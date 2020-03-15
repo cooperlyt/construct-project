@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: construct-attach-corp
+  profiles:
+    active:
+      default
+  cloud:
+    config:
+      enabled: false
+
+server:
+  port: 18001
