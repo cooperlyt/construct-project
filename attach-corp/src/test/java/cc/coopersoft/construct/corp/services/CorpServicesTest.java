@@ -57,8 +57,8 @@ public class CorpServicesTest {
         regInfo.setType(ConstructJoinType.Construct);
 
         BusinessReg businessReg = new BusinessReg();
-        businessReg.setId(new BusinessRegPK());
-        businessReg.getId().setInfo(regInfo);
+
+        businessReg.setInfo(regInfo);
         business.getRegs().add(businessReg);
 
         regInfo = new RegInfo();
@@ -67,8 +67,7 @@ public class CorpServicesTest {
         regInfo.setLevelNumber("test2");
         regInfo.setType(ConstructJoinType.Developer);
         businessReg = new BusinessReg();
-        businessReg.setId(new BusinessRegPK());
-        businessReg.getId().setInfo(regInfo);
+        businessReg.setInfo(regInfo);
         business.getRegs().add(businessReg);
 
         corpServices.patchCreate(business);

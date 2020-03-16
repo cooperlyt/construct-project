@@ -137,16 +137,16 @@ public class CorpServices {
 
         for(BusinessReg reg:  regBusiness.getRegs()){
 
-            RegInfo regInfo = reg.getId().getInfo();
+
 
             CorpReg corpReg = new CorpReg();
-            corpReg.setId(new CorpRegPK(regInfo.getType(),corp));
-            corpReg.setInfo(regInfo);
+            corpReg.setId(new CorpRegPK(reg.getInfo().getType(),corp));
+            corpReg.setInfo(reg.getInfo());
             corp.getRegs().add(corpReg);
 
-            types = types + " " + regInfo.getType().name();
+            types = types + " " + reg.getInfo().getType().name();
 
-            logger.debug("add record type :" + regInfo.getType().name());
+            logger.debug("add record type :" + reg.getInfo().getType().name());
         }
 
         corp.setTypes(types.trim());
@@ -192,23 +192,22 @@ public class CorpServices {
         String types = "";
 
         for(BusinessReg reg:  regBusiness.getRegs()){
-            RegInfo businessRegInfo = reg.getId().getInfo();
             switch (reg.getOperateType()){
                 case DELETE:
                     corp.getRegs().remove(corpRegs.get(reg.getOperateType()));
                     break;
                 case CREATE:
                     CorpReg corpReg = new CorpReg();
-                    corpReg.setId(new CorpRegPK(businessRegInfo.getType(),corp));
-                    corpReg.setInfo(businessRegInfo);
+                    corpReg.setId(new CorpRegPK(reg.getInfo().getType(),corp));
+                    corpReg.setInfo(reg.getInfo());
                     corp.getRegs().add(corpReg);
                     break;
                 case MODIFY:
-                    corpRegs.get(reg.getOperateType()).setInfo(businessRegInfo);
+                    corpRegs.get(reg.getOperateType()).setInfo(reg.getInfo());
                     break;
             }
             if (!BusinessReg.OperateType.DELETE.equals(reg.getOperateType())){
-                types = types + " " + businessRegInfo.getType().name();
+                types = types + " " + reg.getInfo().getType().name();
             }
         }
         corp.setTypes(types.trim());
@@ -245,20 +244,23 @@ public class CorpServices {
         }
 
         for(BusinessReg reg:  regBusiness.getRegs()) {
-            reg.getId().setBusiness(regBusiness);
-            if (!BusinessReg.OperateType.QUOTED.equals(reg.getOperateType())){
+            reg.setBusiness(regBusiness);
+            if (BusinessReg.OperateType.QUOTED.equals(reg.getOperateType())){
                 throw new IllegalArgumentException("操作类型错误：" +  reg.getOperateType());
             }
-            reg.getId().getInfo().setId(defaultUidGenerator.getUID());
-            ConstructJoinType joinType = reg.getId().getInfo().getType();
-            reg.getId().getInfo().setPrevious(corpRegs.get(joinType));
+            reg.setId(defaultUidGenerator.getUID());
+            reg.getInfo().setId(reg.getId());
+            ConstructJoinType joinType = reg.getInfo().getType();
+            reg.getInfo().setPrevious(corpRegs.get(joinType));
             corpRegs.remove(joinType);
         }
 
         for(RegInfo regInfo : corpRegs.values()){
             BusinessReg businessReg = new BusinessReg();
-            businessReg.setId(new BusinessRegPK(regInfo,regBusiness));
+            businessReg.setId(defaultUidGenerator.getUID());
             businessReg.setOperateType(BusinessReg.OperateType.QUOTED);
+            businessReg.setInfo(regInfo);
+            businessReg.setBusiness(regBusiness);
         }
         return regBusiness;
     }
@@ -289,10 +291,11 @@ public class CorpServices {
         regBusiness.getCorpInfo().setPrevious(null);
 
         for(BusinessReg reg:  regBusiness.getRegs()){
-            reg.getId().setBusiness(regBusiness);
+            reg.setId(defaultUidGenerator.getUID());
+            reg.getInfo().setId(reg.getId());
+            reg.setBusiness(regBusiness);
             reg.setOperateType(BusinessReg.OperateType.CREATE);
-            reg.getId().getInfo().setId(defaultUidGenerator.getUID());
-            reg.getId().getInfo().setPrevious(null);
+            reg.getInfo().setPrevious(null);
         }
         return regBusiness;
     }

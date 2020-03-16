@@ -49,7 +49,7 @@ public class CorpBusiness {
     @JoinColumn(name = "CORP_INFO", nullable = false)
     private CorpInfo corpInfo;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.business", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "business", cascade = CascadeType.ALL)
     private Set<BusinessReg> regs = new HashSet<>(0);
 
     @Override

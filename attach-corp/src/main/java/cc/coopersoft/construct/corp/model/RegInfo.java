@@ -40,9 +40,6 @@ public class RegInfo {
     @JoinColumn(name = "PREVIOUS")
     private RegInfo previous;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.info")
-    private Set<BusinessReg> businessRegs = new HashSet<>(0);
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
