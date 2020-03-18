@@ -20,6 +20,7 @@ import java.util.Objects;
 public class CorpInfo implements java.io.Serializable {
 
     @Id
+    @Column(name = "ID", nullable = false, unique = true)
     private Long id;
 
     @Column(name = "CORP_CODE", nullable = false, length = 32)

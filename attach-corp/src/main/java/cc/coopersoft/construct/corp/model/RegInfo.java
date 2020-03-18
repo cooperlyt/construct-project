@@ -32,10 +32,6 @@ public class RegInfo {
     @Column(name = "LEVEL_NUMBER", length = 32)
     private String levelNumber;
 
-    @Column(name = "CORP_TYPE", length = 16, nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ConstructJoinType type;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PREVIOUS")
     private RegInfo previous;

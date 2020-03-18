@@ -1,6 +1,7 @@
 package cc.coopersoft.construct.corp.model;
 
 
+import cc.coopersoft.common.data.ConstructJoinType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -21,9 +22,8 @@ public class BusinessReg {
         QUOTED
     }
 
-    @Id
-    @Column(name = "ID" , nullable = false, unique = true)
-    private Long id;
+    @EmbeddedId
+    private BusinessRegPK id;
 
     @Column(name = "OPERATE", length = 6, nullable = false)
     @Enumerated(EnumType.STRING)
@@ -34,9 +34,9 @@ public class BusinessReg {
     @JoinColumn(name = "REG_ID", nullable = false)
     private RegInfo info;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BUSINESS_ID", nullable = false)
-    private CorpBusiness business;
+    public BusinessReg(CorpBusiness business, ConstructJoinType type) {
+        this.id = new BusinessRegPK(type, business);
+    }
 
     @Override
     public boolean equals(Object o) {
