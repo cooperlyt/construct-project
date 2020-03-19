@@ -128,7 +128,7 @@ public class CorpServices {
 
 
     @Transactional()
-    public CorpBusiness patchCreate(CorpBusiness business){
+    public Corp patchCreate(CorpBusiness business){
         CorpBusiness regBusiness = createCorp(business);
 
         regBusiness.setRegDate(new Date());
@@ -156,14 +156,13 @@ public class CorpServices {
 
         corp.setTypes(types.trim());
 
-        this.corpBusinessRepository.save(regBusiness);
-        this.corpRepository.save(corp);
 
-        return regBusiness;
+        this.corpBusinessRepository.save(regBusiness);
+        return this.corpRepository.save(corp);
     }
 
     @Transactional
-    public CorpBusiness patchModify(String corpCode, CorpBusiness business){
+    public Corp patchModify(String corpCode, CorpBusiness business){
 
         Optional<Corp> _corp = this.corpRepository.findById(corpCode);
         Corp corp;
@@ -202,14 +201,13 @@ public class CorpServices {
                     corp.getRegs().remove(corpRegs.get(reg.getId().getType()));
                     logger.debug("remove reg type: " + reg.getId().getType() + "; size is:" + corp.getRegs().size());
                     break;
+                case MODIFY:
+                    corp.getRegs().remove(corpRegs.get(reg.getId().getType()));
                 case CREATE:
                     CorpReg corpReg = new CorpReg();
                     corpReg.setId(new CorpRegPK(reg.getId().getType(),corp));
                     corpReg.setInfo(reg.getInfo());
                     corp.getRegs().add(corpReg);
-                    break;
-                case MODIFY:
-                    corpRegs.get(reg.getId().getType()).setInfo(reg.getInfo());
                     break;
             }
             if (!BusinessReg.OperateType.DELETE.equals(reg.getOperateType())){
@@ -218,10 +216,9 @@ public class CorpServices {
         }
         corp.setTypes(types.trim());
 
-        this.corpBusinessRepository.save(regBusiness);
-        this.corpRepository.save(corp);
 
-        return regBusiness;
+        this.corpBusinessRepository.save(regBusiness);
+        return this.corpRepository.save(corp);
     }
 
     private boolean corpInBusiness(String corpCode){
@@ -258,6 +255,7 @@ public class CorpServices {
                     reg.setInfo(corpRegs.get(joinType).getInfo());
                     break;
                 case MODIFY:
+                    logger.debug("add modify info level number:" + reg.getInfo().getLevelNumber());
                     reg.getInfo().setPrevious(corpRegs.get(joinType).getInfo());
                 case CREATE:
                     reg.getInfo().setId(defaultUidGenerator.getUID());

@@ -13,10 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Date;
-import java.util.Objects;
 
 import static org.junit.Assert.*;
 
@@ -36,7 +34,7 @@ public class CorpServicesTest {
     @Test
     public void curd() {
 
-
+        // create
 
         CorpBusiness business = new CorpBusiness();
 
@@ -80,6 +78,7 @@ public class CorpServicesTest {
         assertEquals(corpServices.corp("path_create_test").get().getRegs().size(), 2);
 
 
+        logger.debug("------------create test completed!  ----------------------");
 
         business = new CorpBusiness();
         businessReg = new BusinessReg();
@@ -94,6 +93,8 @@ public class CorpServicesTest {
 
         assertEquals(corpServices.corp("path_create_test").get().getRegs().size(), 1);
 
+
+        logger.debug("------------del reg  test completed!  ----------------------");
 
         business = new CorpBusiness();
 
@@ -132,6 +133,7 @@ public class CorpServicesTest {
 
         assertEquals(corpServices.corpReg("path_create_test",ConstructJoinType.Developer ).get().getInfo().getLevelNumber(),"test1-mod");
 
+        logger.debug("------------modify create and modify  test completed!  ----------------------");
 
     }
 

@@ -45,7 +45,7 @@ public class CorpBusiness {
     @Column(name = "INFO", nullable = false)
     private boolean info;
 
-    @ManyToOne(fetch = FetchType.LAZY,optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY,optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "CORP_INFO", nullable = false)
     private CorpInfo corpInfo;
 

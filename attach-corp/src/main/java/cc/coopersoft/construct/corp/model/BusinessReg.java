@@ -30,7 +30,7 @@ public class BusinessReg {
     private OperateType operateType;
 
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "REG_ID", nullable = false)
     private RegInfo info;
 
