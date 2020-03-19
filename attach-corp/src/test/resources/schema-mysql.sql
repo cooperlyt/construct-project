@@ -126,20 +126,21 @@ CREATE TABLE CORP_INFO
 
 CREATE TABLE CORP_REG_BUSINESS
 (
-	BUSINESS_ID bigint NOT NULL,
-	CREATE_TIME datetime NOT NULL,
-	REG_DATE date NOT NULL,
-	-- OLD
-	-- OLE
-	-- BIZ
-	SOURCE varchar(3) NOT NULL COMMENT 'OLD
+    BUSINESS_ID bigint NOT NULL,
+    CREATE_TIME datetime NOT NULL,
+    REG_TIME datetime NOT NULL,
+    -- OLD
+    -- OLE
+    -- BIZ
+    SOURCE varchar(3) NOT NULL COMMENT 'OLD
 OLE
 BIZ',
-	STATUS varchar(8),
-	INFO boolean NOT NULL,
-	CORP_INFO bigint NOT NULL,
-	TAGS varchar(512),
-	PRIMARY KEY (BUSINESS_ID)
+    STATUS varchar(8),
+    INFO boolean NOT NULL,
+    CORP_INFO bigint NOT NULL,
+    TAGS varchar(512),
+    APPLY_TIME datetime,
+    PRIMARY KEY (BUSINESS_ID)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET utf8;
 
 

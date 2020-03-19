@@ -131,7 +131,8 @@ public class CorpServices {
     public Corp patchCreate(CorpBusiness business){
         CorpBusiness regBusiness = createCorp(business);
 
-        regBusiness.setRegDate(new Date());
+        regBusiness.setRegTime(new Date());
+        regBusiness.setApplyTime(new Date());
         regBusiness.setSource(BusinessSource.OLD);
         regBusiness.setStatus(BusinessStatus.valid);
 
@@ -177,7 +178,8 @@ public class CorpServices {
         }
 
         CorpBusiness regBusiness = modifyCorp(corp,business);
-        regBusiness.setRegDate(new Date());
+        regBusiness.setRegTime(new Date());
+        regBusiness.setApplyTime(new Date());
         regBusiness.setSource(BusinessSource.OLD);
         regBusiness.setStatus(BusinessStatus.valid);
 
