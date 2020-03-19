@@ -114,8 +114,7 @@ public class ProjectBusiness implements java.io.Serializable{
     private BigDecimal height;
 
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "BUSINESS_ID", nullable = false)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "info", cascade = CascadeType.ALL)
     private Set<JoinCorp> corps = new HashSet<>(0);
 
 

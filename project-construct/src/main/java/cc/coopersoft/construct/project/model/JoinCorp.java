@@ -3,6 +3,7 @@ package cc.coopersoft.construct.project.model;
 
 import cc.coopersoft.common.data.ConstructJoinType;
 import cc.coopersoft.common.data.GroupIdType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,10 +18,11 @@ import javax.validation.constraints.Size;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
+@NamedEntityGraph(name = "joinCorp.full", attributeNodes = {@NamedAttributeNode(value = "info")})
 public class JoinCorp {
 
     @Id
-    @Column(name = "BUSINESS_ID", nullable = false, unique = true)
+    @Column(name = "ID", nullable = false, unique = true)
     private Long id;
 
     @Enumerated(EnumType.STRING)
@@ -62,6 +64,10 @@ public class JoinCorp {
     @Column(name = "TEL", length = 16)
     private String tel;
 
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BUSINESS_ID", nullable = false)
+    private ProjectBusiness info;
 
 
 }
