@@ -18,6 +18,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="attach-corp" />
+        <module name="project-construct" />
       </profile>
     </annotationProcessing>
   </component>
@@ -26,6 +27,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="attach-corp" options="-parameters" />
       <module name="construct-fire" options="" />
+      <module name="project-construct" options="-parameters" />
     </option>
   </component>
 </project>

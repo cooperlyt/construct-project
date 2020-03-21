@@ -5,10 +5,19 @@
       <list>
         <State>
           <option name="id" value="efce7b2d-2630-448e-af84-ba748cd1f236" />
-          <option name="name" value="DDL data source" />
+          <option name="name" value="Corp DDL" />
           <option name="urls">
             <array>
               <option value="file://$PROJECT_DIR$/attach-corp/src/test/resources/schema-mysql.sql" />
+            </array>
+          </option>
+        </State>
+        <State>
+          <option name="id" value="ef648cde-7bee-4017-9cd6-d40611347696" />
+          <option name="name" value="Project DDL" />
+          <option name="urls">
+            <array>
+              <option value="file://$PROJECT_DIR$/project-construct/src/test/resources/schema-mysql.sql" />
             </array>
           </option>
         </State>
