@@ -7,6 +7,7 @@ import cc.coopersoft.common.data.ConstructJoinType;
 import cc.coopersoft.common.data.GroupIdType;
 import cc.coopersoft.construct.corp.model.*;
 import cc.coopersoft.construct.corp.repository.CorpBusinessRepository;
+import cc.coopersoft.construct.corp.repository.CorpRegRepository;
 import cc.coopersoft.construct.corp.repository.CorpRepository;
 import com.github.wujun234.uid.UidGenerator;
 import org.apache.commons.lang.StringUtils;
@@ -35,16 +36,23 @@ public class CorpServices {
 
     private final CorpBusinessRepository corpBusinessRepository;
 
+    private final CorpRegRepository corpRegRepository;
+
     @Resource
     private UidGenerator defaultUidGenerator;
 
     @Autowired
     public CorpServices(CorpRepository corpRepository,
-                        CorpBusinessRepository corpBusinessRepository) {
+                        CorpBusinessRepository corpBusinessRepository,
+                        CorpRegRepository corpRegRepository) {
         this.corpRepository = corpRepository;
         this.corpBusinessRepository = corpBusinessRepository;
+        this.corpRegRepository = corpRegRepository;
     }
 
+    public Optional<CorpReg> corpReg(String corpCode, ConstructJoinType type){
+        return corpRegRepository.findByIdCorpCorpCodeAndIdType(corpCode,type);
+    }
 
     public Optional<CorpBusiness> corpBusiness(long businessId){
         return this.corpBusinessRepository.findById(businessId);
@@ -120,10 +128,11 @@ public class CorpServices {
 
 
     @Transactional()
-    public CorpBusiness patchCreate(CorpBusiness business){
+    public Corp patchCreate(CorpBusiness business){
         CorpBusiness regBusiness = createCorp(business);
 
-        regBusiness.setRegDate(new Date());
+        regBusiness.setRegTime(new Date());
+        regBusiness.setApplyTime(new Date());
         regBusiness.setSource(BusinessSource.OLD);
         regBusiness.setStatus(BusinessStatus.valid);
 
@@ -136,29 +145,25 @@ public class CorpServices {
         String types = "";
 
         for(BusinessReg reg:  regBusiness.getRegs()){
-
-            RegInfo regInfo = reg.getId().getInfo();
-
             CorpReg corpReg = new CorpReg();
-            corpReg.setId(new CorpRegPK(regInfo.getType(),corp));
-            corpReg.setInfo(regInfo);
+            corpReg.setId(new CorpRegPK(reg.getId().getType(),corp));
+            corpReg.setInfo(reg.getInfo());
             corp.getRegs().add(corpReg);
 
-            types = types + " " + regInfo.getType().name();
+            types = types + " " + reg.getId().getType().name();
 
-            logger.debug("add record type :" + regInfo.getType().name());
+            logger.debug("add record type :" + reg.getId().getType().name());
         }
 
         corp.setTypes(types.trim());
 
-        this.corpBusinessRepository.save(regBusiness);
-        this.corpRepository.save(corp);
 
-        return regBusiness;
+        this.corpBusinessRepository.save(regBusiness);
+        return this.corpRepository.save(corp);
     }
 
     @Transactional
-    public CorpBusiness patchModify(String corpCode, CorpBusiness business){
+    public Corp patchModify(String corpCode, CorpBusiness business){
 
         Optional<Corp> _corp = this.corpRepository.findById(corpCode);
         Corp corp;
@@ -173,7 +178,8 @@ public class CorpServices {
         }
 
         CorpBusiness regBusiness = modifyCorp(corp,business);
-        regBusiness.setRegDate(new Date());
+        regBusiness.setRegTime(new Date());
+        regBusiness.setApplyTime(new Date());
         regBusiness.setSource(BusinessSource.OLD);
         regBusiness.setStatus(BusinessStatus.valid);
 
@@ -192,31 +198,29 @@ public class CorpServices {
         String types = "";
 
         for(BusinessReg reg:  regBusiness.getRegs()){
-            RegInfo businessRegInfo = reg.getId().getInfo();
             switch (reg.getOperateType()){
                 case DELETE:
-                    corp.getRegs().remove(corpRegs.get(reg.getOperateType()));
-                    break;
-                case CREATE:
-                    CorpReg corpReg = new CorpReg();
-                    corpReg.setId(new CorpRegPK(businessRegInfo.getType(),corp));
-                    corpReg.setInfo(businessRegInfo);
-                    corp.getRegs().add(corpReg);
+                    corp.getRegs().remove(corpRegs.get(reg.getId().getType()));
+                    logger.debug("remove reg type: " + reg.getId().getType() + "; size is:" + corp.getRegs().size());
                     break;
                 case MODIFY:
-                    corpRegs.get(reg.getOperateType()).setInfo(businessRegInfo);
+                    corp.getRegs().remove(corpRegs.get(reg.getId().getType()));
+                case CREATE:
+                    CorpReg corpReg = new CorpReg();
+                    corpReg.setId(new CorpRegPK(reg.getId().getType(),corp));
+                    corpReg.setInfo(reg.getInfo());
+                    corp.getRegs().add(corpReg);
                     break;
             }
             if (!BusinessReg.OperateType.DELETE.equals(reg.getOperateType())){
-                types = types + " " + businessRegInfo.getType().name();
+                types = types + " " + reg.getId().getType().name();
             }
         }
         corp.setTypes(types.trim());
 
-        this.corpBusinessRepository.save(regBusiness);
-        this.corpRepository.save(corp);
 
-        return regBusiness;
+        this.corpBusinessRepository.save(regBusiness);
+        return this.corpRepository.save(corp);
     }
 
     private boolean corpInBusiness(String corpCode){
@@ -238,37 +242,43 @@ public class CorpServices {
             regBusiness.setCorpInfo(corp.getInfo());
         }
 
-        Map<ConstructJoinType, RegInfo> corpRegs = new HashMap<>(corp.getRegs().size());
+        Map<ConstructJoinType, CorpReg> corpRegs = new HashMap<>(corp.getRegs().size());
 
         for(CorpReg reg: corp.getRegs()){
-            corpRegs.put(reg.getId().getType(),reg.getInfo());
+            corpRegs.put(reg.getId().getType(),reg);
         }
 
         for(BusinessReg reg:  regBusiness.getRegs()) {
-            reg.getId().setBusiness(regBusiness);
-            if (!BusinessReg.OperateType.QUOTED.equals(reg.getOperateType())){
-                throw new IllegalArgumentException("操作类型错误：" +  reg.getOperateType());
+            ConstructJoinType joinType = reg.getId().getType();
+            switch (reg.getOperateType()){
+                case QUOTED:
+                    throw new IllegalArgumentException("操作类型错误：" +  reg.getOperateType());
+                case DELETE:
+                    reg.setInfo(corpRegs.get(joinType).getInfo());
+                    break;
+                case MODIFY:
+                    logger.debug("add modify info level number:" + reg.getInfo().getLevelNumber());
+                    reg.getInfo().setPrevious(corpRegs.get(joinType).getInfo());
+                case CREATE:
+                    reg.getInfo().setId(defaultUidGenerator.getUID());
+                    break;
             }
-            reg.getId().getInfo().setId(defaultUidGenerator.getUID());
-            ConstructJoinType joinType = reg.getId().getInfo().getType();
-            reg.getId().getInfo().setPrevious(corpRegs.get(joinType));
+            reg.getId().setBusiness(regBusiness);
             corpRegs.remove(joinType);
         }
 
-        for(RegInfo regInfo : corpRegs.values()){
-            BusinessReg businessReg = new BusinessReg();
-            businessReg.setId(new BusinessRegPK(regInfo,regBusiness));
+        for(CorpReg corpReg : corpRegs.values()){
+            BusinessReg businessReg = new BusinessReg(regBusiness,corpReg.getId().getType());
             businessReg.setOperateType(BusinessReg.OperateType.QUOTED);
+            businessReg.setInfo(corpReg.getInfo());
+            regBusiness.getRegs().add(businessReg);
         }
         return regBusiness;
     }
 
     private CorpBusiness createCorp(CorpBusiness regBusiness){
-        //TODO Check data
-
 
         String corpCode;
-
         if (GroupIdType.COMPANY_CODE.equals(regBusiness.getCorpInfo().getGroupIdType())){
             corpCode = regBusiness.getCorpInfo().getGroupId();
             if (corpRepository.existsById(corpCode)){
@@ -289,10 +299,10 @@ public class CorpServices {
         regBusiness.getCorpInfo().setPrevious(null);
 
         for(BusinessReg reg:  regBusiness.getRegs()){
+            reg.getInfo().setId(defaultUidGenerator.getUID());
             reg.getId().setBusiness(regBusiness);
             reg.setOperateType(BusinessReg.OperateType.CREATE);
-            reg.getId().getInfo().setId(defaultUidGenerator.getUID());
-            reg.getId().getInfo().setPrevious(null);
+            reg.getInfo().setPrevious(null);
         }
         return regBusiness;
     }

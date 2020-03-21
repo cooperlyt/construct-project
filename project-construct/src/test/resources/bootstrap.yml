@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: construct-project
+  profiles:
+    active:
+      default
+  cloud:
+    config:
+      enabled: false
+
+server:
+  port: 19002

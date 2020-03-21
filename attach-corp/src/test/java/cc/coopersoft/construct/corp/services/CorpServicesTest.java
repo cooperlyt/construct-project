@@ -13,10 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Date;
-import java.util.Objects;
 
 import static org.junit.Assert.*;
 
@@ -34,9 +32,9 @@ public class CorpServicesTest {
 
 
     @Test
-    public void patchCreate() {
+    public void curd() {
 
-
+        // create
 
         CorpBusiness business = new CorpBusiness();
 
@@ -54,21 +52,21 @@ public class CorpServicesTest {
         regInfo.setRegTo(new Date());
         regInfo.setLevel(0);
         regInfo.setLevelNumber("test1");
-        regInfo.setType(ConstructJoinType.Construct);
 
         BusinessReg businessReg = new BusinessReg();
+        businessReg.setInfo(regInfo);
         businessReg.setId(new BusinessRegPK());
-        businessReg.getId().setInfo(regInfo);
+        businessReg.getId().setType(ConstructJoinType.Construct);
         business.getRegs().add(businessReg);
 
         regInfo = new RegInfo();
         regInfo.setRegTo(new Date());
         regInfo.setLevel(0);
         regInfo.setLevelNumber("test2");
-        regInfo.setType(ConstructJoinType.Developer);
         businessReg = new BusinessReg();
+        businessReg.setInfo(regInfo);
         businessReg.setId(new BusinessRegPK());
-        businessReg.getId().setInfo(regInfo);
+        businessReg.getId().setType(ConstructJoinType.Developer);
         business.getRegs().add(businessReg);
 
         corpServices.patchCreate(business);
@@ -77,12 +75,67 @@ public class CorpServicesTest {
         assertTrue(corpServices.corp("path_create_test").get().getTypes().equals("Construct Developer") ||
                 corpServices.corp("path_create_test").get().getTypes().equals("Developer Construct"));
 
+        assertEquals(corpServices.corp("path_create_test").get().getRegs().size(), 2);
+
+
+        logger.debug("------------create test completed!  ----------------------");
+
+        business = new CorpBusiness();
+        businessReg = new BusinessReg();
+        businessReg.setId(new BusinessRegPK());
+        businessReg.getId().setType(ConstructJoinType.Construct);
+        businessReg.setOperateType(BusinessReg.OperateType.DELETE);
+        business.getRegs().add(businessReg);
+
+        corpServices.patchModify("path_create_test",business);
+
+        assertEquals(corpServices.corp("path_create_test").get().getTypes(),"Developer");
+
+        assertEquals(corpServices.corp("path_create_test").get().getRegs().size(), 1);
+
+
+        logger.debug("------------del reg  test completed!  ----------------------");
+
+        business = new CorpBusiness();
+
+        regInfo = new RegInfo();
+        regInfo.setRegTo(new Date());
+        regInfo.setLevel(0);
+        regInfo.setLevelNumber("test2");
+
+        businessReg = new BusinessReg();
+        businessReg.setId(new BusinessRegPK());
+        businessReg.getId().setType(ConstructJoinType.Construct);
+        businessReg.setInfo(regInfo);
+        businessReg.setOperateType(BusinessReg.OperateType.CREATE);
+        business.getRegs().add(businessReg);
+
+
+        regInfo = new RegInfo();
+        regInfo.setRegTo(new Date());
+        regInfo.setLevel(2);
+        regInfo.setLevelNumber("test1-mod");
+
+        businessReg = new BusinessReg();
+        businessReg.setId(new BusinessRegPK());
+        businessReg.getId().setType(ConstructJoinType.Developer);
+        businessReg.setInfo(regInfo);
+        businessReg.setOperateType(BusinessReg.OperateType.MODIFY);
+        business.getRegs().add(businessReg);
+
+        corpServices.patchModify("path_create_test",business);
+
+        assertTrue(corpServices.corp("path_create_test").get().getTypes().equals("Construct Developer") ||
+                corpServices.corp("path_create_test").get().getTypes().equals("Developer Construct"));
+
+        assertEquals(corpServices.corp("path_create_test").get().getRegs().size(), 2);
+
+
+        assertEquals(corpServices.corpReg("path_create_test",ConstructJoinType.Developer ).get().getInfo().getLevelNumber(),"test1-mod");
+
+        logger.debug("------------modify create and modify  test completed!  ----------------------");
+
     }
 
-    @Test
-    public  void patchModify() {
 
-
-
-    }
 }

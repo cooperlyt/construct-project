@@ -1,5 +1,7 @@
 package cc.coopersoft.construct.corp.model;
 
+
+import cc.coopersoft.common.data.ConstructJoinType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,14 +13,13 @@ import java.util.Objects;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BusinessRegPK implements java.io.Serializable {
+public class BusinessRegPK implements java.io.Serializable{
 
+    @Column(name = "CORP_TYPE", nullable = false, length = 16)
+    @Enumerated(EnumType.STRING)
+    private ConstructJoinType type;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
-    @JoinColumn(name = "REG_ID", nullable = false)
-    private RegInfo info;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "BUSINESS_ID", nullable = false)
     private CorpBusiness business;
 
@@ -26,21 +27,19 @@ public class BusinessRegPK implements java.io.Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
+        if (this.business == null) return false;
         if (o == null || getClass() != o.getClass()) return false;
 
         BusinessRegPK that = (BusinessRegPK) o;
 
-        if (info == null || that.info == null) return false;
-        if (business == null || that.business == null) return false;
-
-        if (!Objects.equals(info, that.info)) return false;
+        if (type != that.type) return false;
         return Objects.equals(business, that.business);
     }
 
     @Override
     public int hashCode() {
-        if (info == null || business == null) return super.hashCode();
-        int result = info != null ? info.hashCode() : 0;
+        if (this.business == null) return super.hashCode();
+        int result = type.hashCode();
         result = 31 * result + (business != null ? business.hashCode() : 0);
         return result;
     }

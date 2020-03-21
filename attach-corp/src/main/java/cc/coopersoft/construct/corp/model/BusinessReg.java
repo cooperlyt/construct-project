@@ -1,11 +1,13 @@
 package cc.coopersoft.construct.corp.model;
 
 
+import cc.coopersoft.common.data.ConstructJoinType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Data
@@ -28,23 +30,27 @@ public class BusinessReg {
     private OperateType operateType;
 
 
-    public BusinessReg(BusinessRegPK id) {
-        this.id = id;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "REG_ID", nullable = false)
+    private RegInfo info;
+
+    public BusinessReg(CorpBusiness business, ConstructJoinType type) {
+        this.id = new BusinessRegPK(type, business);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
+        if (id == null) return false;
         if (o == null || getClass() != o.getClass()) return false;
 
         BusinessReg that = (BusinessReg) o;
 
-        return id.equals(that.id);
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return id.hashCode();
+        return id != null ? id.hashCode() : super.hashCode();
     }
-
 }

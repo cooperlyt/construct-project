@@ -1,15 +1,13 @@
 package cc.coopersoft.construct.corp.model;
 
-import cc.coopersoft.common.data.ConstructJoinType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
 
 
 @Entity
@@ -32,16 +30,9 @@ public class RegInfo {
     @Column(name = "LEVEL_NUMBER", length = 32)
     private String levelNumber;
 
-    @Column(name = "CORP_TYPE", length = 16, nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ConstructJoinType type;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PREVIOUS")
     private RegInfo previous;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.info")
-    private Set<BusinessReg> businessRegs = new HashSet<>(0);
 
     @Override
     public boolean equals(Object o) {

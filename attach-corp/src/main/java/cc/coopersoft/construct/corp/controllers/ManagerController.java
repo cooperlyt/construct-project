@@ -67,14 +67,14 @@ public class ManagerController {
 
     @RequestMapping(value = "/path/create", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public CorpBusiness pathCreate(@Valid @RequestBody CorpBusiness regBusiness){
+    public Corp pathCreate(@Valid @RequestBody CorpBusiness regBusiness){
         return this.corpServices.patchCreate(regBusiness);
     }
 
 
     @RequestMapping(value = "/path/modify/{code}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public CorpBusiness pathModify(
+    public Corp pathModify(
             @PathVariable("code") String corpCode,
             @Valid @RequestBody CorpBusiness regBusiness){
         return this.corpServices.patchModify(corpCode,regBusiness);

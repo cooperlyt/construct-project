@@ -27,9 +27,13 @@ public class CorpBusiness {
     @Column(name = "CREATE_TIME", nullable = false)
     private Date createTime;
 
-    @Temporal(TemporalType.DATE)
-    @Column(name = "REG_DATE")
-    private Date regDate;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "APPLY_TIME")
+    private Date applyTime;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "REG_TIME")
+    private Date regTime;
 
     @Column(name = "SOURCE", nullable = false, length = 3)
     @Enumerated(EnumType.STRING)
@@ -45,7 +49,7 @@ public class CorpBusiness {
     @Column(name = "INFO", nullable = false)
     private boolean info;
 
-    @ManyToOne(fetch = FetchType.LAZY,optional = false, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY,optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "CORP_INFO", nullable = false)
     private CorpInfo corpInfo;
 
