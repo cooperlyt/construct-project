@@ -63,6 +63,9 @@ public class JoinCorp {
     @Column(name = "TEL", length = 16)
     private String tel;
 
+    @Column(name = "MASTER", nullable = false)
+    private boolean master;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "BUSINESS_ID", nullable = false)
     private ProjectInfo info;
