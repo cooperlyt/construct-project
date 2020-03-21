@@ -2,8 +2,9 @@ package cc.coopersoft.construct.project.services;
 
 import cc.coopersoft.construct.project.model.JoinCorp;
 import cc.coopersoft.construct.project.model.Project;
-import cc.coopersoft.construct.project.model.ProjectBusiness;
+import cc.coopersoft.construct.project.model.ProjectInfo;
 import cc.coopersoft.construct.project.repository.BusinessRepository;
+import cc.coopersoft.construct.project.repository.JoinCorpRepository;
 import cc.coopersoft.construct.project.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,11 +20,15 @@ public class ProjectService {
 
     private final ProjectRepository projectRepository;
 
+    private final JoinCorpRepository joinCorpRepository;
+
     @Autowired
     public ProjectService(BusinessRepository businessRepository,
-                          ProjectRepository projectRepository) {
+                          ProjectRepository projectRepository,
+                          JoinCorpRepository joinCorpRepository) {
         this.businessRepository = businessRepository;
         this.projectRepository = projectRepository;
+        this.joinCorpRepository = joinCorpRepository;
     }
 
 
@@ -37,10 +42,10 @@ public class ProjectService {
     }
 
 
-    public Page<ProjectBusiness> businesses(Optional<Integer> page,
-                                            Optional<String> key,
-                                            Optional<String> sort,
-                                            Optional<String> dir){
+    public Page<ProjectInfo> businesses(Optional<Integer> page,
+                                        Optional<String> key,
+                                        Optional<String> sort,
+                                        Optional<String> dir){
 
         //TODO implements
         return null;
@@ -52,7 +57,7 @@ public class ProjectService {
         return null;
     }
 
-    public Optional<ProjectBusiness> business(String id){
+    public Optional<ProjectInfo> business(String id){
         //TODO implements
         return null;
     }
@@ -67,13 +72,13 @@ public class ProjectService {
     }
 
 
-    public Project patchCreate(ProjectBusiness business){
+    public Project patchCreate(ProjectInfo business){
 
         //TODO implements
         return null;
     }
 
-    public Project pathModify(ProjectBusiness business){
+    public Project pathModify(ProjectInfo business){
         //TODO implements
         return null;
     }

@@ -3,7 +3,7 @@ package cc.coopersoft.construct.project.controllers;
 
 import cc.coopersoft.construct.project.model.JoinCorp;
 import cc.coopersoft.construct.project.model.Project;
-import cc.coopersoft.construct.project.model.ProjectBusiness;
+import cc.coopersoft.construct.project.model.ProjectInfo;
 import cc.coopersoft.construct.project.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,10 +38,10 @@ public class ViewController {
 
     @RequestMapping(value = "/business", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public Page<ProjectBusiness> businesses(@RequestParam(value ="page", required = false) Optional<Integer> page,
-                                            @RequestParam(value ="key", required = false)Optional<String> key,
-                                            @RequestParam(value ="sort", required = false)Optional<String> sort,
-                                            @RequestParam(value ="dir", required = false)Optional<String> dir){
+    public Page<ProjectInfo> businesses(@RequestParam(value ="page", required = false) Optional<Integer> page,
+                                        @RequestParam(value ="key", required = false)Optional<String> key,
+                                        @RequestParam(value ="sort", required = false)Optional<String> sort,
+                                        @RequestParam(value ="dir", required = false)Optional<String> dir){
         return projectService.businesses(page,key,sort,dir);
     }
 
@@ -59,8 +59,8 @@ public class ViewController {
 
     @RequestMapping(value = "/business/{id}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public ProjectBusiness business(@PathVariable("id") String id){
-        Optional<ProjectBusiness> result = projectService.business(id);
+    public ProjectInfo business(@PathVariable("id") String id){
+        Optional<ProjectInfo> result = projectService.business(id);
         if (result.isPresent()){
             return result.get();
         }else{

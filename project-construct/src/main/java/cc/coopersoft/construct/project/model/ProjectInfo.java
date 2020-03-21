@@ -1,8 +1,6 @@
 package cc.coopersoft.construct.project.model;
 
-
-import cc.coopersoft.common.business.BusinessSource;
-import cc.coopersoft.common.business.BusinessStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,38 +13,15 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "PROJECT_REG_BUSINESS")
+@Table(name = "PROJECT_INFO")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
-public class ProjectBusiness implements java.io.Serializable{
+public class ProjectInfo implements java.io.Serializable{
 
     @Id
     @Column(name = "BUSINESS_ID", unique = true, nullable = false)
     private Long id;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "CREATE_TIME", nullable = false)
-    private Date createTime;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "APPLY_TIME")
-    private Date applyTime;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "REG_TIME")
-    private Date regTime;
-
-    @Column(name = "SOURCE", nullable = false, length = 3)
-    @Enumerated(EnumType.STRING)
-    private BusinessSource source;
-
-    @Column(name = "STATUS", nullable = false, length = 8)
-    @Enumerated(EnumType.STRING)
-    private BusinessStatus status;
-
-    @Column(name = "TAGS", length = 512)
-    private String tags;
 
     @Column(name = "PROJECT_CODE", nullable = false, length = 32)
     private String projectCode;
@@ -117,5 +92,9 @@ public class ProjectBusiness implements java.io.Serializable{
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "info", cascade = CascadeType.ALL)
     private Set<JoinCorp> corps = new HashSet<>(0);
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "BUSINESS_ID", nullable = false)
+    @MapsId
+    private ProjectReg reg;
 
 }

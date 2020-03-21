@@ -1,7 +1,7 @@
 package cc.coopersoft.construct.project.controllers;
 
 import cc.coopersoft.construct.project.model.Project;
-import cc.coopersoft.construct.project.model.ProjectBusiness;
+import cc.coopersoft.construct.project.model.ProjectInfo;
 import cc.coopersoft.construct.project.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -35,13 +35,13 @@ public class ManagerController {
 
     @RequestMapping(value = "/patch/create", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public Project patchCreate(ProjectBusiness business){
+    public Project patchCreate(ProjectInfo business){
         return projectService.patchCreate(business);
     }
 
     @RequestMapping(value = "/patch/modify", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.OK)
-    public Project pathModify(ProjectBusiness business){
+    public Project pathModify(ProjectInfo business){
         return projectService.pathModify(business);
     }
 }

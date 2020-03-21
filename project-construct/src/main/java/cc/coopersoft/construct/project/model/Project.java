@@ -25,8 +25,9 @@ public class Project {
     @Column(name = "DATA_TIME", nullable = false)
     private Date dataTime;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BUSINESS_ID", nullable = false)
-    private ProjectBusiness info;
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
+    @JoinColumn(name = "REG", nullable = false)
+    private ProjectReg reg;
+
 
 }
