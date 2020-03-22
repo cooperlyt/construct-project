@@ -16,6 +16,22 @@
     <name>Construct fire construct check register business</name>
     <description>fire check</description>
 
+    <repositories>
+        <repository>
+            <id>maven-repository-comm-cloud</id>
+            <url>
+                https://raw.github.com/cooper-lyt/maven-repo/comm-cloud/
+            </url>
+        </repository>
+
+        <repository>
+            <id>maven-repository-comm-construct</id>
+            <url>
+                https://raw.github.com/cooper-lyt/maven-repo/comm-construct/
+            </url>
+        </repository>
+    </repositories>
+
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -39,12 +55,12 @@
         <dependency>
             <groupId>cc.coopersoft</groupId>
             <artifactId>common-cloud</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
         </dependency>
         <dependency>
             <groupId>cc.coopersoft</groupId>
             <artifactId>common-construct</artifactId>
-            <version>1.3.40</version>
+            <version>1.3.41</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
