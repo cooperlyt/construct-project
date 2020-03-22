@@ -26,14 +26,6 @@ logging:
 signing:
   key: "345345fsdfsf5345"
 
-ugly:
-  register:
-    service:
-      url: http://192.168.1.21:9901/api/
-
-business:
-  readyLimitDay: 10
-
 
 
 uid:

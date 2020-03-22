@@ -30,6 +30,7 @@ public class RegInfo {
     @Column(name = "LEVEL_NUMBER", length = 32)
     private String levelNumber;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PREVIOUS")
     private RegInfo previous;
