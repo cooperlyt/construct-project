@@ -1,0 +1,73 @@
+package cc.coopersoft.construct.corp.controllers;
+
+import cc.coopersoft.common.data.ConstructJoinType;
+import cc.coopersoft.construct.corp.model.Corp;
+import cc.coopersoft.construct.corp.model.CorpBusiness;
+import cc.coopersoft.construct.corp.services.CorpServices;
+import com.fasterxml.jackson.annotation.JsonView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
+import java.util.Optional;
+
+@RestController
+@RequestMapping("view")
+public class ViewController {
+
+    private final CorpServices corpServices;
+
+    @Autowired
+    public ViewController(CorpServices corpServices) {
+        this.corpServices = corpServices;
+    }
+
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    @JsonView(Corp.Summary.class)
+    public Page<Corp> listCorp(@RequestParam("valid") boolean valid,
+                               @RequestParam(value = "joinType", required = false) Optional<ConstructJoinType> joinType,
+                               @RequestParam(value ="page", required = false) Optional<Integer> page,
+                               @RequestParam(value ="key", required = false)Optional<String> key,
+                               @RequestParam(value ="sort", required = false)Optional<String> sort,
+                               @RequestParam(value ="dir", required = false)Optional<String> dir){
+        return corpServices.listAllCorp(valid,joinType,page,key,sort,dir);
+    }
+
+    @RequestMapping(value = "/corp/{code}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    @JsonView(Corp.Details.class)
+    public Corp corp(@PathVariable("code") String corpCode){
+        Optional<Corp> _corp = this.corpServices.corp(corpCode);
+        if (_corp.isPresent()){
+            return _corp.get();
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @RequestMapping(value = "/business/{id}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    @JsonView(CorpBusiness.Details.class)
+    public CorpBusiness business(@PathVariable("id") long id){
+        Optional<CorpBusiness> _business = this.corpServices.corpBusiness(id);
+        if (_business.isPresent()){
+            return _business.get();
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+    }
+
+
+
+    @RequestMapping(value = "/corp/{code}/business", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    @JsonView(CorpBusiness.Summary.class)
+    public List<CorpBusiness> listBusiness(@PathVariable("code") String corpCode){
+        return this.corpServices.listBusiness(corpCode);
+    }
+
+}

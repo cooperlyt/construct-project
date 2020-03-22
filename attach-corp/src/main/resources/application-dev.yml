@@ -61,8 +61,3 @@ spring:
         dialect: "org.hibernate.dialect.MySQL5Dialect"
         naming:
           physical-strategy: "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl"
-
-ugly:
-  register:
-    service:
-      url: http://127.0.0.1:9901/api/

@@ -3,6 +3,7 @@ package cc.coopersoft.construct.corp.repository;
 import cc.coopersoft.common.business.BusinessStatus;
 import cc.coopersoft.construct.corp.model.Corp;
 import cc.coopersoft.construct.corp.model.CorpBusiness;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
@@ -15,5 +16,6 @@ public interface CorpBusinessRepository extends CrudRepository<CorpBusiness, Lon
 
     boolean existsByStatusAndCorpInfoCorpCode(BusinessStatus status, String corpCode);
 
+    @EntityGraph(value = "business.full", type = EntityGraph.EntityGraphType.FETCH)
     List<CorpBusiness> findByStatusInAndCorpInfoCorpCodeOrderByCreateTime(Set<BusinessStatus> statuses, String corpCode);
 }

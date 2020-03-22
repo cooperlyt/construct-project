@@ -2,6 +2,7 @@ package cc.coopersoft.construct.corp.model;
 
 import cc.coopersoft.common.data.GroupIdType;
 import cc.coopersoft.common.data.PersonIdType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -65,6 +66,7 @@ public class CorpInfo implements java.io.Serializable {
     @Size(max = 16)
     private String tel;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PREVIOUS")
     private CorpInfo previous;

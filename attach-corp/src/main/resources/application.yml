@@ -34,6 +34,3 @@ spring:
 signing:
   key: "345345fsdfsf5345"
 
-
-business:
-  readyLimitDay: 10

@@ -9,4 +9,4 @@ spring:
       enabled: false
 
 server:
-  port: 18001
+  port: 19001
