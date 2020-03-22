@@ -3,6 +3,7 @@ package cc.coopersoft.construct.project.services;
 import cc.coopersoft.construct.project.model.JoinCorp;
 import cc.coopersoft.construct.project.model.Project;
 import cc.coopersoft.construct.project.model.ProjectInfo;
+import cc.coopersoft.construct.project.model.ProjectReg;
 import cc.coopersoft.construct.project.repository.BusinessRepository;
 import cc.coopersoft.construct.project.repository.JoinCorpRepository;
 import cc.coopersoft.construct.project.repository.ProjectRepository;
@@ -42,10 +43,10 @@ public class ProjectService {
     }
 
 
-    public Page<ProjectInfo> businesses(Optional<Integer> page,
-                                        Optional<String> key,
-                                        Optional<String> sort,
-                                        Optional<String> dir){
+    public Page<ProjectReg> businesses(Optional<Integer> page,
+                                       Optional<String> key,
+                                       Optional<String> sort,
+                                       Optional<String> dir){
 
         //TODO implements
         return null;
@@ -57,7 +58,7 @@ public class ProjectService {
         return null;
     }
 
-    public Optional<ProjectInfo> business(String id){
+    public Optional<ProjectReg> business(String id){
         //TODO implements
         return null;
     }
@@ -72,13 +73,13 @@ public class ProjectService {
     }
 
 
-    public Project patchCreate(ProjectInfo business){
+    public Project patchCreate(ProjectReg reg){
 
         //TODO implements
         return null;
     }
 
-    public Project pathModify(ProjectInfo business){
+    public Project pathModify(ProjectReg reg){
         //TODO implements
         return null;
     }
