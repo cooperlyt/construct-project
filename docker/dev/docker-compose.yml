@@ -142,7 +142,7 @@ services:
     expose:
       - "19001"
     environment:
-      PROFILE: "dev"
+      PROFILE: "default"
       SERVER_PORT: "19001"
       DATABASE_PORT:     3306
       CONFIGSERVER_PORT: 8888

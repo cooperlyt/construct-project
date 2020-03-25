@@ -3,7 +3,7 @@ spring:
     name: construct-project
   profiles:
     active:
-      default
+      test
   cloud:
     config:
       enabled: false
