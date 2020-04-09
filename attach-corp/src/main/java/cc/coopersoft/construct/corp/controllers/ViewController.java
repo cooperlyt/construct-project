@@ -5,6 +5,7 @@ import cc.coopersoft.construct.corp.model.Corp;
 import cc.coopersoft.construct.corp.model.CorpBusiness;
 import cc.coopersoft.construct.corp.services.CorpServices;
 import com.fasterxml.jackson.annotation.JsonView;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("view")
+@Slf4j
 public class ViewController {
 
     private final CorpServices corpServices;
@@ -28,7 +30,7 @@ public class ViewController {
     @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Corp.Summary.class)
-    public Page<Corp> listCorp(@RequestParam("valid") boolean valid,
+    public Page<Corp> listCorp(@RequestParam(value = "valid", required = false) Optional<Boolean> valid,
                                @RequestParam(value = "joinType", required = false) Optional<ConstructJoinType> joinType,
                                @RequestParam(value ="page", required = false) Optional<Integer> page,
                                @RequestParam(value ="key", required = false)Optional<String> key,

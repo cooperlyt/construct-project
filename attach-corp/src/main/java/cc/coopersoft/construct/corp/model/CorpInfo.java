@@ -4,6 +4,7 @@ import cc.coopersoft.common.data.GroupIdType;
 import cc.coopersoft.common.data.PersonIdType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -20,50 +21,58 @@ import java.util.Objects;
 @NoArgsConstructor
 public class CorpInfo implements java.io.Serializable {
 
+    public interface Summary {}
+    public interface Details extends Summary {}
+
     @Id
     @Column(name = "ID", nullable = false, unique = true)
     private Long id;
-
-    @Column(name = "CORP_CODE", nullable = false, length = 32)
-    private String corpCode;
 
 
     @Column(name = "NAME", length = 128, nullable = false)
     @NotBlank
     @Size(max = 128)
+    @JsonView(Summary.class)
     private String name;
 
     @Column(name = "REG_ID_TYPE", nullable = false, length = 16)
     @Enumerated(EnumType.STRING)
     @NotNull
+    @JsonView(Details.class)
     private GroupIdType groupIdType;
 
     @Column(name = "REG_ID_NUMBER", nullable = false, length = 32)
     @NotBlank
     @Size(max = 32)
+    @JsonView(Details.class)
     private String groupId;
 
     @Column(name = "OWNER_NAME", nullable = false, length = 32)
     @NotBlank
     @Size(max = 32)
+    @JsonView(Details.class)
     private String ownerName;
 
     @Column(name = "OWNER_ID_TYPE", nullable = false, length = 16)
     @Enumerated(EnumType.STRING)
     @NotNull
+    @JsonView(Details.class)
     private PersonIdType ownerIdType;
 
     @Column(name = "OWNER_ID_NUMBER", length = 32, nullable = false)
     @NotBlank
     @Size(max = 32)
+    @JsonView(Details.class)
     private String ownerId;
 
     @Column(name = "ADDRESS", length = 256)
     @Size(max = 256)
+    @JsonView(Summary.class)
     private String address;
 
     @Column(name = "TEL", length = 16)
     @Size(max = 16)
+    @JsonView(Summary.class)
     private String tel;
 
     @JsonIgnore

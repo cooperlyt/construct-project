@@ -24,29 +24,31 @@ public class ManagerController {
 
     @RequestMapping(value = "/path/create", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public Corp pathCreate(@Valid @RequestBody CorpBusiness regBusiness){
-        return this.corpServices.patchCreate(regBusiness);
+    public String pathCreate(@Valid @RequestBody CorpBusiness regBusiness){
+        return this.corpServices.patchCreate(regBusiness).getCorpCode();
     }
 
 
     @RequestMapping(value = "/path/modify/{code}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public Corp pathModify(
+    public String pathModify(
             @PathVariable("code") String corpCode,
             @Valid @RequestBody CorpBusiness regBusiness){
-        return this.corpServices.patchModify(corpCode,regBusiness);
+        return this.corpServices.patchModify(corpCode,regBusiness).getCorpCode();
     }
 
-    @RequestMapping(value = "/enable/{code}", method = RequestMethod.GET)
+    @RequestMapping(value = "/enable/{code}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void enableCorp(@PathVariable("code") String corpCode){
+    public String enableCorp(@PathVariable("code") String corpCode){
         this.corpServices.setCorpEnable(corpCode,true);
+        return "{ \"code\":\"" +  corpCode + "\" , \"enable\":true}" ;
     }
 
-    @RequestMapping(value = "/disable/{code}", method = RequestMethod.GET)
+    @RequestMapping(value = "/disable/{code}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public void disableCorp(@PathVariable("code") String corpCode){
+    public String disableCorp(@PathVariable("code") String corpCode){
         this.corpServices.setCorpEnable(corpCode,false);
+        return "{ \"code\":\"" +  corpCode + "\" , \"enable\":false}" ;
     }
 
 

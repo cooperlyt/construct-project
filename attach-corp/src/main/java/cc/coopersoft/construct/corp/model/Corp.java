@@ -21,8 +21,8 @@ import java.util.Set;
 @NamedEntityGraph(name = "corp.full", attributeNodes = {@NamedAttributeNode(("info"))})
 public class Corp {
 
-    public interface Summary {}
-    public interface Details extends CorpBusiness.Summary {}
+    public interface Summary extends CorpInfo.Summary{}
+    public interface Details extends CorpBusiness.Summary, CorpInfo.Details {}
 
     @Id
     @Column(name = "CORP_CODE", length = 32 ,nullable = false, unique = true)

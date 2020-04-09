@@ -30,6 +30,10 @@ public class CorpBusiness {
     @JsonView(Summary.class)
     private Long id;
 
+    @Column(name = "CORP_CODE", nullable = false, length = 32)
+    @JsonView(Summary.class)
+    private String corpCode;
+
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATE_TIME", nullable = false)
     @JsonIgnore

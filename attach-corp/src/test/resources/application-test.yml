@@ -14,7 +14,7 @@ spring:
   datasource:
     testWhileIdle: "true"
     validationQuery: "SELECT 1"
-    url: "jdbc:mysql://127.0.0.1:3306/MONEY_ACCOUNT?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false"
+    url: "jdbc:mysql://127.0.0.1:3306/CONSTRUCT?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false"
     username: "root"
     password: "5257mq99"
     driver-class-name: "com.mysql.cj.jdbc.Driver"

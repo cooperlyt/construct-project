@@ -63,52 +63,58 @@ public class CorpServices {
     }
 
     public List<CorpBusiness> listBusiness(String corpCode){
-        return this.corpBusinessRepository.findByStatusInAndCorpInfoCorpCodeOrderByCreateTime(
+        return this.corpBusinessRepository.findByStatusInAndCorpCodeOrderByCreateTime(
                 EnumSet.of(BusinessStatus.running,BusinessStatus.valid),corpCode);
     }
 
 
-    public Page<Corp> listAllCorp(boolean validOnly, Optional<ConstructJoinType> joinType,
+    public Page<Corp> listAllCorp(Optional<Boolean> valid, Optional<ConstructJoinType> joinType,
                                   Optional<Integer> page,
                                   Optional<String> key,
                                   Optional<String> sort,
                                   Optional<String> dir){
         //TODO StringUtils.split(key)
 
+        boolean validOnly = valid.isEmpty() || valid.get();
+
         Specification<Corp> specification = (Specification<Corp>) (root, criteriaQuery, cb) -> {
 
             List<Predicate> predicates = new LinkedList<>();
 
+
+
             Fetch<Corp, CorpInfo> infoFetch = root.fetch("info", JoinType.LEFT);
             Join<Corp,CorpInfo> infoJoin = (Join<Corp, CorpInfo>) infoFetch;
             if (key.isPresent() && StringUtils.isNotBlank(key.get())){
+                List<Predicate> keyPredicate = new LinkedList<>();
                 String _key = key.get().trim();
                 String _keyLike = "%" + _key + "%";
-                predicates.add(cb.equal(root.get("corpCode").as(String.class),_key));
-                predicates.add(cb.like(infoJoin.get("groupId").as(String.class), _keyLike ));
-                predicates.add(cb.like(infoJoin.get("ownerName").as(String.class), _keyLike));
-                predicates.add(cb.like(infoJoin.get("ownerId").as(String.class), _keyLike));
-                predicates.add(cb.like(infoJoin.get("address").as(String.class), _keyLike));
-                predicates.add(cb.like(infoJoin.get("tel").as(String.class),_keyLike));
-                predicates.add(cb.like(infoJoin.get("name").as(String.class),_keyLike));
+                keyPredicate.add(cb.equal(root.get("corpCode").as(String.class),_key));
+                keyPredicate.add(cb.like(infoJoin.get("groupId").as(String.class), _keyLike ));
+                keyPredicate.add(cb.like(infoJoin.get("ownerName").as(String.class), _keyLike));
+                keyPredicate.add(cb.like(infoJoin.get("ownerId").as(String.class), _keyLike));
+                keyPredicate.add(cb.like(infoJoin.get("address").as(String.class), _keyLike));
+                keyPredicate.add(cb.like(infoJoin.get("tel").as(String.class),_keyLike));
+                keyPredicate.add(cb.like(infoJoin.get("name").as(String.class),_keyLike));
+
+                predicates.add(cb.and(keyPredicate.toArray(new Predicate[0])));
+
             }
 
-            Predicate predicate = cb.or(predicates.toArray(new Predicate[predicates.size()]));
 
 
             if (joinType.isPresent()){
 
                 Join<Corp,CorpReg> regJoin = root.join("regs", JoinType.INNER);
-                predicate = cb.and(cb.equal(regJoin.get("id.CORP_TYPE").as(ConstructJoinType.class),joinType.get()) ,
-                        predicate);
+                predicates.add(cb.and(cb.equal(regJoin.get("id.type").as(ConstructJoinType.class),joinType.get())));
 
             }
 
             if (validOnly){
-                predicate = cb.and(cb.isTrue(root.get("enable").as(Boolean.class)),predicate);
+                predicates.add(cb.and(cb.isTrue(root.get("enable").as(Boolean.class))));
             }
-            return predicate;
 
+            return cb.and(predicates.toArray(new Predicate[0]));
         };
 
         Sort sortable = Sort.by((dir.isPresent() ? ("DESC".equals(dir.get()) ? Sort.Direction.DESC : Sort.Direction.ASC) : Sort.Direction.DESC)
@@ -138,7 +144,7 @@ public class CorpServices {
 
         Corp corp = new Corp();
         corp.setInfo(regBusiness.getCorpInfo());
-        corp.setCorpCode(regBusiness.getCorpInfo().getCorpCode());
+        corp.setCorpCode(regBusiness.getCorpCode());
         corp.setEnable(true);
         corp.setDataTime(new Date());
 
@@ -224,17 +230,18 @@ public class CorpServices {
     }
 
     private boolean corpInBusiness(String corpCode){
-        return this.corpBusinessRepository.existsByStatusAndCorpInfoCorpCode(BusinessStatus.running,corpCode);
+        return this.corpBusinessRepository.existsByStatusAndCorpCode(BusinessStatus.running,corpCode);
     }
 
     private CorpBusiness modifyCorp(Corp corp, CorpBusiness regBusiness){
 
         regBusiness.setCreateTime(new Date());
         regBusiness.setId(defaultUidGenerator.getUID());
+        regBusiness.setCorpCode(corp.getCorpCode());
 
         if (regBusiness.getCorpInfo() != null){
             regBusiness.setInfo(true);
-            regBusiness.getCorpInfo().setCorpCode(corp.getCorpCode());
+            regBusiness.setCorpCode(corp.getCorpCode());
             regBusiness.getCorpInfo().setPrevious(corp.getInfo());
             regBusiness.getCorpInfo().setId(defaultUidGenerator.getUID());
         }else{
@@ -295,7 +302,7 @@ public class CorpServices {
 
 
         regBusiness.getCorpInfo().setId(defaultUidGenerator.getUID());
-        regBusiness.getCorpInfo().setCorpCode(corpCode);
+        regBusiness.setCorpCode(corpCode);
         regBusiness.getCorpInfo().setPrevious(null);
 
         for(BusinessReg reg:  regBusiness.getRegs()){
