@@ -10,6 +10,7 @@ import cc.coopersoft.construct.corp.repository.CorpBusinessRepository;
 import cc.coopersoft.construct.corp.repository.CorpRegRepository;
 import cc.coopersoft.construct.corp.repository.CorpRepository;
 import com.github.wujun234.uid.UidGenerator;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +27,8 @@ import javax.persistence.criteria.*;
 import java.util.*;
 
 @Service
+@Slf4j
 public class CorpServices {
-
-    private static final Logger logger = LoggerFactory.getLogger(CorpServices.class);
 
     private final static  int PAGE_SIZE = 20;
 
@@ -83,8 +83,14 @@ public class CorpServices {
 
 
 
-            Fetch<Corp, CorpInfo> infoFetch = root.fetch("info", JoinType.LEFT);
-            Join<Corp,CorpInfo> infoJoin = (Join<Corp, CorpInfo>) infoFetch;
+            Join<Corp,CorpInfo> infoJoin;
+
+            if (criteriaQuery.getResultType().equals(Long.class)) {
+                infoJoin = root.join("info", JoinType.INNER);
+            }else{
+                Fetch<Corp, CorpInfo> infoFetch = root.fetch("info", JoinType.LEFT);
+                infoJoin =(Join<Corp, CorpInfo>)infoFetch;
+            }
             if (key.isPresent() && StringUtils.isNotBlank(key.get())){
                 List<Predicate> keyPredicate = new LinkedList<>();
                 String _key = key.get().trim();
@@ -97,16 +103,13 @@ public class CorpServices {
                 keyPredicate.add(cb.like(infoJoin.get("tel").as(String.class),_keyLike));
                 keyPredicate.add(cb.like(infoJoin.get("name").as(String.class),_keyLike));
 
-                predicates.add(cb.and(keyPredicate.toArray(new Predicate[0])));
+                predicates.add(cb.or(keyPredicate.toArray(new Predicate[0])));
 
             }
 
-
-
             if (joinType.isPresent()){
-
                 Join<Corp,CorpReg> regJoin = root.join("regs", JoinType.INNER);
-                predicates.add(cb.and(cb.equal(regJoin.get("id.type").as(ConstructJoinType.class),joinType.get())));
+                predicates.add(cb.and(cb.equal(regJoin.get("id").get("type").as(ConstructJoinType.class),joinType.get())));
 
             }
 
@@ -158,7 +161,7 @@ public class CorpServices {
 
             types = types + " " + reg.getId().getType().name();
 
-            logger.debug("add record type :" + reg.getId().getType().name());
+            log.debug("add record type :" + reg.getId().getType().name());
         }
 
         corp.setTypes(types.trim());
@@ -207,7 +210,7 @@ public class CorpServices {
             switch (reg.getOperateType()){
                 case DELETE:
                     corp.getRegs().remove(corpRegs.get(reg.getId().getType()));
-                    logger.debug("remove reg type: " + reg.getId().getType() + "; size is:" + corp.getRegs().size());
+                    log.debug("remove reg type: " + reg.getId().getType() + "; size is:" + corp.getRegs().size());
                     break;
                 case MODIFY:
                     corp.getRegs().remove(corpRegs.get(reg.getId().getType()));
@@ -264,7 +267,7 @@ public class CorpServices {
                     reg.setInfo(corpRegs.get(joinType).getInfo());
                     break;
                 case MODIFY:
-                    logger.debug("add modify info level number:" + reg.getInfo().getLevelNumber());
+                    log.debug("add modify info level number:" + reg.getInfo().getLevelNumber());
                     reg.getInfo().setPrevious(corpRegs.get(joinType).getInfo());
                 case CREATE:
                     reg.getInfo().setId(defaultUidGenerator.getUID());
@@ -292,7 +295,8 @@ public class CorpServices {
                 throw new IllegalArgumentException("机构已经存在：" +  corpCode);
             }
         }else{
-            corpCode = defaultUidGenerator.parseUID(defaultUidGenerator.getUID());
+            corpCode = String.valueOf(defaultUidGenerator.getUID());
+            log.debug("new corp code is :" + corpCode);
         }
 
 
