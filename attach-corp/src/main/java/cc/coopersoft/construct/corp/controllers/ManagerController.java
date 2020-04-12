@@ -22,31 +22,31 @@ public class ManagerController {
 
     @RequestMapping(value = "/path/create", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public long pathCreate(@Valid @RequestBody CorpBusiness regBusiness){
-        return this.corpServices.patchCreate(regBusiness).getCorpCode();
+    public String pathCreate(@Valid @RequestBody CorpBusiness regBusiness){
+        return String.valueOf(this.corpServices.patchCreate(regBusiness).getCorpCode());
     }
 
 
     @RequestMapping(value = "/path/modify/{code}", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
-    public long pathModify(
+    public String pathModify(
             @PathVariable("code") long corpCode,
             @Valid @RequestBody CorpBusiness regBusiness){
-        return this.corpServices.patchModify(corpCode,regBusiness).getCorpCode();
+        return String.valueOf(this.corpServices.patchModify(corpCode,regBusiness).getCorpCode());
     }
 
     @RequestMapping(value = "/enable/{code}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.ACCEPTED)
     public String enableCorp(@PathVariable("code") Long corpCode){
         this.corpServices.setCorpEnable(corpCode,true);
-        return "{ \"code\":\"" +  corpCode + "\" , \"enable\":true}" ;
+        return "{ \"code\":" +  corpCode + " , \"enable\":true}" ;
     }
 
     @RequestMapping(value = "/disable/{code}", method = RequestMethod.DELETE)
     @ResponseStatus(HttpStatus.ACCEPTED)
     public String disableCorp(@PathVariable("code") long corpCode){
         this.corpServices.setCorpEnable(corpCode,false);
-        return "{ \"code\":\"" +  corpCode + "\" , \"enable\":false}" ;
+        return "{ \"code\":" +  corpCode + " , \"enable\":false}" ;
     }
 
 
