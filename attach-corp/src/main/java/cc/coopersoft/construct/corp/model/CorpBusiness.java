@@ -32,7 +32,7 @@ public class CorpBusiness {
 
     @Column(name = "CORP_CODE", nullable = false, length = 32)
     @JsonView(Summary.class)
-    private String corpCode;
+    private Long corpCode;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATE_TIME", nullable = false)

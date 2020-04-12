@@ -42,7 +42,7 @@ public class ViewController {
     @RequestMapping(value = "/corp/{code}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Corp.Details.class)
-    public Corp corp(@PathVariable("code") String corpCode){
+    public Corp corp(@PathVariable("code") long corpCode){
         Optional<Corp> _corp = this.corpServices.corp(corpCode);
         if (_corp.isPresent()){
             return _corp.get();
@@ -68,7 +68,7 @@ public class ViewController {
     @RequestMapping(value = "/corp/{code}/business", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @JsonView(CorpBusiness.Summary.class)
-    public List<CorpBusiness> listBusiness(@PathVariable("code") String corpCode){
+    public List<CorpBusiness> listBusiness(@PathVariable("code") long corpCode){
         return this.corpServices.listBusiness(corpCode);
     }
 

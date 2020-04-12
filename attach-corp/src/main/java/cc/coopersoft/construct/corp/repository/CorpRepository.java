@@ -6,6 +6,6 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface CorpRepository extends CrudRepository<Corp, String> , JpaSpecificationExecutor<Corp> {
+public interface CorpRepository extends CrudRepository<Corp, Long> , JpaSpecificationExecutor<Corp> {
 
 }

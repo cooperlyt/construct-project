@@ -22,12 +22,12 @@ import java.util.Set;
 public class Corp {
 
     public interface Summary extends CorpInfo.Summary{}
-    public interface Details extends CorpBusiness.Summary, CorpInfo.Details {}
+    public interface Details extends Summary, CorpReg.Details, CorpInfo.Details {}
 
     @Id
     @Column(name = "CORP_CODE", length = 32 ,nullable = false, unique = true)
     @JsonView(Summary.class)
-    private String corpCode;
+    private Long corpCode;
 
     @Column(name = "ENABLE", nullable = false)
     @JsonView(Summary.class)
@@ -48,7 +48,6 @@ public class Corp {
     private Date dataTime;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.corp", orphanRemoval = true, cascade = CascadeType.ALL)
-    @JsonIgnore
     @JsonView(Details.class)
     private Set<CorpReg> regs = new HashSet<>(0);
 

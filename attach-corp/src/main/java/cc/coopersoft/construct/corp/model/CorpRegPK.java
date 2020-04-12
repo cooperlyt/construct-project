@@ -1,6 +1,7 @@
 package cc.coopersoft.construct.corp.model;
 
 import cc.coopersoft.common.data.ConstructJoinType;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,7 @@ public class CorpRegPK implements java.io.Serializable{
 
     @Column(name = "CORP_TYPE", nullable = false, length = 16)
     @Enumerated(EnumType.STRING)
+    @JsonView(CorpReg.Details.class)
     private ConstructJoinType type;
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

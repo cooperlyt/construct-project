@@ -10,6 +10,6 @@ import java.util.Optional;
 @Repository
 public interface CorpRegRepository extends CrudRepository<CorpReg, Long> {
 
-    Optional<CorpReg> findByIdCorpCorpCodeAndIdType(String corpCode, ConstructJoinType type);
+    Optional<CorpReg> findByIdCorpCorpCodeAndIdType(long corpCode, ConstructJoinType type);
 
 }

@@ -50,7 +50,7 @@ public class CorpServices {
         this.corpRegRepository = corpRegRepository;
     }
 
-    public Optional<CorpReg> corpReg(String corpCode, ConstructJoinType type){
+    public Optional<CorpReg> corpReg(long corpCode, ConstructJoinType type){
         return corpRegRepository.findByIdCorpCorpCodeAndIdType(corpCode,type);
     }
 
@@ -58,11 +58,11 @@ public class CorpServices {
         return this.corpBusinessRepository.findById(businessId);
     }
 
-    public Optional<Corp> corp(String corpCode){
+    public Optional<Corp> corp(long corpCode){
         return this.corpRepository.findById(corpCode);
     }
 
-    public List<CorpBusiness> listBusiness(String corpCode){
+    public List<CorpBusiness> listBusiness(Long corpCode){
         return this.corpBusinessRepository.findByStatusInAndCorpCodeOrderByCreateTime(
                 EnumSet.of(BusinessStatus.running,BusinessStatus.valid),corpCode);
     }
@@ -127,7 +127,7 @@ public class CorpServices {
     }
 
     @Transactional
-    public void setCorpEnable(String id, boolean enable){
+    public void setCorpEnable(long id, boolean enable){
         Optional<Corp> corp = this.corpRepository.findById(id);
         if (corp.isPresent()){
             corp.get().setEnable(enable);
@@ -172,7 +172,7 @@ public class CorpServices {
     }
 
     @Transactional
-    public Corp patchModify(String corpCode, CorpBusiness business){
+    public Corp patchModify(long corpCode, CorpBusiness business){
 
         Optional<Corp> _corp = this.corpRepository.findById(corpCode);
         Corp corp;
@@ -232,7 +232,7 @@ public class CorpServices {
         return this.corpRepository.save(corp);
     }
 
-    private boolean corpInBusiness(String corpCode){
+    private boolean corpInBusiness(long corpCode){
         return this.corpBusinessRepository.existsByStatusAndCorpCode(BusinessStatus.running,corpCode);
     }
 
@@ -288,25 +288,13 @@ public class CorpServices {
 
     private CorpBusiness createCorp(CorpBusiness regBusiness){
 
-        String corpCode;
-        if (GroupIdType.COMPANY_CODE.equals(regBusiness.getCorpInfo().getGroupIdType())){
-            corpCode = regBusiness.getCorpInfo().getGroupId();
-            if (corpRepository.existsById(corpCode)){
-                throw new IllegalArgumentException("机构已经存在：" +  corpCode);
-            }
-        }else{
-            corpCode = String.valueOf(defaultUidGenerator.getUID());
-            log.debug("new corp code is :" + corpCode);
-        }
-
-
         regBusiness.setCreateTime(new Date());
         regBusiness.setId(defaultUidGenerator.getUID());
         regBusiness.setInfo(true);
 
 
         regBusiness.getCorpInfo().setId(defaultUidGenerator.getUID());
-        regBusiness.setCorpCode(corpCode);
+        regBusiness.setCorpCode(defaultUidGenerator.getUID());
         regBusiness.getCorpInfo().setPrevious(null);
 
         for(BusinessReg reg:  regBusiness.getRegs()){

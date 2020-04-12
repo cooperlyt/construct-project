@@ -2,6 +2,7 @@ package cc.coopersoft.construct.corp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,17 +18,22 @@ import java.util.Objects;
 @NoArgsConstructor
 public class RegInfo {
 
+    public interface Details{}
+
     @Id
     @Column(name = "ID",nullable = false, unique = true)
     private Long id;
 
     @Column(name = "REG_DATE_TO")
+    @JsonView(Details.class)
     private Date regTo;
 
     @Column(name = "LEVEL")
+    @JsonView(Details.class)
     private int level;
 
     @Column(name = "LEVEL_NUMBER", length = 32)
+    @JsonView(Details.class)
     private String levelNumber;
 
     @JsonIgnore

@@ -14,8 +14,8 @@ import java.util.Set;
 @Repository
 public interface CorpBusinessRepository extends CrudRepository<CorpBusiness, Long>, JpaSpecificationExecutor<Corp> {
 
-    boolean existsByStatusAndCorpCode(BusinessStatus status, String corpCode);
+    boolean existsByStatusAndCorpCode(BusinessStatus status, Long corpCode);
 
     @EntityGraph(value = "business.full", type = EntityGraph.EntityGraphType.FETCH)
-    List<CorpBusiness> findByStatusInAndCorpCodeOrderByCreateTime(Set<BusinessStatus> statuses, String corpCode);
+    List<CorpBusiness> findByStatusInAndCorpCodeOrderByCreateTime(Set<BusinessStatus> statuses, Long corpCode);
 }

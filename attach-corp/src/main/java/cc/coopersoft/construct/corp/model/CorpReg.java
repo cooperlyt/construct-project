@@ -1,6 +1,7 @@
 package cc.coopersoft.construct.corp.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,11 +15,15 @@ import java.util.Objects;
 @NoArgsConstructor
 public class CorpReg {
 
+    public interface Details extends RegInfo.Details {}
+
     @EmbeddedId
+    @JsonView(Details.class)
     private CorpRegPK id;
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "REG_ID", nullable = false)
+    @JsonView(Details.class)
     private RegInfo info;
 
     @Override
