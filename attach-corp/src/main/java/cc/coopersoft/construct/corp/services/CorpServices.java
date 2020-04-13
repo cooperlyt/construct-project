@@ -171,7 +171,7 @@ public class CorpServices {
         return this.corpRepository.save(corp);
     }
 
-    @Transactional
+    @Transactional()
     public Corp patchModify(long corpCode, CorpBusiness business){
 
         Optional<Corp> _corp = this.corpRepository.findById(corpCode);
@@ -191,6 +191,8 @@ public class CorpServices {
         regBusiness.setApplyTime(new Date());
         regBusiness.setSource(BusinessSource.OLD);
         regBusiness.setStatus(BusinessStatus.valid);
+
+        regBusiness = this.corpBusinessRepository.saveAndFlush(regBusiness);
 
         corp.setDataTime(new Date());
 
@@ -227,8 +229,6 @@ public class CorpServices {
         }
         corp.setTypes(types.trim());
 
-
-        this.corpBusinessRepository.save(regBusiness);
         return this.corpRepository.save(corp);
     }
 

@@ -135,6 +135,27 @@ public class CorpServicesTest {
 
         logger.debug("------------modify create and modify  test completed!  ----------------------");
 
+
+        logger.debug(" test info change");
+
+
+        corpInfo = new CorpInfo();
+        corpInfo.setGroupIdType(GroupIdType.COMPANY_CODE);
+        corpInfo.setGroupId("path_create_test");
+        corpInfo.setName("test1");
+        corpInfo.setOwnerIdType(PersonIdType.MASTER_ID);
+        corpInfo.setOwnerId("test-modify");
+        corpInfo.setOwnerName("test");
+
+        business = new CorpBusiness();
+
+        business.setCorpInfo(corpInfo);
+
+        Corp corp = corpServices.patchModify(code,business);
+
+        assertEquals(corp.getInfo().getOwnerId(), "test-modify");
+
+
     }
 
 
