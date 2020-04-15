@@ -1,7 +1,6 @@
 package cc.coopersoft.construct.project.controllers;
 
 
-import cc.coopersoft.construct.project.model.JoinCorp;
 import cc.coopersoft.construct.project.model.Project;
 import cc.coopersoft.construct.project.model.ProjectReg;
 import cc.coopersoft.construct.project.services.ProjectService;
@@ -40,7 +39,7 @@ public class ViewController {
 
     @RequestMapping(value = "/business", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    @JsonView(ProjectReg.SummaryWithReg.class)
+    @JsonView(ProjectReg.Summary.class)
     public Page<ProjectReg> businesses(@RequestParam(value ="page", required = false) Optional<Integer> page,
                                        @RequestParam(value ="key", required = false)Optional<String> key,
                                        @RequestParam(value ="sort", required = false)Optional<String> sort,
@@ -63,7 +62,7 @@ public class ViewController {
 
     @RequestMapping(value = "/business/{id}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    @JsonView(ProjectReg.DetailsWithReg.class)
+    @JsonView(ProjectReg.Details.class)
     public ProjectReg business(@PathVariable("id") String id){
         Optional<ProjectReg> result = projectService.business(id);
         if (result.isPresent()){
@@ -76,8 +75,8 @@ public class ViewController {
 
     @RequestMapping(value = "/business/{code}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    @JsonView(ProjectReg.DetailsWithCorp.class)
-    public List<JoinCorp> joinProjects(@PathVariable("code") String code){
+    @JsonView(ProjectReg.Summary.class)
+    public List<ProjectReg> joinProjects(@PathVariable("code") String code){
         return projectService.joinProjects(code);
     }
 

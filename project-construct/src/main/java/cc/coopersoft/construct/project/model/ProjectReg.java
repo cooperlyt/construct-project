@@ -3,33 +3,39 @@ package cc.coopersoft.construct.project.model;
 
 import cc.coopersoft.common.business.BusinessSource;
 import cc.coopersoft.common.business.BusinessStatus;
+import cc.coopersoft.common.json.JsonRawDeserializer;
+import cc.coopersoft.common.json.JsonRawSerialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "PROJECT_REG")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
-@NamedEntityGraph(name = "reg.full",
-        attributeNodes = {@NamedAttributeNode("apply"),@NamedAttributeNode("info")})
+@NamedEntityGraph(name = "reg.summary",
+        attributeNodes = {@NamedAttributeNode("info")})
 public class ProjectReg {
 
 
-    public interface Summary extends ProjectInfo.Summary {}
-    public interface SummaryWithReg extends Summary {}
-    public interface DetailsWithReg extends SummaryWithReg, ProjectInfo.Details {}
-    public interface DetailsWithCorp extends Summary, ProjectInfo.DetailsWithCorp {}
+    public interface BaseView extends ProjectInfo.Summary {}
+
+    public interface Summary extends BaseView {}
+    public interface Details extends BaseView, ProjectInfo.Details, JoinCorp.Details {}
 
     @Id
     @Column(name = "BUSINESS_ID", unique = true, nullable = false)
-    @JsonView(Summary.class)
+    @JsonView(BaseView.class)
     private Long id;
 
 
@@ -40,33 +46,31 @@ public class ProjectReg {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "APPLY_TIME")
-    @JsonView(Summary.class)
+    @JsonView(BaseView.class)
     private Date applyTime;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "REG_TIME")
-    @JsonView({DetailsWithReg.class, DetailsWithCorp.class})
+    @JsonView(BaseView.class)
     private Date regTime;
 
     @Column(name = "SOURCE", nullable = false, length = 3)
     @Enumerated(EnumType.STRING)
-    @JsonView(Summary.class)
+    @JsonView(BaseView.class)
     private BusinessSource source;
 
     @Column(name = "STATUS", nullable = false, length = 8)
     @Enumerated(EnumType.STRING)
-    @JsonView(Summary.class)
+    @JsonView(BaseView.class)
     private BusinessStatus status;
 
     @Column(name = "TAGS", length = 512)
     @JsonIgnore
     private String tags;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "APPLY_CORP", nullable = false)
-    @JsonView(SummaryWithReg.class)
-    private JoinCorp apply;
-
+    @Column(name = "PROJECT_CODE", nullable = false)
+    @JsonView(BaseView.class)
+    private long code;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PREVIOUS")
@@ -74,8 +78,19 @@ public class ProjectReg {
     private ProjectReg previous;
 
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "reg", cascade = CascadeType.ALL)
-    @JsonView(SummaryWithReg.class)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "INFO", nullable = false)
+    @JsonView(BaseView.class)
     private ProjectInfo info;
+
+    @JsonSerialize(using = JsonRawSerialize.class)
+    @JsonDeserialize(using = JsonRawDeserializer.class)
+    @Column(name = "CORPS", length = 512)
+    @JsonView(Summary.class)
+    private String corpDescription;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reg", cascade = CascadeType.ALL)
+    @JsonView(Details.class)
+    private Set<JoinCorp> corps = new HashSet<>(0);
 
 }

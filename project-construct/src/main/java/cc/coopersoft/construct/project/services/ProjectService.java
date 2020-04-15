@@ -63,7 +63,7 @@ public class ProjectService {
         return null;
     }
 
-    public List<JoinCorp> joinProjects(String code){
+    public List<ProjectReg> joinProjects(String code){
         //TODO implements
         return null;
     }

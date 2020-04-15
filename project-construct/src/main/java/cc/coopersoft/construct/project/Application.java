@@ -10,7 +10,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 
 @EnableDiscoveryClient
 @EnableCircuitBreaker
-@SpringBootApplication(scanBasePackages = {"cc.coopersoft.common.cloud"})
+@SpringBootApplication(scanBasePackages = {"cc.coopersoft.common.cloud","cc.coopersoft.construct.project"})
 @EnableEurekaClient
 @EnableResourceServer
 public class Application {

@@ -21,19 +21,14 @@ import java.util.Set;
 public class ProjectInfo implements java.io.Serializable{
 
     public interface Summary {}
+    public interface Details extends Summary {}
 
-    public interface Details extends Summary, JoinCorp.Details {}
-
-    public interface DetailsWithCorp extends Summary, JoinCorp.DetailsWithCorp {}
 
     @Id
-    @Column(name = "BUSINESS_ID", unique = true, nullable = false)
+    @Column(name = "ID", unique = true, nullable = false)
     @JsonIgnore
     private Long id;
 
-    @Column(name = "PROJECT_CODE", nullable = false, length = 32)
-    @JsonView(Summary.class)
-    private String projectCode;
 
     @Column(name = "NAME", nullable = false, length = 256)
     @NotBlank
@@ -72,6 +67,7 @@ public class ProjectInfo implements java.io.Serializable{
 
     @Temporal(TemporalType.DATE)
     @Column(name = "BEGIN_DATE")
+    @JsonView(Summary.class)
     private Date BeginDate;
 
     @Temporal(TemporalType.DATE)
@@ -99,7 +95,7 @@ public class ProjectInfo implements java.io.Serializable{
 
     //TODO Enum or int
     @Column(name = "MAIN_PROJECT_LEVEL", length = 16)
-    @JsonView(Details.class)
+    @JsonView(Summary.class)
     private String importantLevel;
 
     @Column(name = "MAIN_PROJECT_FILE", length = 32)
@@ -115,15 +111,6 @@ public class ProjectInfo implements java.io.Serializable{
     private BigDecimal height;
 
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "info", cascade = CascadeType.ALL)
-    @JsonView(Details.class)
-    private Set<JoinCorp> corps = new HashSet<>(0);
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BUSINESS_ID", nullable = false)
-    @MapsId
-    @JsonIgnore
-    @JsonView(DetailsWithCorp.class)
-    private ProjectReg reg;
 
 }

@@ -19,15 +19,20 @@ import javax.validation.constraints.Size;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
-@NamedEntityGraph(name = "joinCorp.full",
-        attributeNodes = {@NamedAttributeNode(value = "info", subgraph = "info.reg")} ,
-        subgraphs = {@NamedSubgraph(name = "info.reg", attributeNodes = @NamedAttributeNode("reg"))}
-)
+//@NamedEntityGraph(name = "joinCorp.full",
+//        attributeNodes = {@NamedAttributeNode(value = "reg", subgraph = "reg.info")} ,
+//        subgraphs = {@NamedSubgraph(name = "reg.info", attributeNodes = @NamedAttributeNode("info"))}
+//)
 public class JoinCorp {
 
-    public interface Summary{}
-    public interface Details extends Summary {}
-    public interface DetailsWithCorp extends Summary{}
+
+    public interface Details{}
+
+    public enum Role {
+        MASTER,
+        ACCOMPANY,
+        MANAGER
+    }
 
     @Id
     @Column(name = "JOIN_ID", nullable = false, unique = true)
@@ -37,7 +42,7 @@ public class JoinCorp {
     @Enumerated(EnumType.STRING)
     @Column(name = "CORP_TYPE", nullable = false, length = 16)
     @NotNull
-    @JsonView(Summary.class)
+    @JsonView(Details.class)
     private ConstructJoinType type;
 
     @Column(name = "OUTSIDE_TEAM_FILE", length = 32)
@@ -52,28 +57,28 @@ public class JoinCorp {
     @JsonView(Details.class)
     private String outLevelFile;
 
-    @Column(name = "CORP_CODE", length = 32, nullable = false)
-    @JsonView(Summary.class)
-    private String corpCode;
+    @Column(name = "CORP_CODE", nullable = false)
+    @JsonView(Details.class)
+    private long corpCode;
 
     @Column(name = "NAME", length = 128, nullable = false)
-    @JsonView(Summary.class)
+    @JsonView(Details.class)
     private String name;
 
     @Column(name = "REG_ID_TYPE", nullable = false, length = 16)
     @Enumerated(EnumType.STRING)
     @NotNull
-    @JsonView(Summary.class)
+    @JsonView(Details.class)
     private GroupIdType groupIdType;
 
     @Column(name = "REG_ID_NUMBER", nullable = false, length = 32)
     @NotBlank
     @Size(max = 32)
-    @JsonView(Summary.class)
+    @JsonView(Details.class)
     private String groupId;
 
     @Column(name = "LEVEL", nullable = false)
-    @JsonView(Summary.class)
+    @JsonView(Details.class)
     private int level;
 
     @Column(name = "CONTACTS", length = 64)
@@ -84,14 +89,14 @@ public class JoinCorp {
     @JsonView(Details.class)
     private String tel;
 
-    @Column(name = "MASTER", nullable = false)
-    @JsonView(Summary.class)
-    private boolean master;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "ROLE", nullable = false , length = 16)
+    @JsonView(Details.class)
+    private Role role;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BUSINESS_ID", nullable = false)
-    @JsonView(DetailsWithCorp.class)
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "REG", nullable = false)
     @JsonIgnore
-    private ProjectInfo info;
+    private ProjectReg reg;
 
 }

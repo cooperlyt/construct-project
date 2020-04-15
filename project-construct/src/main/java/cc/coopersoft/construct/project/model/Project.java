@@ -14,21 +14,19 @@ import java.util.Date;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
-@NamedEntityGraph(name = "project.full",
-        attributeNodes = {@NamedAttributeNode(value = "reg" ,subgraph = "reg.apply"),
-                            @NamedAttributeNode(value = "reg", subgraph = "reg.info")},
-        subgraphs = {@NamedSubgraph(name = "reg.apply", attributeNodes = @NamedAttributeNode("apply")),
-                    @NamedSubgraph(name = "reg.info" , attributeNodes = @NamedAttributeNode("info"))}
+@NamedEntityGraph(name = "project.summary",
+        attributeNodes = {@NamedAttributeNode(value = "reg", subgraph = "reg.info")} ,
+        subgraphs = {@NamedSubgraph(name = "reg.info", attributeNodes = @NamedAttributeNode("info"))}
 )
 public class Project {
 
-    public interface Summary extends ProjectReg.SummaryWithReg {}
-    public interface Details extends Summary, ProjectReg.DetailsWithReg {}
+    public interface Summary extends ProjectReg.Summary {}
+    public interface Details extends Summary, ProjectReg.Details {}
 
     @Id
     @Column(name = "PROJECT_CODE", nullable = false, unique = true)
     @JsonView(Summary.class)
-    private String projectCode;
+    private Long code;
 
     @Column(name = "ENABLE", nullable = false)
     @JsonView(Summary.class)
