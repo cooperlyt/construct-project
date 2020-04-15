@@ -1,6 +1,7 @@
 package cc.coopersoft.construct.corp.controllers;
 
 import cc.coopersoft.common.data.ConstructJoinType;
+import cc.coopersoft.common.data.GroupIdType;
 import cc.coopersoft.construct.corp.model.Corp;
 import cc.coopersoft.construct.corp.model.CorpBusiness;
 import cc.coopersoft.construct.corp.services.CorpServices;
@@ -70,6 +71,28 @@ public class ViewController {
     @JsonView(CorpBusiness.Summary.class)
     public List<CorpBusiness> listBusiness(@PathVariable("code") long corpCode){
         return this.corpServices.listBusiness(corpCode);
+    }
+
+    @RequestMapping(value = "/corp/exists/{type}/{number}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public String existsCorpGroupNumber(@PathVariable("type") GroupIdType type,
+                                        @PathVariable("number") String number){
+        return String.valueOf(corpServices.existsCorpGroupNumber(type,number));
+    }
+
+    @RequestMapping(value = "/corp/exists/{type}/{number}/{code}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public String existsCorpGroupNumber(@PathVariable("code") long code,
+                                        @PathVariable("type") GroupIdType type,
+                                        @PathVariable("number") String number){
+        return String.valueOf(corpServices.existsCorpGroupNumber(code,type,number));
+    }
+
+    @RequestMapping(value = "/business/exists/corp/{code}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public String corpInBusiness(@PathVariable("code") long code){
+        return String.valueOf(corpServices.corpInBusiness(code));
+
     }
 
 }

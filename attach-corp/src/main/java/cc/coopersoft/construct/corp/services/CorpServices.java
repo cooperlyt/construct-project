@@ -62,6 +62,25 @@ public class CorpServices {
         return this.corpRepository.findById(corpCode);
     }
 
+    public Optional<Corp> corp(GroupIdType type, String number){
+        return corpRepository.findByInfoGroupIdTypeAndInfoGroupId(type,number);
+    }
+
+
+    public boolean existsCorpGroupNumber(GroupIdType type, String number){
+       return corpRepository.existsByInfoGroupIdTypeAndInfoGroupId(type,number) ||
+            corpBusinessRepository.existsByStatusAndCorpInfoGroupIdTypeAndCorpInfoGroupId(BusinessStatus.running,type,number);
+    }
+
+    public boolean existsCorpGroupNumber(long code, GroupIdType type, String number){
+        return corpRepository.existsByCorpCodeNotAndInfoGroupIdTypeAndInfoGroupId(code,type,number) ||
+                corpBusinessRepository.existsByCorpCodeNotAndStatusAndCorpInfoGroupIdTypeAndCorpInfoGroupId(code,BusinessStatus.running,type,number);
+    }
+
+    public boolean corpInBusiness(long corpCode){
+        return this.corpBusinessRepository.existsByStatusAndCorpCode(BusinessStatus.running,corpCode);
+    }
+
     public List<CorpBusiness> listBusiness(Long corpCode){
         return this.corpBusinessRepository.findByStatusInAndCorpCodeOrderByCreateTime(
                 EnumSet.of(BusinessStatus.running,BusinessStatus.valid),corpCode);
@@ -232,9 +251,7 @@ public class CorpServices {
         return this.corpRepository.save(corp);
     }
 
-    private boolean corpInBusiness(long corpCode){
-        return this.corpBusinessRepository.existsByStatusAndCorpCode(BusinessStatus.running,corpCode);
-    }
+
 
     private CorpBusiness modifyCorp(Corp corp, CorpBusiness regBusiness){
 
@@ -243,6 +260,13 @@ public class CorpServices {
         regBusiness.setCorpCode(corp.getCorpCode());
 
         if (regBusiness.getCorpInfo() != null){
+            if (existsCorpGroupNumber(corp.getCorpCode(),
+                    regBusiness.getCorpInfo().getGroupIdType(),
+                    regBusiness.getCorpInfo().getGroupId())){
+                throw new IllegalArgumentException("企业证件编号已经被占用");
+            }
+
+
             regBusiness.setInfo(true);
             regBusiness.setCorpCode(corp.getCorpCode());
             regBusiness.getCorpInfo().setPrevious(corp.getInfo());
@@ -287,6 +311,11 @@ public class CorpServices {
     }
 
     private CorpBusiness createCorp(CorpBusiness regBusiness){
+
+        if (existsCorpGroupNumber(regBusiness.getCorpInfo().getGroupIdType(),
+                regBusiness.getCorpInfo().getGroupId())){
+            throw new IllegalArgumentException("企业证件编号已经存在!" );
+        }
 
         regBusiness.setCreateTime(new Date());
         regBusiness.setId(defaultUidGenerator.getUID());

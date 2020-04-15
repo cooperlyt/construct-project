@@ -1,6 +1,7 @@
 package cc.coopersoft.construct.corp.repository;
 
 import cc.coopersoft.common.business.BusinessStatus;
+import cc.coopersoft.common.data.GroupIdType;
 import cc.coopersoft.construct.corp.model.Corp;
 import cc.coopersoft.construct.corp.model.CorpBusiness;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -19,4 +20,9 @@ public interface CorpBusinessRepository extends CrudRepository<CorpBusiness, Lon
 
     @EntityGraph(value = "business.full", type = EntityGraph.EntityGraphType.FETCH)
     List<CorpBusiness> findByStatusInAndCorpCodeOrderByCreateTime(Set<BusinessStatus> statuses, Long corpCode);
+
+    boolean existsByStatusAndCorpInfoGroupIdTypeAndCorpInfoGroupId(BusinessStatus status, GroupIdType type, String number);
+
+    boolean existsByCorpCodeNotAndStatusAndCorpInfoGroupIdTypeAndCorpInfoGroupId(long code, BusinessStatus status, GroupIdType type,String number);
+
 }
