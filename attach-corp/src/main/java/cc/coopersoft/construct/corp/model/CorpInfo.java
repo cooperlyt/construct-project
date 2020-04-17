@@ -19,66 +19,95 @@ import java.util.Objects;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
-public class CorpInfo implements java.io.Serializable {
+@Access(AccessType.PROPERTY)
+public class CorpInfo extends cc.coopersoft.common.construct.corp.CorpInfo implements java.io.Serializable {
 
     public interface Summary {}
     public interface Details extends Summary {}
 
     @Id
     @Column(name = "ID", nullable = false, unique = true)
+    @Access(AccessType.FIELD)
     private Long id;
+
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PREVIOUS")
+    @Access(AccessType.FIELD)
+    private CorpInfo previous;
 
 
     @Column(name = "NAME", length = 128, nullable = false)
     @NotBlank
     @Size(max = 128)
     @JsonView(Summary.class)
-    private String name;
+    @Override
+    public String getName(){
+        return super.getName();
+    }
 
     @Column(name = "REG_ID_TYPE", nullable = false, length = 16)
     @Enumerated(EnumType.STRING)
     @NotNull
     @JsonView(Details.class)
-    private GroupIdType groupIdType;
+    @Override
+    public GroupIdType getGroupIdType(){
+        return super.getGroupIdType();
+    }
+
 
     @Column(name = "REG_ID_NUMBER", nullable = false, length = 32)
     @NotBlank
     @Size(max = 32)
     @JsonView(Details.class)
-    private String groupId;
+    @Override
+    public String getGroupId(){
+        return super.getGroupId();
+    }
 
     @Column(name = "OWNER_NAME", nullable = false, length = 32)
     @NotBlank
     @Size(max = 32)
     @JsonView(Details.class)
-    private String ownerName;
+    @Override
+    public String getOwnerName(){
+        return super.getOwnerName();
+    }
 
     @Column(name = "OWNER_ID_TYPE", nullable = false, length = 16)
     @Enumerated(EnumType.STRING)
     @NotNull
     @JsonView(Details.class)
-    private PersonIdType ownerIdType;
+    @Override
+    public PersonIdType getOwnerIdType(){
+        return super.getOwnerIdType();
+    }
 
     @Column(name = "OWNER_ID_NUMBER", length = 32, nullable = false)
     @NotBlank
     @Size(max = 32)
     @JsonView(Details.class)
-    private String ownerId;
+    @Override
+    public String getOwnerId(){
+        return super.getOwnerId();
+    }
 
     @Column(name = "ADDRESS", length = 256)
     @Size(max = 256)
     @JsonView(Summary.class)
-    private String address;
+    @Override
+    public String getAddress(){
+        return super.getAddress();
+    }
 
     @Column(name = "TEL", length = 16)
     @Size(max = 16)
     @JsonView(Summary.class)
-    private String tel;
+    @Override
+    public String getTel(){
+        return super.getTel();
+    }
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "PREVIOUS")
-    private CorpInfo previous;
 
     @Override
     public boolean equals(Object o) {

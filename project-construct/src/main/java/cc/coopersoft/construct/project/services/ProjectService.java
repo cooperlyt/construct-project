@@ -1,35 +1,30 @@
 package cc.coopersoft.construct.project.services;
 
-import cc.coopersoft.construct.project.model.JoinCorp;
+import cc.coopersoft.common.business.BusinessStatus;
 import cc.coopersoft.construct.project.model.Project;
-import cc.coopersoft.construct.project.model.ProjectInfo;
 import cc.coopersoft.construct.project.model.ProjectReg;
-import cc.coopersoft.construct.project.repository.BusinessRepository;
-import cc.coopersoft.construct.project.repository.JoinCorpRepository;
+import cc.coopersoft.construct.project.repository.RegRepository;
 import cc.coopersoft.construct.project.repository.ProjectRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 public class ProjectService {
 
-    private final BusinessRepository businessRepository;
+    private final RegRepository regRepository;
 
     private final ProjectRepository projectRepository;
 
-    private final JoinCorpRepository joinCorpRepository;
-
     @Autowired
-    public ProjectService(BusinessRepository businessRepository,
-                          ProjectRepository projectRepository,
-                          JoinCorpRepository joinCorpRepository) {
-        this.businessRepository = businessRepository;
+    public ProjectService(RegRepository regRepository,
+                          ProjectRepository projectRepository) {
+        this.regRepository = regRepository;
         this.projectRepository = projectRepository;
-        this.joinCorpRepository = joinCorpRepository;
     }
 
 
@@ -43,29 +38,18 @@ public class ProjectService {
     }
 
 
-    public Page<ProjectReg> businesses(Optional<Integer> page,
-                                       Optional<String> key,
-                                       Optional<String> sort,
-                                       Optional<String> dir){
-
-        //TODO implements
-        return null;
-    }
-
-
     public Optional<Project> project(String code){
         //TODO implements
         return null;
     }
 
-    public Optional<ProjectReg> business(String id){
+    public Optional<ProjectReg> reg(String id){
         //TODO implements
         return null;
     }
 
-    public List<ProjectReg> joinProjects(String code){
-        //TODO implements
-        return null;
+    public List<ProjectReg> joinProjects(long code){
+        return regRepository.findDistinctByCorpsCorpCodeAndStatusInOrderByCreateTimeDesc(code, EnumSet.of(BusinessStatus.running,BusinessStatus.valid));
     }
 
     public void enableProject(boolean enable){

@@ -17,8 +17,9 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="attach-corp" />
         <module name="project-construct" />
+        <module name="attach-corp" />
+        <module name="cache" />
       </profile>
     </annotationProcessing>
   </component>
@@ -26,7 +27,9 @@
     <option name="ADDITIONAL_OPTIONS_STRING" value="-encoding utf-8" />
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="attach-corp" options="-parameters" />
+      <module name="cache" options="-parameters" />
       <module name="construct-fire" options="" />
+      <module name="construct-project" options="" />
       <module name="project-construct" options="-parameters" />
     </option>
   </component>

@@ -37,17 +37,6 @@ public class ViewController {
     }
 
 
-    @RequestMapping(value = "/business", method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    @JsonView(ProjectReg.Summary.class)
-    public Page<ProjectReg> businesses(@RequestParam(value ="page", required = false) Optional<Integer> page,
-                                       @RequestParam(value ="key", required = false)Optional<String> key,
-                                       @RequestParam(value ="sort", required = false)Optional<String> sort,
-                                       @RequestParam(value ="dir", required = false)Optional<String> dir){
-        return projectService.businesses(page,key,sort,dir);
-    }
-
-
     @RequestMapping(value = "/project/{code}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Project.Details.class)
@@ -60,11 +49,11 @@ public class ViewController {
         }
     }
 
-    @RequestMapping(value = "/business/{id}", method = RequestMethod.GET)
+    @RequestMapping(value = "/reg/{id}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @JsonView(ProjectReg.Details.class)
-    public ProjectReg business(@PathVariable("id") String id){
-        Optional<ProjectReg> result = projectService.business(id);
+    public ProjectReg reg(@PathVariable("id") String id){
+        Optional<ProjectReg> result = projectService.reg(id);
         if (result.isPresent()){
             return result.get();
         }else{
@@ -76,7 +65,7 @@ public class ViewController {
     @RequestMapping(value = "/business/{code}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @JsonView(ProjectReg.Summary.class)
-    public List<ProjectReg> joinProjects(@PathVariable("code") String code){
+    public List<ProjectReg> joinProjects(@PathVariable("code") long code){
         return projectService.joinProjects(code);
     }
 

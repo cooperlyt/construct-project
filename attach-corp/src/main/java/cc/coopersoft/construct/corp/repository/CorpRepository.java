@@ -16,5 +16,5 @@ public interface CorpRepository extends CrudRepository<Corp, Long> , JpaSpecific
 
     boolean existsByInfoGroupIdTypeAndInfoGroupId(GroupIdType type, String number);
 
-    boolean existsByCorpCodeNotAndInfoGroupIdTypeAndInfoGroupId(long code,GroupIdType type, String number);
+    boolean existsByCodeNotAndInfoGroupIdTypeAndInfoGroupId(long code, GroupIdType type, String number);
 }

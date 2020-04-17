@@ -1,6 +1,6 @@
 package cc.coopersoft.construct.corp.controllers;
 
-import cc.coopersoft.common.data.ConstructJoinType;
+import cc.coopersoft.common.construct.corp.CorpProperty;
 import cc.coopersoft.common.data.GroupIdType;
 import cc.coopersoft.construct.corp.model.Corp;
 import cc.coopersoft.construct.corp.model.CorpBusiness;
@@ -32,7 +32,7 @@ public class ViewController {
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Corp.Summary.class)
     public Page<Corp> listCorp(@RequestParam(value = "valid", required = false) Optional<Boolean> valid,
-                               @RequestParam(value = "type", required = false) Optional<ConstructJoinType> joinType,
+                               @RequestParam(value = "type", required = false) Optional<CorpProperty> joinType,
                                @RequestParam(value ="page", required = false) Optional<Integer> page,
                                @RequestParam(value ="key", required = false)Optional<String> key,
                                @RequestParam(value ="sort", required = false)Optional<String> sort,

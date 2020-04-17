@@ -51,6 +51,7 @@ public class JoinCorp {
 
     @Column(name = "OUT_LEVEL")
     @JsonView(Details.class)
+    @NotNull
     private Boolean outLevel;
 
     @Column(name = "OUT_LEVEL_FILE", length = 32)
@@ -67,13 +68,11 @@ public class JoinCorp {
 
     @Column(name = "REG_ID_TYPE", nullable = false, length = 16)
     @Enumerated(EnumType.STRING)
-    @NotNull
     @JsonView(Details.class)
     private GroupIdType groupIdType;
 
     @Column(name = "REG_ID_NUMBER", nullable = false, length = 32)
     @NotBlank
-    @Size(max = 32)
     @JsonView(Details.class)
     private String groupId;
 

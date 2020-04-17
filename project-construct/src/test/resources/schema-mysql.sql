@@ -100,7 +100,7 @@ CREATE TABLE PROJECT_REG
     -- OLD
     -- OLE
     -- BIZ
-    SOURCE varchar(3) NOT NULL COMMENT 'OLD
+    SOURCE varchar(8) NOT NULL COMMENT 'OLD
 OLE
 BIZ',
     STATUS varchar(8) NOT NULL,

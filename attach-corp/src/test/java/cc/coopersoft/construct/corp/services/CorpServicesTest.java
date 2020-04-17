@@ -1,6 +1,6 @@
 package cc.coopersoft.construct.corp.services;
 
-import cc.coopersoft.common.data.ConstructJoinType;
+import cc.coopersoft.common.construct.corp.CorpProperty;
 import cc.coopersoft.common.data.GroupIdType;
 import cc.coopersoft.common.data.PersonIdType;
 import cc.coopersoft.construct.corp.Application;
@@ -46,7 +46,7 @@ public class CorpServicesTest {
         corpInfo.setOwnerId("test");
         corpInfo.setOwnerName("test");
 
-        business.setCorpInfo(corpInfo);
+        business.setInfo(corpInfo);
 
         RegInfo regInfo = new RegInfo();
         regInfo.setRegTo(new Date());
@@ -56,7 +56,7 @@ public class CorpServicesTest {
         BusinessReg businessReg = new BusinessReg();
         businessReg.setInfo(regInfo);
         businessReg.setId(new BusinessRegPK());
-        businessReg.getId().setType(ConstructJoinType.Construct);
+        businessReg.getId().setProperty(CorpProperty.Construct);
         business.getRegs().add(businessReg);
 
         regInfo = new RegInfo();
@@ -66,10 +66,10 @@ public class CorpServicesTest {
         businessReg = new BusinessReg();
         businessReg.setInfo(regInfo);
         businessReg.setId(new BusinessRegPK());
-        businessReg.getId().setType(ConstructJoinType.Developer);
+        businessReg.getId().setProperty(CorpProperty.Developer);
         business.getRegs().add(businessReg);
 
-        long code = corpServices.patchCreate(business).getCorpCode();
+        long code = corpServices.patchCreate(business).getCode();
 
 
         assertTrue(corpServices.corp(code).get().getTypes().equals("Construct Developer") ||
@@ -83,7 +83,7 @@ public class CorpServicesTest {
         business = new CorpBusiness();
         businessReg = new BusinessReg();
         businessReg.setId(new BusinessRegPK());
-        businessReg.getId().setType(ConstructJoinType.Construct);
+        businessReg.getId().setProperty(CorpProperty.Construct);
         businessReg.setOperateType(BusinessReg.OperateType.DELETE);
         business.getRegs().add(businessReg);
 
@@ -105,7 +105,7 @@ public class CorpServicesTest {
 
         businessReg = new BusinessReg();
         businessReg.setId(new BusinessRegPK());
-        businessReg.getId().setType(ConstructJoinType.Construct);
+        businessReg.getId().setProperty(CorpProperty.Construct);
         businessReg.setInfo(regInfo);
         businessReg.setOperateType(BusinessReg.OperateType.CREATE);
         business.getRegs().add(businessReg);
@@ -118,7 +118,7 @@ public class CorpServicesTest {
 
         businessReg = new BusinessReg();
         businessReg.setId(new BusinessRegPK());
-        businessReg.getId().setType(ConstructJoinType.Developer);
+        businessReg.getId().setProperty(CorpProperty.Developer);
         businessReg.setInfo(regInfo);
         businessReg.setOperateType(BusinessReg.OperateType.MODIFY);
         business.getRegs().add(businessReg);
@@ -131,7 +131,7 @@ public class CorpServicesTest {
         assertEquals(corpServices.corp(code).get().getRegs().size(), 2);
 
 
-        assertEquals(corpServices.corpReg(code,ConstructJoinType.Developer ).get().getInfo().getLevelNumber(),"test1-mod");
+        assertEquals(corpServices.corpReg(code,CorpProperty.Developer ).get().getInfo().getLevelNumber(),"test1-mod");
 
         logger.debug("------------modify create and modify  test completed!  ----------------------");
 
@@ -149,7 +149,7 @@ public class CorpServicesTest {
 
         business = new CorpBusiness();
 
-        business.setCorpInfo(corpInfo);
+        business.setInfo(corpInfo);
 
         Corp corp = corpServices.patchModify(code,business);
 

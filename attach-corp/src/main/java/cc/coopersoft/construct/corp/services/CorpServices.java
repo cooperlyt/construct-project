@@ -1,10 +1,10 @@
 package cc.coopersoft.construct.corp.services;
 
 
-import cc.coopersoft.common.business.BusinessSource;
-import cc.coopersoft.common.business.BusinessStatus;
-import cc.coopersoft.common.data.ConstructJoinType;
+import cc.coopersoft.common.construct.corp.CorpProperty;
 import cc.coopersoft.common.data.GroupIdType;
+import cc.coopersoft.common.data.RegSource;
+import cc.coopersoft.common.data.RegStatus;
 import cc.coopersoft.construct.corp.model.*;
 import cc.coopersoft.construct.corp.repository.CorpBusinessRepository;
 import cc.coopersoft.construct.corp.repository.CorpRegRepository;
@@ -12,8 +12,6 @@ import cc.coopersoft.construct.corp.repository.CorpRepository;
 import com.github.wujun234.uid.UidGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -50,8 +48,9 @@ public class CorpServices {
         this.corpRegRepository = corpRegRepository;
     }
 
-    public Optional<CorpReg> corpReg(long corpCode, ConstructJoinType type){
-        return corpRegRepository.findByIdCorpCorpCodeAndIdType(corpCode,type);
+    public Optional<CorpReg> corpReg(long corpCode, CorpProperty type){
+       return corpRegRepository.findByIdCorpCodeAndIdProperty(corpCode,type);
+
     }
 
     public Optional<CorpBusiness> corpBusiness(long businessId){
@@ -63,31 +62,31 @@ public class CorpServices {
     }
 
     public Optional<Corp> corp(GroupIdType type, String number){
-        return corpRepository.findByInfoGroupIdTypeAndInfoGroupId(type,number);
+       return corpRepository.findByInfoGroupIdTypeAndInfoGroupId(type,number);
     }
 
 
     public boolean existsCorpGroupNumber(GroupIdType type, String number){
        return corpRepository.existsByInfoGroupIdTypeAndInfoGroupId(type,number) ||
-            corpBusinessRepository.existsByStatusAndCorpInfoGroupIdTypeAndCorpInfoGroupId(BusinessStatus.running,type,number);
+            corpBusinessRepository.existsByStatusAndInfoGroupIdTypeAndInfoGroupId(RegStatus.Running,type,number);
     }
 
     public boolean existsCorpGroupNumber(long code, GroupIdType type, String number){
-        return corpRepository.existsByCorpCodeNotAndInfoGroupIdTypeAndInfoGroupId(code,type,number) ||
-                corpBusinessRepository.existsByCorpCodeNotAndStatusAndCorpInfoGroupIdTypeAndCorpInfoGroupId(code,BusinessStatus.running,type,number);
+        return corpRepository.existsByCodeNotAndInfoGroupIdTypeAndInfoGroupId(code,type,number) ||
+                corpBusinessRepository.existsByCodeNotAndStatusAndInfoGroupIdTypeAndInfoGroupId(code,RegStatus.Running,type,number);
     }
 
     public boolean corpInBusiness(long corpCode){
-        return this.corpBusinessRepository.existsByStatusAndCorpCode(BusinessStatus.running,corpCode);
+        return this.corpBusinessRepository.existsByStatusAndCode(RegStatus.Running,corpCode);
     }
 
     public List<CorpBusiness> listBusiness(Long corpCode){
-        return this.corpBusinessRepository.findByStatusInAndCorpCodeOrderByCreateTime(
-                EnumSet.of(BusinessStatus.running,BusinessStatus.valid),corpCode);
+        return this.corpBusinessRepository.findByStatusInAndCodeOrderByCreateTime(
+                EnumSet.of(RegStatus.Running,RegStatus.Register),corpCode);
     }
 
 
-    public Page<Corp> listAllCorp(Optional<Boolean> valid, Optional<ConstructJoinType> joinType,
+    public Page<Corp> listAllCorp(Optional<Boolean> valid, Optional<CorpProperty> joinType,
                                   Optional<Integer> page,
                                   Optional<String> key,
                                   Optional<String> sort,
@@ -128,7 +127,7 @@ public class CorpServices {
 
             if (joinType.isPresent()){
                 Join<Corp,CorpReg> regJoin = root.join("regs", JoinType.INNER);
-                predicates.add(cb.and(cb.equal(regJoin.get("id").get("type").as(ConstructJoinType.class),joinType.get())));
+                predicates.add(cb.and(cb.equal(regJoin.get("id").get("type").as(CorpProperty.class),joinType.get())));
 
             }
 
@@ -159,28 +158,32 @@ public class CorpServices {
     public Corp patchCreate(CorpBusiness business){
         CorpBusiness regBusiness = createCorp(business);
 
+        // maybe in client
         regBusiness.setRegTime(new Date());
         regBusiness.setApplyTime(new Date());
-        regBusiness.setSource(BusinessSource.OLD);
-        regBusiness.setStatus(BusinessStatus.valid);
+
+        regBusiness.setSource(RegSource.Patch);
+        regBusiness.setStatus(RegStatus.Register);
 
         Corp corp = new Corp();
-        corp.setInfo(regBusiness.getCorpInfo());
-        corp.setCorpCode(regBusiness.getCorpCode());
+        corp.setInfo(regBusiness.getInfo());
+        corp.setCode(regBusiness.getCode());
         corp.setEnable(true);
         corp.setDataTime(new Date());
 
         String types = "";
 
         for(BusinessReg reg:  regBusiness.getRegs()){
+            reg.getInfo().setRegTime(regBusiness.getRegTime());
+
             CorpReg corpReg = new CorpReg();
-            corpReg.setId(new CorpRegPK(reg.getId().getType(),corp));
+            corpReg.setId(new CorpRegPK(reg.getId().getProperty(),corp));
             corpReg.setInfo(reg.getInfo());
             corp.getRegs().add(corpReg);
 
-            types = types + " " + reg.getId().getType().name();
+            types = types + " " + reg.getId().getProperty().name();
 
-            log.debug("add record type :" + reg.getId().getType().name());
+            log.debug("add record type :" + reg.getId().getProperty().name());
         }
 
         corp.setTypes(types.trim());
@@ -206,23 +209,28 @@ public class CorpServices {
         }
 
         CorpBusiness regBusiness = modifyCorp(corp,business);
+        // maybe client
         regBusiness.setRegTime(new Date());
         regBusiness.setApplyTime(new Date());
-        regBusiness.setSource(BusinessSource.OLD);
-        regBusiness.setStatus(BusinessStatus.valid);
+        regBusiness.setSource(RegSource.Patch);
+        regBusiness.setStatus(RegStatus.Register);
+
+        for(BusinessReg reg:  regBusiness.getRegs()){
+            reg.getInfo().setRegTime(regBusiness.getRegTime());
+        }
 
         regBusiness = this.corpBusinessRepository.saveAndFlush(regBusiness);
 
         corp.setDataTime(new Date());
 
-        if (regBusiness.isInfo()){
-            corp.setInfo(regBusiness.getCorpInfo());
+        if (regBusiness.isInfoChanged()){
+            corp.setInfo(regBusiness.getInfo());
         }
 
-        Map<ConstructJoinType, CorpReg> corpRegs = new HashMap<>(corp.getRegs().size());
+        Map<CorpProperty, CorpReg> corpRegs = new HashMap<>(corp.getRegs().size());
 
         for(CorpReg reg: corp.getRegs()){
-            corpRegs.put(reg.getId().getType(),reg);
+            corpRegs.put(reg.getId().getProperty(),reg);
         }
 
         String types = "";
@@ -230,20 +238,21 @@ public class CorpServices {
         for(BusinessReg reg:  regBusiness.getRegs()){
             switch (reg.getOperateType()){
                 case DELETE:
-                    corp.getRegs().remove(corpRegs.get(reg.getId().getType()));
-                    log.debug("remove reg type: " + reg.getId().getType() + "; size is:" + corp.getRegs().size());
+                    corp.getRegs().remove(corpRegs.get(reg.getId().getProperty()));
+                    log.debug("remove reg type: " + reg.getId().getProperty() + "; size is:" + corp.getRegs().size());
                     break;
                 case MODIFY:
-                    corp.getRegs().remove(corpRegs.get(reg.getId().getType()));
+                    corp.getRegs().remove(corpRegs.get(reg.getId().getProperty()));
                 case CREATE:
+
                     CorpReg corpReg = new CorpReg();
-                    corpReg.setId(new CorpRegPK(reg.getId().getType(),corp));
+                    corpReg.setId(new CorpRegPK(reg.getId().getProperty(),corp));
                     corpReg.setInfo(reg.getInfo());
                     corp.getRegs().add(corpReg);
                     break;
             }
             if (!BusinessReg.OperateType.DELETE.equals(reg.getOperateType())){
-                types = types + " " + reg.getId().getType().name();
+                types = types + " " + reg.getId().getProperty().name();
             }
         }
         corp.setTypes(types.trim());
@@ -257,33 +266,33 @@ public class CorpServices {
 
         regBusiness.setCreateTime(new Date());
         regBusiness.setId(defaultUidGenerator.getUID());
-        regBusiness.setCorpCode(corp.getCorpCode());
+        regBusiness.setCode(corp.getCode());
 
-        if (regBusiness.getCorpInfo() != null){
-            if (existsCorpGroupNumber(corp.getCorpCode(),
-                    regBusiness.getCorpInfo().getGroupIdType(),
-                    regBusiness.getCorpInfo().getGroupId())){
+        if (regBusiness.getInfo() != null){
+            if (existsCorpGroupNumber(corp.getCode(),
+                    regBusiness.getInfo().getGroupIdType(),
+                    regBusiness.getInfo().getGroupId())){
                 throw new IllegalArgumentException("企业证件编号已经被占用");
             }
 
 
-            regBusiness.setInfo(true);
-            regBusiness.setCorpCode(corp.getCorpCode());
-            regBusiness.getCorpInfo().setPrevious(corp.getInfo());
-            regBusiness.getCorpInfo().setId(defaultUidGenerator.getUID());
+            regBusiness.setInfoChanged(true);
+            regBusiness.setCode(corp.getCode());
+            regBusiness.getInfo().setPrevious(corp.getInfo());
+            regBusiness.getInfo().setId(defaultUidGenerator.getUID());
         }else{
-            regBusiness.setInfo(false);
-            regBusiness.setCorpInfo(corp.getInfo());
+            regBusiness.setInfoChanged(false);
+            regBusiness.setInfo(corp.getInfo());
         }
 
-        Map<ConstructJoinType, CorpReg> corpRegs = new HashMap<>(corp.getRegs().size());
+        Map<CorpProperty, CorpReg> corpRegs = new HashMap<>(corp.getRegs().size());
 
         for(CorpReg reg: corp.getRegs()){
-            corpRegs.put(reg.getId().getType(),reg);
+            corpRegs.put(reg.getId().getProperty(),reg);
         }
 
         for(BusinessReg reg:  regBusiness.getRegs()) {
-            ConstructJoinType joinType = reg.getId().getType();
+            CorpProperty joinType = reg.getId().getProperty();
             switch (reg.getOperateType()){
                 case QUOTED:
                     throw new IllegalArgumentException("操作类型错误：" +  reg.getOperateType());
@@ -302,7 +311,7 @@ public class CorpServices {
         }
 
         for(CorpReg corpReg : corpRegs.values()){
-            BusinessReg businessReg = new BusinessReg(regBusiness,corpReg.getId().getType());
+            BusinessReg businessReg = new BusinessReg(regBusiness,corpReg.getId().getProperty());
             businessReg.setOperateType(BusinessReg.OperateType.QUOTED);
             businessReg.setInfo(corpReg.getInfo());
             regBusiness.getRegs().add(businessReg);
@@ -312,19 +321,19 @@ public class CorpServices {
 
     private CorpBusiness createCorp(CorpBusiness regBusiness){
 
-        if (existsCorpGroupNumber(regBusiness.getCorpInfo().getGroupIdType(),
-                regBusiness.getCorpInfo().getGroupId())){
+        if (existsCorpGroupNumber(regBusiness.getInfo().getGroupIdType(),
+                regBusiness.getInfo().getGroupId())){
             throw new IllegalArgumentException("企业证件编号已经存在!" );
         }
 
         regBusiness.setCreateTime(new Date());
         regBusiness.setId(defaultUidGenerator.getUID());
-        regBusiness.setInfo(true);
+        regBusiness.setInfoChanged(true);
 
 
-        regBusiness.getCorpInfo().setId(defaultUidGenerator.getUID());
-        regBusiness.setCorpCode(defaultUidGenerator.getUID());
-        regBusiness.getCorpInfo().setPrevious(null);
+        regBusiness.getInfo().setId(defaultUidGenerator.getUID());
+        regBusiness.setCode(defaultUidGenerator.getUID());
+        regBusiness.getInfo().setPrevious(null);
 
         for(BusinessReg reg:  regBusiness.getRegs()){
             reg.getInfo().setId(defaultUidGenerator.getUID());
