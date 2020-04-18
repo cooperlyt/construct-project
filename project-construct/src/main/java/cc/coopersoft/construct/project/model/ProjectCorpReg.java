@@ -17,10 +17,6 @@ import java.util.Set;
 @NoArgsConstructor
 public class ProjectCorpReg extends cc.coopersoft.common.construct.project.ProjectCorpReg<JoinCorp>{
 
-    @Column(name = "OWNER", nullable = false)
-    @JsonIgnore
-    @Access(AccessType.FIELD)
-    private boolean owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PREVIOUS")
@@ -43,7 +39,7 @@ public class ProjectCorpReg extends cc.coopersoft.common.construct.project.Proje
     @Override
     public Date getRegTime(){return super.getRegTime();}
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reg", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reg", cascade = CascadeType.ALL, orphanRemoval = true)
     @Override
     public Set<JoinCorp> getCorps(){return super.getCorps();}
 

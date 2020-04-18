@@ -81,8 +81,8 @@ public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp<Jo
     @Override
     public String getTel(){return super.getTel();}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "INFO", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL,orphanRemoval = true, optional = false)
+    @PrimaryKeyJoinColumn
     @JsonView(Summary.class)
     @Override
     public JoinCorpInfo getInfo(){return super.getInfo();}

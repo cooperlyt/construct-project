@@ -12,6 +12,6 @@ import java.util.Set;
 @Repository
 public interface RegRepository extends CrudRepository<ProjectReg, Long>, JpaSpecificationExecutor<ProjectReg> {
 
-    List<ProjectReg> findDistinctByCorpsCodeAndStatusInOrderByCreateTimeDesc(long code, Set<RegStatus> statuses);
+    boolean existsByCodeAndStatus(long code, RegStatus status);
 
 }

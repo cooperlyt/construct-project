@@ -65,4 +65,13 @@ spring:
         dialect: "org.hibernate.dialect.MySQL5Dialect"
         naming:
           physical-strategy: "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl"
-
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          name-server:
+            192.168.1.21:9876
+      bindings:
+        output:
+          destination: projectChangeTopic
+          content-type: application/json

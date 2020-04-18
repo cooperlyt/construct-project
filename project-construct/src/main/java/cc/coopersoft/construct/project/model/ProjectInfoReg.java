@@ -16,10 +16,6 @@ import java.util.Date;
 @NoArgsConstructor
 public class ProjectInfoReg extends cc.coopersoft.common.construct.project.ProjectInfoReg<ProjectInfo>{
 
-    @Column(name = "OWNER",nullable = false)
-    @Access(AccessType.FIELD)
-    @JsonIgnore
-    private boolean owner;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PREVIOUS")

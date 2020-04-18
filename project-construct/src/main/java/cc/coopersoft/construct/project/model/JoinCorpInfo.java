@@ -10,6 +10,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "PROJECT_JOIN_CORP_INFO")
@@ -24,6 +25,13 @@ public class JoinCorpInfo extends cc.coopersoft.common.construct.project.JoinCor
     @JsonIgnore
     @Access(AccessType.FIELD)
     private Long id;
+
+    @MapsId
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ID", nullable = false)
+    @JsonIgnore
+    @Access(AccessType.FIELD)
+    private JoinCorp joinCorp;
 
     @Column(name = "NAME", length = 128, nullable = false)
     @JsonView(JoinCorp.Details.class)
@@ -46,4 +54,6 @@ public class JoinCorpInfo extends cc.coopersoft.common.construct.project.JoinCor
     @JsonView(JoinCorp.Details.class)
     @Override
     public int getLevel(){return super.getLevel();}
+
+
 }

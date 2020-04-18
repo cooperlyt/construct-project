@@ -1,6 +1,7 @@
 package cc.coopersoft.construct.project.controllers;
 
 
+import cc.coopersoft.construct.project.model.JoinCorp;
 import cc.coopersoft.construct.project.model.Project;
 import cc.coopersoft.construct.project.model.ProjectReg;
 import cc.coopersoft.construct.project.services.ProjectService;
@@ -25,10 +26,10 @@ public class ViewController {
         this.projectService = projectService;
     }
 
-    @RequestMapping(value = "/projects", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Project.Summary.class)
-    public Page<Project> projects(@RequestParam("valid") boolean valid,
+    public Page<Project> projects(@RequestParam(value = "valid", required = false) Optional<Boolean> valid,
                                   @RequestParam(value ="page", required = false) Optional<Integer> page,
                                   @RequestParam(value ="key", required = false)Optional<String> key,
                                   @RequestParam(value ="sort", required = false)Optional<String> sort,
@@ -40,7 +41,7 @@ public class ViewController {
     @RequestMapping(value = "/project/{code}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Project.Details.class)
-    public Project project(@PathVariable("code") String code){
+    public Project project(@PathVariable("code") long code){
         Optional<Project> result = projectService.project(code);
         if (result.isPresent()){
             return result.get();
@@ -49,24 +50,21 @@ public class ViewController {
         }
     }
 
-    @RequestMapping(value = "/reg/{id}", method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    @JsonView(ProjectReg.Details.class)
-    public ProjectReg reg(@PathVariable("id") String id){
-        Optional<ProjectReg> result = projectService.reg(id);
-        if (result.isPresent()){
-            return result.get();
-        }else{
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
 
-    }
 
-    @RequestMapping(value = "/business/{code}", method = RequestMethod.GET)
+    @RequestMapping(value = "/join/{code}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @JsonView(ProjectReg.Summary.class)
-    public List<ProjectReg> joinProjects(@PathVariable("code") long code){
+    public List<JoinCorp> joinProjects(@PathVariable("code") long code){
         return projectService.joinProjects(code);
+    }
+
+
+    @RequestMapping(value = "/reg/running/{code}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public String corpInReg(@PathVariable("code") long code){
+        return String.valueOf(projectService.projectInReg(code));
+
     }
 
 

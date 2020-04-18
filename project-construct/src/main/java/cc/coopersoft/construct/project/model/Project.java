@@ -15,8 +15,14 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @NamedEntityGraph(name = "project.summary",
-        attributeNodes = {@NamedAttributeNode(value = "reg", subgraph = "reg.info")} ,
-        subgraphs = {@NamedSubgraph(name = "reg.info", attributeNodes = @NamedAttributeNode("info"))}
+        attributeNodes = {
+            @NamedAttributeNode(value = "info", subgraph = "info.details"),
+            @NamedAttributeNode(value = "corp"),
+            @NamedAttributeNode(value ="developer", subgraph = "corp.info")} ,
+        subgraphs = {
+            @NamedSubgraph(name = "info.details", attributeNodes = @NamedAttributeNode("info")),
+            @NamedSubgraph(name = "corp.info", attributeNodes = @NamedAttributeNode("info"))
+        }
 )
 public class Project extends cc.coopersoft.common.construct.project.Project<ProjectInfoReg,JoinCorp,ProjectCorpReg>{
 
@@ -55,6 +61,7 @@ public class Project extends cc.coopersoft.common.construct.project.Project<Proj
     @JoinColumn(name = "DEVELOPER", nullable = false)
     @Override
     public JoinCorp getDeveloper(){return super.getDeveloper();}
+
 
 
 }
