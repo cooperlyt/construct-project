@@ -1,6 +1,6 @@
 package cc.coopersoft.construct.project.repository;
 
-import cc.coopersoft.common.business.BusinessStatus;
+import cc.coopersoft.common.data.RegStatus;
 import cc.coopersoft.construct.project.model.ProjectReg;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.repository.CrudRepository;
@@ -12,6 +12,6 @@ import java.util.Set;
 @Repository
 public interface RegRepository extends CrudRepository<ProjectReg, Long>, JpaSpecificationExecutor<ProjectReg> {
 
-    List<ProjectReg> findDistinctByCorpsCorpCodeAndStatusInOrderByCreateTimeDesc(long code, Set<BusinessStatus> statuses);
+    List<ProjectReg> findDistinctByCorpsCodeAndStatusInOrderByCreateTimeDesc(long code, Set<RegStatus> statuses);
 
 }

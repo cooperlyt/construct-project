@@ -12,90 +12,81 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @Entity
 @Table(name = "PROJECT_JOIN_CORP")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
+@Access(AccessType.PROPERTY)
 //@NamedEntityGraph(name = "joinCorp.full",
 //        attributeNodes = {@NamedAttributeNode(value = "reg", subgraph = "reg.info")} ,
 //        subgraphs = {@NamedSubgraph(name = "reg.info", attributeNodes = @NamedAttributeNode("info"))}
 //)
-public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp{
+public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp<JoinCorpInfo>{
 
 
-    public interface Details{}
-
-    public enum Role {
-        MASTER,
-        ACCOMPANY,
-        MANAGER
-    }
+    public interface Summary{}
+    public interface Details extends Summary{}
 
     @Id
     @Column(name = "JOIN_ID", nullable = false, unique = true)
     @JsonIgnore
+    @Access(AccessType.FIELD)
     private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "REG", nullable = false)
+    @JsonIgnore
+    @Access(AccessType.FIELD)
+    private ProjectCorpReg reg;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "CORP_TYPE", nullable = false, length = 16)
     @NotNull
     @JsonView(Details.class)
-    private CorpProperty property;
+    @Override
+    public CorpProperty getProperty(){return super.getProperty();}
 
     @Column(name = "OUTSIDE_TEAM_FILE", length = 32)
     @JsonView(Details.class)
-    private String outsideTeamFile;
+    @Override
+    public String getOutsideTeamFile(){return super.getOutsideTeamFile();}
 
     @Column(name = "OUT_LEVEL")
     @JsonView(Details.class)
     @NotNull
-    private Boolean outLevel;
+    @Override
+    public Boolean getOutLevel(){return super.getOutLevel();}
 
     @Column(name = "OUT_LEVEL_FILE", length = 32)
     @JsonView(Details.class)
-    private String outLevelFile;
+    @Override
+    public String getOutLevelFile(){return super.getOutLevelFile();}
 
     @Column(name = "CORP_CODE", nullable = false)
     @JsonView(Details.class)
-    private long corpCode;
+    @Override
+    public long getCode(){return super.getCode();}
 
-    @Column(name = "NAME", length = 128, nullable = false)
-    @JsonView(Details.class)
-    private String name;
 
-    @Column(name = "REG_ID_TYPE", nullable = false, length = 16)
-    @Enumerated(EnumType.STRING)
-    @JsonView(Details.class)
-    private GroupIdType groupIdType;
-
-    @Column(name = "REG_ID_NUMBER", nullable = false, length = 32)
-    @NotBlank
-    @JsonView(Details.class)
-    private String groupId;
-
-    @Column(name = "LEVEL", nullable = false)
-    @JsonView(Details.class)
-    private int level;
 
     @Column(name = "CONTACTS", length = 64)
     @JsonView(Details.class)
-    private String contacts;
+    @Override
+    public String getContacts(){return super.getContacts();}
 
     @Column(name = "TEL", length = 16)
     @JsonView(Details.class)
-    private String tel;
+    @Override
+    public String getTel(){return super.getTel();}
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ROLE", nullable = false , length = 16)
-    @JsonView(Details.class)
-    private Role role;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "INFO", nullable = false)
+    @JsonView(Summary.class)
+    @Override
+    public JoinCorpInfo getInfo(){return super.getInfo();}
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "REG", nullable = false)
-    @JsonIgnore
-    private ProjectReg reg;
+
 
 }

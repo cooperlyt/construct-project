@@ -1,5 +1,6 @@
 package cc.coopersoft.construct.project.services;
 
+import cc.coopersoft.common.data.RegStatus;
 import cc.coopersoft.construct.project.model.Project;
 import cc.coopersoft.construct.project.model.ProjectReg;
 import cc.coopersoft.construct.project.repository.RegRepository;
@@ -48,7 +49,7 @@ public class ProjectService {
     }
 
     public List<ProjectReg> joinProjects(long code){
-        return regRepository.findDistinctByCorpsCorpCodeAndStatusInOrderByCreateTimeDesc(code, EnumSet.of(BusinessStatus.running,BusinessStatus.valid));
+        return regRepository.findDistinctByCorpsCodeAndStatusInOrderByCreateTimeDesc(code, EnumSet.of(RegStatus.Running,RegStatus.Register));
     }
 
     public void enableProject(boolean enable){
