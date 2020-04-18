@@ -1,6 +1,5 @@
 package cc.coopersoft.construct.project.services;
 
-import cc.coopersoft.common.business.BusinessStatus;
 import cc.coopersoft.construct.project.model.Project;
 import cc.coopersoft.construct.project.model.ProjectReg;
 import cc.coopersoft.construct.project.repository.RegRepository;

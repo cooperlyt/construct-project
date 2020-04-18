@@ -1,17 +1,15 @@
 package cc.coopersoft.construct.cache.repository.redis;
 
 import cc.coopersoft.common.construct.corp.Corp;
-import cc.coopersoft.construct.cache.repository.CorpRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import cc.coopersoft.construct.cache.repository.CacheDataRepository;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
 @Repository
-public class CorpRedisRepository implements CorpRepository {
+public class CorpRedisRepository implements CacheDataRepository<Corp.Default,Long> {
 
     private static final String HASH_NAME="corp";
 
@@ -30,23 +28,22 @@ public class CorpRedisRepository implements CorpRepository {
         hashOperations = redisTemplate.opsForHash();
     }
 
-    @Override
-    public void saveCorp(Corp.Default corp) {
+    public void save(Corp.Default corp) {
         hashOperations.put(HASH_NAME,corp.getCode(),corp);
     }
 
     @Override
-    public void updateCorp(Corp.Default corp) {
+    public void update(Corp.Default corp) {
         hashOperations.put(HASH_NAME,corp.getCode(),corp);
     }
 
     @Override
-    public void deleteCorp(long corp) {
+    public void delete(Long corp) {
         hashOperations.delete(HASH_NAME,corp);
     }
 
     @Override
-    public Corp.Default findCorp(long code) {
+    public Corp.Default find(Long code) {
         return (Corp.Default)hashOperations.get(HASH_NAME,code);
     }
 }

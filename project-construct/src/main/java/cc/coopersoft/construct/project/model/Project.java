@@ -18,7 +18,7 @@ import java.util.Date;
         attributeNodes = {@NamedAttributeNode(value = "reg", subgraph = "reg.info")} ,
         subgraphs = {@NamedSubgraph(name = "reg.info", attributeNodes = @NamedAttributeNode("info"))}
 )
-public class Project {
+public class Project extends cc.coopersoft.common.construct.project.Project<ProjectReg>{
 
     public interface Summary extends ProjectReg.Summary {}
     public interface Details extends Summary, ProjectReg.Details {}

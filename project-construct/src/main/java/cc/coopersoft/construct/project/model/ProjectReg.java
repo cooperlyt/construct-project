@@ -1,8 +1,7 @@
 package cc.coopersoft.construct.project.model;
 
-
-import cc.coopersoft.common.business.BusinessSource;
-import cc.coopersoft.common.business.BusinessStatus;
+import cc.coopersoft.common.data.RegSource;
+import cc.coopersoft.common.data.RegStatus;
 import cc.coopersoft.common.json.JsonRawDeserializer;
 import cc.coopersoft.common.json.JsonRawSerialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -25,7 +24,7 @@ import java.util.Set;
 @NoArgsConstructor
 @NamedEntityGraph(name = "reg.summary",
         attributeNodes = {@NamedAttributeNode("info")})
-public class ProjectReg {
+public class ProjectReg extends cc.coopersoft.common.construct.project.ProjectReg<ProjectInfo,JoinCorp>{
 
 
     public interface BaseView extends ProjectInfo.Summary {}
@@ -57,12 +56,12 @@ public class ProjectReg {
     @Column(name = "SOURCE", nullable = false, length = 3)
     @Enumerated(EnumType.STRING)
     @JsonView(BaseView.class)
-    private BusinessSource source;
+    private RegSource source;
 
     @Column(name = "STATUS", nullable = false, length = 8)
     @Enumerated(EnumType.STRING)
     @JsonView(BaseView.class)
-    private BusinessStatus status;
+    private RegStatus status;
 
     @Column(name = "TAGS", length = 512)
     @JsonIgnore

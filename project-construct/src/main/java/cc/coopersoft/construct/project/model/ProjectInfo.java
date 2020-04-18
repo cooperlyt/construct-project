@@ -18,7 +18,7 @@ import java.util.Set;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
-public class ProjectInfo implements java.io.Serializable{
+public class ProjectInfo extends cc.coopersoft.common.construct.project.ProjectInfo implements java.io.Serializable{
 
     public interface Summary {}
     public interface Details extends Summary {}

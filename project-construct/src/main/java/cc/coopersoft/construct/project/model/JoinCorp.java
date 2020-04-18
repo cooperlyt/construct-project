@@ -1,7 +1,7 @@
 package cc.coopersoft.construct.project.model;
 
 
-import cc.coopersoft.common.data.ConstructJoinType;
+import cc.coopersoft.common.construct.corp.CorpProperty;
 import cc.coopersoft.common.data.GroupIdType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -23,7 +23,7 @@ import javax.validation.constraints.Size;
 //        attributeNodes = {@NamedAttributeNode(value = "reg", subgraph = "reg.info")} ,
 //        subgraphs = {@NamedSubgraph(name = "reg.info", attributeNodes = @NamedAttributeNode("info"))}
 //)
-public class JoinCorp {
+public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp{
 
 
     public interface Details{}
@@ -43,7 +43,7 @@ public class JoinCorp {
     @Column(name = "CORP_TYPE", nullable = false, length = 16)
     @NotNull
     @JsonView(Details.class)
-    private ConstructJoinType type;
+    private CorpProperty property;
 
     @Column(name = "OUTSIDE_TEAM_FILE", length = 32)
     @JsonView(Details.class)
