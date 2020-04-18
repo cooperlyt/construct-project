@@ -82,6 +82,7 @@ services:
       - "6379:6379"
     volumes:
       - "/home/docker/data/redis:/data"
+    command: redis-server --requirepass p0stgr@s
 
   rmqnamesrv:
     image: rocketmqinc/rocketmq
@@ -179,7 +180,7 @@ services:
       KAFKASERVER_PORT:  2181
       CONFIGSERVER_URI: "http://configserver:8888"
       EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
-      AUTHSERVER_URI:   "http://authenticationservice:8901/auth/user"
+      AUTHSERVER_URI:   "8091"
       TZ: Asia/Shanghai
     links:
       - eurekaserver:eurekaserver

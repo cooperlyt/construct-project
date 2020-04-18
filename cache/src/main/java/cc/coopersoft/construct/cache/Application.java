@@ -1,40 +1,23 @@
 package cc.coopersoft.construct.cache;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.SpringCloudApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.connection.RedisPassword;
-import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.cloud.client.circuitbreaker.EnableCircuitBreaker;
+import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
+import org.springframework.security.oauth2.config.annotation.web.configuration.EnableOAuth2Client;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
 
-
-@SpringCloudApplication
+@EnableDiscoveryClient
+@EnableCircuitBreaker
+@SpringBootApplication(scanBasePackages = {"cc.coopersoft.common.cloud", "cc.coopersoft.construct.cache"})
+@EnableEurekaClient
 @EnableResourceServer
 public class Application {
 
-
-    private final ServiceConfig serviceConfig;
-
-    @Autowired
-    public Application(ServiceConfig serviceConfig) {
-        this.serviceConfig = serviceConfig;
-    }
-
-    @Bean
-    public JedisConnectionFactory jedisConnectionFactory(){
-        RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(serviceConfig.getRedisServer(), serviceConfig.getRedisPort());
-        redisStandaloneConfiguration.setPassword(RedisPassword.of(serviceConfig.getRedisPassword()));
-        return new JedisConnectionFactory(redisStandaloneConfiguration);
-    }
-
-    @Bean
-    public RedisTemplate<String,Object> redisTemplate(){
-        RedisTemplate<String,Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(jedisConnectionFactory());
-        return template;
+    public static void main(String[] args){
+        SpringApplication.run(Application.class,args);
     }
 }

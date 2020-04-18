@@ -13,10 +13,12 @@ import com.github.wujun234.uid.UidGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,16 +38,25 @@ public class CorpServices {
 
     private final CorpRegRepository corpRegRepository;
 
+    private final Source source;
+
+    public void publishChangeMessage(long code){
+        log.debug(" sending message corp {} change ", code);
+        source.output().send(MessageBuilder.withPayload(code).build());
+    }
+
     @Resource
     private UidGenerator defaultUidGenerator;
 
     @Autowired
     public CorpServices(CorpRepository corpRepository,
                         CorpBusinessRepository corpBusinessRepository,
-                        CorpRegRepository corpRegRepository) {
+                        CorpRegRepository corpRegRepository,
+                        Source source) {
         this.corpRepository = corpRepository;
         this.corpBusinessRepository = corpBusinessRepository;
         this.corpRegRepository = corpRegRepository;
+        this.source = source;
     }
 
     public Optional<CorpReg> corpReg(long corpCode, CorpProperty type){
@@ -146,6 +157,7 @@ public class CorpServices {
 
     @Transactional
     public void setCorpEnable(long id, boolean enable){
+        publishChangeMessage(id);
         Optional<Corp> corp = this.corpRepository.findById(id);
         if (corp.isPresent()){
             corp.get().setEnable(enable);
@@ -195,7 +207,7 @@ public class CorpServices {
 
     @Transactional()
     public Corp patchModify(long corpCode, CorpBusiness business){
-
+        publishChangeMessage(corpCode);
         Optional<Corp> _corp = this.corpRepository.findById(corpCode);
         Corp corp;
         if (_corp.isEmpty()){
