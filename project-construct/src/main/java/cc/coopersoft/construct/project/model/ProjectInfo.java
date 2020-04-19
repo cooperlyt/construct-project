@@ -36,7 +36,7 @@ public class ProjectInfo extends cc.coopersoft.common.construct.project.ProjectI
     @Column(name = "ADDRESS", length = 512)
     @JsonView(ProjectInfoReg.Summary.class)
     @Override
-    public String getAddress(){return getAddress();}
+    public String getAddress(){return super.getAddress();}
 
     @Enumerated(EnumType.STRING)
     @Column(name = "TYPE", length = 19)
@@ -115,6 +115,7 @@ public class ProjectInfo extends cc.coopersoft.common.construct.project.ProjectI
     @Enumerated(EnumType.STRING)
     @Column(name = "MAIN_PROJECT_LEVEL", length = 8)
     @JsonView(ProjectInfoReg.Title.class)
+    @NotNull
     @Override
     public ImportType getImportantLevel(){return super.getImportantLevel();}
 

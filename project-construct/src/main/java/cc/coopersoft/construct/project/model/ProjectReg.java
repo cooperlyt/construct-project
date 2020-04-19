@@ -66,13 +66,13 @@ public class ProjectReg implements java.io.Serializable{
     private RegSource source;
 
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
-    @PrimaryKeyJoinColumn
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST , CascadeType.MERGE}, optional = false)
+    @JoinColumn(name = "CORP", nullable = false)
     @JsonView(Title.class)
     private ProjectCorpReg corp;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
-    @PrimaryKeyJoinColumn
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST , CascadeType.MERGE}, optional = false)
+    @JoinColumn(name = "INFO", nullable = false)
     @JsonView(Title.class)
     private ProjectInfoReg info;
 

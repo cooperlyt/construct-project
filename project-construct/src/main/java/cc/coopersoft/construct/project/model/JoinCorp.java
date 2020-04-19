@@ -56,7 +56,6 @@ public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp<Jo
 
     @Column(name = "OUT_LEVEL")
     @JsonView({Details.class, SummaryWithCorp.class})
-    @NotNull
     @Override
     public Boolean getOutLevel(){return super.getOutLevel();}
 

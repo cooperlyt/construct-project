@@ -54,7 +54,7 @@ public class ViewController {
 
     @RequestMapping(value = "/join/{code}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    @JsonView(ProjectReg.Summary.class)
+    @JsonView(JoinCorp.SummaryWithCorp.class)
     public List<JoinCorp> joinProjects(@PathVariable("code") long code){
         return projectService.joinProjects(code);
     }

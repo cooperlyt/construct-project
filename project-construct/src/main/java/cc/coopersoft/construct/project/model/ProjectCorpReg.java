@@ -28,7 +28,7 @@ public class ProjectCorpReg extends cc.coopersoft.common.construct.project.Proje
     public interface Details extends JoinCorp.Details{}
     public interface SummaryWithCorp extends Summary ,  Project.Title {}
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PREVIOUS")
     @JsonIgnore
     private ProjectCorpReg previous;
@@ -43,12 +43,6 @@ public class ProjectCorpReg extends cc.coopersoft.common.construct.project.Proje
     @JsonSerialize(using = JsonRawSerialize.class)
     @JsonView(Summary.class)
     private String corpSummary;
-
-    @MapsId
-    @OneToOne(fetch = FetchType.LAZY,mappedBy = "corp")
-    @JoinColumn(name = "ID", nullable = false)
-    @JsonIgnore
-    private ProjectReg reg;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "corp")
     @JsonView(SummaryWithCorp.class)

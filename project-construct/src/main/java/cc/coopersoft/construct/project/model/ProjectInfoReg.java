@@ -21,18 +21,11 @@ public class ProjectInfoReg extends cc.coopersoft.common.construct.project.Proje
     public interface Summary extends Title{}
     public interface Details extends Summary {}
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PREVIOUS")
     @Access(AccessType.FIELD)
     @JsonIgnore
     private ProjectInfoReg previous;
-
-
-    @MapsId
-    @OneToOne(fetch = FetchType.LAZY,mappedBy = "info")
-    @JoinColumn(name = "ID", nullable = false)
-    @JsonIgnore
-    private ProjectReg reg;
 
     @Id
     @Column(name = "ID",nullable = false, unique = true)
@@ -40,8 +33,8 @@ public class ProjectInfoReg extends cc.coopersoft.common.construct.project.Proje
     @JsonView(Title.class)
     public Long getId(){return super.getId();}
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(name = "INFO", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL,orphanRemoval = true, optional = false)
+    @PrimaryKeyJoinColumn
     @JsonView(Title.class)
     @Override
     public ProjectInfo getInfo(){return super.getInfo();}

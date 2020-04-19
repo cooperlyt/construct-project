@@ -22,18 +22,12 @@ public class JoinCorpInfo extends cc.coopersoft.common.construct.project.JoinCor
     public interface Summary {}
     public interface Details extends Summary {}
 
+    //MapsId bug see https://hibernate.atlassian.net/browse/HHH-12436?page=com.atlassian.jira.plugin.system.issuetabpanels%3Aall-tabpanel
     @Id
-    @Column(name = "ID", nullable = false, unique = true)
+    @Column(name = "JOIN_ID", nullable = false, unique = true)
     @JsonIgnore
     @Access(AccessType.FIELD)
     private Long id;
-
-    @MapsId
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ID", nullable = false)
-    @JsonIgnore
-    @Access(AccessType.FIELD)
-    private JoinCorp joinCorp;
 
     @Column(name = "NAME", length = 128, nullable = false)
     @Override
