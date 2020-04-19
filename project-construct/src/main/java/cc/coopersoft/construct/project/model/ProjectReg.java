@@ -21,15 +21,14 @@ import java.util.Date;
 public class ProjectReg implements java.io.Serializable{
 
 
-    public interface BaseView extends ProjectInfo.Summary {}
-
-    public interface Summary extends BaseView {}
-    public interface Details extends BaseView, ProjectInfo.Details, JoinCorp.Details {}
+    public interface Title {}
+    public interface Summary extends Title, ProjectInfoReg.Summary, ProjectCorpReg.Summary {}
+    public interface Details extends Title, ProjectInfoReg.Details, ProjectCorpReg.Details {}
 
 
     @Id
     @Column(name = "ID", unique = true, nullable = false)
-    @JsonView(BaseView.class)
+    @JsonView(Title.class)
     private Long id;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -39,39 +38,42 @@ public class ProjectReg implements java.io.Serializable{
 
     @Column(name = "STATUS", nullable = false, length = 8)
     @Enumerated(EnumType.STRING)
-    @JsonView(BaseView.class)
+    @JsonView(Title.class)
     private RegStatus status;
 
+    @Basic(fetch = FetchType.LAZY)
     @Column(name = "TAGS", length = 512)
     @JsonIgnore
     private String tags;
 
     @Column(name = "PROJECT_CODE", nullable = false)
-    @JsonView(BaseView.class)
+    @JsonView(Title.class)
     private long code;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "APPLY_TIME")
-    @JsonView(BaseView.class)
+    @JsonView(Title.class)
     private Date applyTime;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "REG_TIME")
-    @JsonView(BaseView.class)
+    @JsonView(Title.class)
     private Date regTime;
 
     @Column(name = "SOURCE", nullable = false, length = 8)
     @Enumerated(EnumType.STRING)
-    @JsonView(BaseView.class)
+    @JsonView(Title.class)
     private RegSource source;
 
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
     @PrimaryKeyJoinColumn
+    @JsonView(Title.class)
     private ProjectCorpReg corp;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST, optional = false)
     @PrimaryKeyJoinColumn
+    @JsonView(Title.class)
     private ProjectInfoReg info;
 
     @Column(name = "CORP_MASTER",nullable = false)

@@ -2,8 +2,6 @@ SET SESSION FOREIGN_KEY_CHECKS=0;
 
 /* Drop Tables */
 
-DROP DATABASE IF EXISTS CONSTRUCT;
-CREATE DATABASE CONSTRUCT;
 USE CONSTRUCT;
 
 SET SESSION FOREIGN_KEY_CHECKS=0;
@@ -54,8 +52,10 @@ CREATE TABLE PROJECT_INFO
 (
     NAME varchar(256) NOT NULL,
     ADDRESS varchar(512),
-    TYPE varchar(32),
-    PROPERTY varchar(32),
+    TYPE varchar(19) NOT NULL,
+    TYPE_CLASS int,
+    FLOOR_TYPE varchar(6) NOT NULL,
+    PROPERTY varchar(6) NOT NULL,
     CONTRACT_AREA decimal(19,2),
     ALL_AREA decimal(19,2),
     GROUND_FLOOR_COUNT int,
@@ -65,8 +65,7 @@ CREATE TABLE PROJECT_INFO
     TENDER varchar(32),
     STRUCTURE varchar(32),
     COSTS decimal(18,2),
-    MAIN_PROJECT boolean,
-    MAIN_PROJECT_LEVEL varchar(16),
+    MAIN_PROJECT_LEVEL varchar(8) NOT NULL,
     MAIN_PROJECT_FILE varchar(32),
     MEMO varchar(512),
     HEIGHT decimal(19,2),
@@ -130,7 +129,7 @@ CREATE TABLE PROJECT_JOIN_REG
     ID bigint NOT NULL,
     PREVIOUS bigint,
     REG_TIME datetime,
-    TAGS varchar(512) NULL,
+    TAGS varchar(1024) NULL,
     CORPS varchar(1024) NULL,
     PRIMARY KEY (ID)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET utf8;

@@ -2,7 +2,6 @@ package cc.coopersoft.construct.project.model;
 
 
 import cc.coopersoft.common.construct.corp.CorpProperty;
-import cc.coopersoft.common.data.GroupIdType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -10,7 +9,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -30,9 +28,13 @@ import javax.validation.constraints.NotNull;
 )
 public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp<JoinCorpInfo>{
 
+    //从 project 取建设单位时使用
+    public interface Summary extends JoinCorpInfo.Summary {}
 
-    public interface Summary{}
-    public interface Details extends Summary{}
+    public interface Details extends Summary, JoinCorpInfo.Details {}
+
+    //取 单位 的项目列表时使用
+    public interface SummaryWithCorp extends JoinCorpInfo.Summary, ProjectCorpReg.SummaryWithCorp {}
 
     @Id
     @Column(name = "JOIN_ID", nullable = false, unique = true)
@@ -40,57 +42,55 @@ public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp<Jo
     @Access(AccessType.FIELD)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "REG", nullable = false)
-    @JsonIgnore
-    @Access(AccessType.FIELD)
-    private ProjectCorpReg reg;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "CORP_TYPE", nullable = false, length = 16)
     @NotNull
-    @JsonView(Details.class)
+    @JsonView({Details.class, SummaryWithCorp.class})
     @Override
     public CorpProperty getProperty(){return super.getProperty();}
 
     @Column(name = "OUTSIDE_TEAM_FILE", length = 32)
-    @JsonView(Details.class)
+    @JsonView({Details.class, SummaryWithCorp.class})
     @Override
     public String getOutsideTeamFile(){return super.getOutsideTeamFile();}
 
     @Column(name = "OUT_LEVEL")
-    @JsonView(Details.class)
+    @JsonView({Details.class, SummaryWithCorp.class})
     @NotNull
     @Override
     public Boolean getOutLevel(){return super.getOutLevel();}
 
     @Column(name = "OUT_LEVEL_FILE", length = 32)
-    @JsonView(Details.class)
+    @JsonView({Details.class, SummaryWithCorp.class})
     @Override
     public String getOutLevelFile(){return super.getOutLevelFile();}
 
     @Column(name = "CORP_CODE", nullable = false)
-    @JsonView(Details.class)
+    @JsonView({Summary.class,SummaryWithCorp.class})
     @Override
     public long getCode(){return super.getCode();}
 
-
-
     @Column(name = "CONTACTS", length = 64)
-    @JsonView(Details.class)
+    @JsonView({Details.class, SummaryWithCorp.class})
     @Override
     public String getContacts(){return super.getContacts();}
 
     @Column(name = "TEL", length = 16)
-    @JsonView(Details.class)
+    @JsonView({Details.class, SummaryWithCorp.class})
     @Override
     public String getTel(){return super.getTel();}
 
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL,orphanRemoval = true, optional = false)
     @PrimaryKeyJoinColumn
-    @JsonView(Summary.class)
+    @JsonView({Summary.class,SummaryWithCorp.class})
     @Override
     public JoinCorpInfo getInfo(){return super.getInfo();}
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "REG", nullable = false)
+    @Access(AccessType.FIELD)
+    @JsonView(SummaryWithCorp.class)
+    private ProjectCorpReg reg;
 
 
 

@@ -108,10 +108,12 @@ public class ProjectService {
                 List<Predicate> keyPredicate = new LinkedList<>();
                 String _key = key.get().trim();
                 String _keyLike = "%" + _key + "%";
-                keyPredicate.add(cb.equal(root.get("code").as(Long.class),_key));
-                keyPredicate.add(cb.like(infoJoin.get("name").as(String.class),_keyLike));
-                keyPredicate.add(cb.like(infoJoin.get("memo").as(String.class),_keyLike));
-                keyPredicate.add(cb.like(corpJoin.get("tags").as(String.class),_keyLike));
+                keyPredicate.add(cb.equal(root.get("code"),_key));
+                keyPredicate.add(cb.like(infoJoin.get("name"),_keyLike));
+                keyPredicate.add(cb.like(infoJoin.get("memo"),_keyLike));
+                keyPredicate.add(cb.like(corpJoin.get("tags"),_keyLike));
+                keyPredicate.add(cb.like(infoJoin.get("importantFile"),_keyLike));
+                keyPredicate.add(cb.like(infoJoin.get("address"),_keyLike));
 
                 predicates.add(cb.or(keyPredicate.toArray(new Predicate[0])));
             }
@@ -266,6 +268,7 @@ public class ProjectService {
             summaries.add(new CorpSummary(corp.getProperty(),corp.getCode(),corp.getInfo().getName(),corp.getInfo().getGroupIdType(),corp.getInfo().getGroupId()));
         }
         reg.setTags(tags);
+        Collections.sort(summaries);
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             reg.setCorpSummary(objectMapper.writeValueAsString(summaries));

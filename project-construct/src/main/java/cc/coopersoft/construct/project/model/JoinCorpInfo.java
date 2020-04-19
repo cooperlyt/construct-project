@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "PROJECT_JOIN_CORP_INFO")
@@ -19,6 +18,9 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @Access(AccessType.PROPERTY)
 public class JoinCorpInfo extends cc.coopersoft.common.construct.project.JoinCorpInfo{
+
+    public interface Summary {}
+    public interface Details extends Summary {}
 
     @Id
     @Column(name = "ID", nullable = false, unique = true)
@@ -34,24 +36,24 @@ public class JoinCorpInfo extends cc.coopersoft.common.construct.project.JoinCor
     private JoinCorp joinCorp;
 
     @Column(name = "NAME", length = 128, nullable = false)
-    @JsonView(JoinCorp.Details.class)
     @Override
+    @JsonView(Summary.class)
     public String getName(){return super.getName();}
 
     @Column(name = "REG_ID_TYPE", nullable = false, length = 16)
     @Enumerated(EnumType.STRING)
-    @JsonView(JoinCorp.Details.class)
+    @JsonView(Details.class)
     @Override
     public GroupIdType getGroupIdType(){return super.getGroupIdType();}
 
     @Column(name = "REG_ID_NUMBER", nullable = false, length = 32)
     @NotBlank
-    @JsonView(JoinCorp.Details.class)
+    @JsonView(Details.class)
     @Override
     public String getGroupId(){return super.getGroupId();}
 
     @Column(name = "LEVEL", nullable = false)
-    @JsonView(JoinCorp.Details.class)
+    @JsonView(Summary.class)
     @Override
     public int getLevel(){return super.getLevel();}
 

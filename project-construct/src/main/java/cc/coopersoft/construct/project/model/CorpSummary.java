@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class CorpSummary {
+public class CorpSummary implements Comparable<CorpSummary>{
 
     private CorpProperty property;
 
@@ -23,4 +23,13 @@ public class CorpSummary {
 
     private String id;
 
+
+    @Override
+    public int compareTo(CorpSummary o) {
+        int result = property.compareTo(o.getProperty());
+        if (result == 0){
+            return Long.valueOf(code).compareTo(o.code);
+        }
+        return result;
+    }
 }

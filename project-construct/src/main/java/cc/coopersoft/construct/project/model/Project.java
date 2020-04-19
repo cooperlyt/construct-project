@@ -26,8 +26,11 @@ import java.util.Date;
 )
 public class Project extends cc.coopersoft.common.construct.project.Project<ProjectInfoReg,JoinCorp,ProjectCorpReg>{
 
-    public interface Summary extends ProjectReg.Summary {}
-    public interface Details extends Summary, ProjectReg.Details {}
+
+    public interface Title extends ProjectInfoReg.Title{}
+    public interface Summary extends Title, ProjectInfoReg.Summary, ProjectCorpReg.Summary , JoinCorp.Summary{}
+    public interface Details extends Title, ProjectInfoReg.Details, ProjectCorpReg.Details {}
+
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "DATA_TIME", nullable = false)
@@ -37,28 +40,31 @@ public class Project extends cc.coopersoft.common.construct.project.Project<Proj
 
     @Id
     @Column(name = "PROJECT_CODE", nullable = false, unique = true)
-    @JsonView(Summary.class)
+    @JsonView(Title.class)
     @Override
     public Long getCode(){return super.getCode();}
 
     @Column(name = "ENABLE", nullable = false)
-    @JsonView(Summary.class)
+    @JsonView(Title.class)
     @Override
     public boolean isEnable(){return super.isEnable();}
 
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "INFO", nullable = false)
+    @JsonView(Title.class)
     @Override
     public ProjectInfoReg getInfo(){return super.getInfo();}
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "CORP", nullable = false)
+    @JsonView(Title.class)
     @Override
     public ProjectCorpReg getCorp(){return super.getCorp();}
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "DEVELOPER", nullable = false)
+    @JsonView(Summary.class)
     @Override
     public JoinCorp getDeveloper(){return super.getDeveloper();}
 
