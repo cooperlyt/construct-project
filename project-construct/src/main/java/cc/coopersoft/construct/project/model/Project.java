@@ -47,17 +47,17 @@ public class Project extends cc.coopersoft.common.construct.project.Project<Proj
     public boolean isEnable(){return super.isEnable();}
 
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "INFO", nullable = false)
     @Override
     public ProjectInfoReg getInfo(){return super.getInfo();}
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "CORP", nullable = false)
     @Override
     public ProjectCorpReg getCorp(){return super.getCorp();}
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "DEVELOPER", nullable = false)
     @Override
     public JoinCorp getDeveloper(){return super.getDeveloper();}

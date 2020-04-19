@@ -19,10 +19,15 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor
 @Access(AccessType.PROPERTY)
-//@NamedEntityGraph(name = "joinCorp.full",
-//        attributeNodes = {@NamedAttributeNode(value = "reg", subgraph = "reg.info")} ,
-//        subgraphs = {@NamedSubgraph(name = "reg.info", attributeNodes = @NamedAttributeNode("info"))}
-//)
+@NamedEntityGraph(name = "joinCorp.details",
+        attributeNodes = {@NamedAttributeNode(value = "reg", subgraph = "reg.project")} ,
+        subgraphs = {
+
+            @NamedSubgraph(name = "reg.project", attributeNodes = @NamedAttributeNode(value = "project", subgraph="project.info")),
+                @NamedSubgraph(name = "project.info", attributeNodes = @NamedAttributeNode(value = "info", subgraph = "project.info.info"))  ,
+                    @NamedSubgraph(name = "project.info.info", attributeNodes = @NamedAttributeNode(value = "info"))
+        }
+)
 public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp<JoinCorpInfo>{
 
 

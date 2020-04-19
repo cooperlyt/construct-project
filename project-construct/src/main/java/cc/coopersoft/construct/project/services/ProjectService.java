@@ -7,13 +7,20 @@ import cc.coopersoft.common.construct.corp.RegInfo;
 import cc.coopersoft.common.data.RegSource;
 import cc.coopersoft.common.data.RegStatus;
 import cc.coopersoft.construct.project.model.*;
+import cc.coopersoft.construct.project.repository.JoinCorpRepository;
 import cc.coopersoft.construct.project.repository.RegRepository;
 import cc.coopersoft.construct.project.repository.ProjectRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wujun234.uid.UidGenerator;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.support.MessageBuilder;
@@ -22,19 +29,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import javax.persistence.criteria.Fetch;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Predicate;
+import java.util.*;
 
 @Service
 @Slf4j
 public class ProjectService {
 
+    private final static  int PAGE_SIZE = 20;
+
     private final RegRepository regRepository;
 
     private final ProjectRepository projectRepository;
 
+    private final JoinCorpRepository joinCorpRepository;
+
     private final OAuth2RestTemplate oAuth2RestTemplate;
+
+
 
     @Resource
     private UidGenerator defaultUidGenerator;
@@ -49,10 +64,12 @@ public class ProjectService {
     @Autowired
     public ProjectService(RegRepository regRepository,
                           ProjectRepository projectRepository,
+                          JoinCorpRepository joinCorpRepository,
                           OAuth2RestTemplate oAuth2RestTemplate,
                           Source source) {
         this.regRepository = regRepository;
         this.projectRepository = projectRepository;
+        this.joinCorpRepository = joinCorpRepository;
         this.oAuth2RestTemplate = oAuth2RestTemplate;
         this.source = source;
     }
@@ -63,13 +80,60 @@ public class ProjectService {
                                   Optional<String> key,
                                   Optional<String> sort,
                                   Optional<String> dir){
-        //TODO implements
-        return null;
+
+        boolean validOnly = valid.isEmpty() || valid.get();
+
+        Specification<Project> specification = (Specification<Project>) (root, criteriaQuery, cb) -> {
+
+            boolean countQuery = criteriaQuery.getResultType().equals(Long.class);
+
+            List<Predicate> predicates = new LinkedList<>();
+
+
+            Join<ProjectInfoReg, ProjectInfo> infoJoin;
+            Join<Project,ProjectCorpReg> corpJoin;
+            if (countQuery){
+                Join<Project,ProjectInfoReg> regJoin = root.join("info", JoinType.LEFT);
+                infoJoin = regJoin.join("info", JoinType.LEFT);
+                corpJoin = root.join("corp",JoinType.LEFT);
+            }else{
+                Fetch<Project,ProjectInfoReg> regFetch = root.fetch("info", JoinType.LEFT);
+                Fetch<ProjectInfoReg,ProjectInfo> infoFetch = regFetch.fetch("info", JoinType.LEFT);
+                infoJoin = (Join<ProjectInfoReg, ProjectInfo>) infoFetch;
+                Fetch<Project,ProjectCorpReg> corpFetch = root.fetch("corp",JoinType.LEFT);
+                corpJoin = (Join<Project, ProjectCorpReg>) corpFetch;
+            }
+
+            if (key.isPresent() && StringUtils.isNotBlank(key.get())){
+                List<Predicate> keyPredicate = new LinkedList<>();
+                String _key = key.get().trim();
+                String _keyLike = "%" + _key + "%";
+                keyPredicate.add(cb.equal(root.get("code").as(Long.class),_key));
+                keyPredicate.add(cb.like(infoJoin.get("name").as(String.class),_keyLike));
+                keyPredicate.add(cb.like(infoJoin.get("memo").as(String.class),_keyLike));
+                keyPredicate.add(cb.like(corpJoin.get("tags").as(String.class),_keyLike));
+
+                predicates.add(cb.or(keyPredicate.toArray(new Predicate[0])));
+            }
+
+            if (validOnly){
+                predicates.add(cb.and(cb.isTrue(root.get("enable").as(Boolean.class))));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+
+
+        };
+
+
+        Sort sortable = Sort.by((dir.isPresent() ? ("DESC".equals(dir.get()) ? Sort.Direction.DESC : Sort.Direction.ASC) : Sort.Direction.DESC)
+                , (sort.isPresent() ? sort.get() : "dataTime"));
+
+        return projectRepository.findAll(specification, PageRequest.of(page.isPresent() ? page.get() : 0 ,PAGE_SIZE,sortable));
     }
 
     public List<JoinCorp> joinProjects(long code){
-        //TODO implements
-        return null;
+        return joinCorpRepository.findByRegProjectIsNotNullAndCode(code);
     }
 
     public Optional<Project> project(long code){
@@ -94,12 +158,10 @@ public class ProjectService {
 
         if (reg.isCorpMaster()) {
             reg.getCorp().setRegTime(new Date());
-            reg.getCorp().setRegistered(true);
         }
 
         if (reg.isInfoMaster()) {
             reg.getInfo().setRegTime(new Date());
-            reg.getInfo().setRegistered(true);
         }
         return reg;
     }
@@ -189,6 +251,30 @@ public class ProjectService {
         throw new IllegalArgumentException("corp is found ! but not have this property:[" + property + "]" + code);
     }
 
+    private ProjectCorpReg tagReg(ProjectCorpReg reg) {
+        String tags = "";
+        List<CorpSummary> summaries = new ArrayList<>(reg.getCorps().size());
+        for(JoinCorp corp: reg.getCorps()){
+            tags = tags + " " + corp.getOutsideTeamFile();
+            tags = tags + " " + corp.getOutLevelFile();
+            tags = tags + " " + corp.getCode();
+            tags = tags + " " + corp.getTel();
+            tags = tags + " " + corp.getContacts();
+            tags = tags + " " + corp.getInfo().getGroupId();
+            tags = tags + " " + corp.getInfo().getName();
+
+            summaries.add(new CorpSummary(corp.getProperty(),corp.getCode(),corp.getInfo().getName(),corp.getInfo().getGroupIdType(),corp.getInfo().getGroupId()));
+        }
+        reg.setTags(tags);
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            reg.setCorpSummary(objectMapper.writeValueAsString(summaries));
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("data error can`t convert to json");
+        }
+        return reg;
+    }
+
 
     private ProjectReg create(ProjectReg reg){
         reg.setCreateTime(new Date());
@@ -200,6 +286,9 @@ public class ProjectService {
             corp.setId(defaultUidGenerator.getUID());
             corp.setInfo(getCorpInfo(corp.getProperty(),corp.getCode()));
         }
+
+        reg.setCorp(tagReg(reg.getCorp()));
+
         reg.getInfo().getInfo().setId(reg.getId());
         return reg;
     }
@@ -208,7 +297,6 @@ public class ProjectService {
         if (projectInReg(project.getCode())){
             throw new IllegalArgumentException("project in reg business: " + project.getCode());
         }
-
 
         reg.setCreateTime(new Date());
         reg.setCode(project.getCode());
@@ -221,6 +309,7 @@ public class ProjectService {
                 corp.setId(defaultUidGenerator.getUID());
                 corp.setInfo(getCorpInfo(corp.getProperty(),corp.getCode()));
             }
+            reg.setCorp(tagReg(reg.getCorp()));
         }else{
             reg.setCorp(project.getCorp());
         }

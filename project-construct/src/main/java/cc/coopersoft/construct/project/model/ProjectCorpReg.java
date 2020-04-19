@@ -1,10 +1,15 @@
 package cc.coopersoft.construct.project.model;
 
 
+import cc.coopersoft.common.json.JsonRawDeserializer;
+import cc.coopersoft.common.json.JsonRawSerialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 
 import javax.persistence.*;
 import java.util.Date;
@@ -15,39 +20,48 @@ import java.util.Set;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
+@Access(AccessType.FIELD)
 public class ProjectCorpReg extends cc.coopersoft.common.construct.project.ProjectCorpReg<JoinCorp>{
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "PREVIOUS")
     @JsonIgnore
-    @Access(AccessType.FIELD)
     private ProjectCorpReg previous;
 
-    @Column(name = "REDISTERED", nullable = false)
-    @Access(AccessType.FIELD)
-    @JsonIgnore
-    private boolean registered;
+    @Column(name = "TAGS", length = 512)
+    private String tags;
 
-    @Id
-    @Column(name = "ID", unique = true, nullable = false)
-    @Override
-    public Long getId(){return super.getId();}
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "REG_TIME")
-    @Override
-    public Date getRegTime(){return super.getRegTime();}
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reg", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Override
-    public Set<JoinCorp> getCorps(){return super.getCorps();}
-
+    @Column(name = "CORPS", length = 1024)
+    @JsonDeserialize(using = JsonRawDeserializer.class)
+    @JsonSerialize(using = JsonRawSerialize.class)
+    private String corpSummary;
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY,mappedBy = "corp")
     @JoinColumn(name = "ID", nullable = false)
     @JsonIgnore
     private ProjectReg reg;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "corp")
+    private Project project;
+
+    @Id
+    @Column(name = "ID", unique = true, nullable = false)
+    @Override
+    @Access(AccessType.PROPERTY)
+    public Long getId(){return super.getId();}
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "REG_TIME")
+    @Override
+    @Access(AccessType.PROPERTY)
+    public Date getRegTime(){return super.getRegTime();}
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "reg", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Override
+    @Access(AccessType.PROPERTY)
+    public Set<JoinCorp> getCorps(){return super.getCorps();}
+
 
 }

@@ -17,16 +17,12 @@ import java.util.Date;
 public class ProjectInfoReg extends cc.coopersoft.common.construct.project.ProjectInfoReg<ProjectInfo>{
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "PREVIOUS")
     @Access(AccessType.FIELD)
     @JsonIgnore
     private ProjectInfoReg previous;
 
-    @Column(name = "REDISTERED", nullable = false)
-    @Access(AccessType.FIELD)
-    @JsonIgnore
-    private boolean registered;
 
     @MapsId
     @OneToOne(fetch = FetchType.LAZY,mappedBy = "info")
