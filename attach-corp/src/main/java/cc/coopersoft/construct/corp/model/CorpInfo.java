@@ -22,7 +22,8 @@ import java.util.Objects;
 @Access(AccessType.PROPERTY)
 public class CorpInfo extends cc.coopersoft.common.construct.corp.CorpInfo implements java.io.Serializable {
 
-    public interface Summary {}
+    public interface Title {}
+    public interface Summary extends Title {}
     public interface Details extends Summary {}
 
     @Id
@@ -40,7 +41,7 @@ public class CorpInfo extends cc.coopersoft.common.construct.corp.CorpInfo imple
     @Column(name = "NAME", length = 128, nullable = false)
     @NotBlank
     @Size(max = 128)
-    @JsonView(Summary.class)
+    @JsonView(Title.class)
     @Override
     public String getName(){
         return super.getName();
@@ -49,7 +50,7 @@ public class CorpInfo extends cc.coopersoft.common.construct.corp.CorpInfo imple
     @Column(name = "REG_ID_TYPE", nullable = false, length = 16)
     @Enumerated(EnumType.STRING)
     @NotNull
-    @JsonView(Details.class)
+    @JsonView(Title.class)
     @Override
     public GroupIdType getGroupIdType(){
         return super.getGroupIdType();
@@ -59,7 +60,7 @@ public class CorpInfo extends cc.coopersoft.common.construct.corp.CorpInfo imple
     @Column(name = "REG_ID_NUMBER", nullable = false, length = 32)
     @NotBlank
     @Size(max = 32)
-    @JsonView(Details.class)
+    @JsonView(Title.class)
     @Override
     public String getGroupId(){
         return super.getGroupId();

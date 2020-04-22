@@ -43,12 +43,12 @@ public class ProjectInfo extends cc.coopersoft.common.construct.project.ProjectI
     @JsonView(ProjectInfoReg.Title.class)
     @NotNull
     @Override
-    public ProjectType getType(){return super.getType();}
+    public Type getType(){return super.getType();}
 
     @Column(name = "TYPE_CLASS")
     @JsonView(ProjectInfoReg.Title.class)
     @Override
-    public Integer getTypeClass(){return super.getTypeClass();}
+    public Integer getTypeLevel(){return super.getTypeLevel();}
 
     @Column(name = "FLOOR_TYPE", length = 6)
     @JsonView(ProjectInfoReg.Title.class)
@@ -60,7 +60,7 @@ public class ProjectInfo extends cc.coopersoft.common.construct.project.ProjectI
     @NotNull
     @JsonView(ProjectInfoReg.Title.class)
     @Override
-    public ProjectProperty getProperty(){return super.getProperty();}
+    public Property getProperty(){return super.getProperty();}
 
     @Column(name = "CONTRACT_AREA")
     @JsonView(ProjectInfoReg.Summary.class)
@@ -100,11 +100,11 @@ public class ProjectInfo extends cc.coopersoft.common.construct.project.ProjectI
     @Override
     public String getTender(){return super.getTender();}
 
-    //TODO Enum
-    @Column(name = "STRUCTURE", length = 32)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "STRUCTURE", length = 16)
     @JsonView(ProjectInfoReg.Summary.class)
     @Override
-    public String getStructure(){return super.getStructure();}
+    public Struct getStructure(){return super.getStructure();}
 
     @Column(name = "COSTS")
     @JsonView(ProjectInfoReg.Summary.class)
@@ -117,7 +117,7 @@ public class ProjectInfo extends cc.coopersoft.common.construct.project.ProjectI
     @JsonView(ProjectInfoReg.Title.class)
     @NotNull
     @Override
-    public ImportType getImportantLevel(){return super.getImportantLevel();}
+    public ImportantType getImportantType(){return super.getImportantType();}
 
     @Column(name = "MAIN_PROJECT_FILE", length = 32)
     @JsonView(ProjectInfoReg.Details.class)

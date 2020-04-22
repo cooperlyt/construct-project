@@ -13,12 +13,10 @@ import com.github.wujun234.uid.UidGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,18 +30,17 @@ public class CorpServices {
 
     private final static  int PAGE_SIZE = 20;
 
+    private final static int NAMES_PAGE_SIZE = 10;
+
     private final CorpRepository corpRepository;
 
     private final CorpBusinessRepository corpBusinessRepository;
 
     private final CorpRegRepository corpRegRepository;
 
-    private final Source source;
+    private final RemoteServices remoteServices;
 
-    public void publishChangeMessage(long code){
-        log.debug(" sending message corp {} change ", code);
-        source.output().send(MessageBuilder.withPayload(code).build());
-    }
+
 
     @Resource
     private UidGenerator defaultUidGenerator;
@@ -52,11 +49,11 @@ public class CorpServices {
     public CorpServices(CorpRepository corpRepository,
                         CorpBusinessRepository corpBusinessRepository,
                         CorpRegRepository corpRegRepository,
-                        Source source) {
+                        RemoteServices remoteServices) {
         this.corpRepository = corpRepository;
         this.corpBusinessRepository = corpBusinessRepository;
         this.corpRegRepository = corpRegRepository;
-        this.source = source;
+        this.remoteServices = remoteServices;
     }
 
     public Optional<CorpReg> corpReg(long corpCode, CorpProperty type){
@@ -94,6 +91,18 @@ public class CorpServices {
     public List<CorpBusiness> listBusiness(Long corpCode){
         return this.corpBusinessRepository.findByStatusInAndCodeOrderByCreateTime(
                 EnumSet.of(RegStatus.Running,RegStatus.Register),corpCode);
+    }
+
+    public Page<Corp> names(Optional<String> key, int page){
+        PageRequest pr = PageRequest.of(page,NAMES_PAGE_SIZE,Sort.Direction.DESC , "dataTime");
+        if (key.isPresent() && StringUtils.isNotBlank(key.get())){
+            String _key = key.get().trim() + "%";
+            return this.corpRepository.findByEnableIsTrueAndInfoNameLikeAndInfoGroupIdLike( "%" + _key, _key,pr );
+        }else{
+            return this.corpRepository.findByEnableIsTrue(pr);
+        }
+
+
     }
 
 
@@ -157,7 +166,7 @@ public class CorpServices {
 
     @Transactional
     public void setCorpEnable(long id, boolean enable){
-        publishChangeMessage(id);
+        remoteServices.publishChangeMessage(id);
         Optional<Corp> corp = this.corpRepository.findById(id);
         if (corp.isPresent()){
             corp.get().setEnable(enable);
@@ -207,7 +216,7 @@ public class CorpServices {
 
     @Transactional()
     public Corp patchModify(long corpCode, CorpBusiness business){
-        publishChangeMessage(corpCode);
+        remoteServices.publishChangeMessage(corpCode);
         Optional<Corp> _corp = this.corpRepository.findById(corpCode);
         Corp corp;
         if (_corp.isEmpty()){

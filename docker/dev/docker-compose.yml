@@ -157,7 +157,7 @@ services:
 
   # ==================  archive app ===================================================
 
-  moneyaccountservice:
+  corpservices:
     image: coopersoft/construct-attach-corp-service:snapshot
     #    deploy:
     #      resources:
@@ -171,28 +171,51 @@ services:
     expose:
       - "19001"
     environment:
-      PROFILE: "default"
+      PROFILE: "dev"
       SERVER_PORT: "19001"
-      DATABASE_PORT:     3306
       CONFIGSERVER_PORT: 8888
       EUREKASERVER_PORT: 8761
       AUTHSERVER_PORT:   8091
-      KAFKASERVER_PORT:  2181
       CONFIGSERVER_URI: "http://configserver:8888"
       EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
-      AUTHSERVER_URI:   "8091"
+      AUTHSERVER_URI:   "http://authenticationservice/auth/user"
+      ENCRYPT_KEY:       "IMSYMMETRIC"
       TZ: Asia/Shanghai
     links:
       - eurekaserver:eurekaserver
       - database:database
       - configserver:configserver
-      - kafkaserver:kafkaserver
-      - zookeeper:zookeeper
+      - rmqnamesrv:rmqnamesrv
     depends_on:
       - eurekaserver
       - database
       - configserver
-      - kafkaserver
-      - zookeeper
+      - rmqnamesrv
 
 
+
+  cacheservices:
+    image: coopersoft/construct-project-cache-service:snapshot
+    expose:
+      - "19003"
+    environment:
+      PROFILE: "dev"
+      SERVER_PORT: "19003"
+      CONFIGSERVER_PORT: 8888
+      EUREKASERVER_PORT: 8761
+      AUTHSERVER_PORT:   8091
+      CONFIGSERVER_URI: "http://configserver:8888"
+      EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
+      AUTHSERVER_URI:   "http://authenticationservice/auth/user"
+      ENCRYPT_KEY:       "IMSYMMETRIC"
+      TZ: Asia/Shanghai
+    links:
+      - eurekaserver:eurekaserver
+      - configserver:configserver
+      - rmqnamesrv:rmqnamesrv
+      - redis:redis
+    depends_on:
+      - eurekaserver
+      - configserver
+      - rmqnamesrv
+      - redis

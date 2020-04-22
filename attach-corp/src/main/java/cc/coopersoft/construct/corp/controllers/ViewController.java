@@ -40,6 +40,14 @@ public class ViewController {
         return corpServices.listAllCorp(valid,joinType,page,key,sort,dir);
     }
 
+    @RequestMapping(value = "/names/{page}" ,method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public Page<Corp> listCorp(@RequestParam(value = "key", required = false) Optional<String> key,
+                               @PathVariable("page") int page){
+        return corpServices.names(key,page);
+
+    }
+
     @RequestMapping(value = "/corp/{code}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Corp.Details.class)

@@ -20,7 +20,9 @@ import java.util.Set;
 @NamedEntityGraph(name = "corp.full", attributeNodes = {@NamedAttributeNode(("info"))})
 public class Corp extends cc.coopersoft.common.construct.corp.Corp<CorpInfo,CorpReg>{
 
-    public interface Summary extends CorpInfo.Summary{}
+    public interface Title extends CorpInfo.Title {}
+    public interface TitleWithReg extends Title {}
+    public interface Summary extends Title,CorpInfo.Summary{}
     public interface Details extends Summary, CorpReg.Details, CorpInfo.Details {}
 
 
@@ -38,7 +40,7 @@ public class Corp extends cc.coopersoft.common.construct.corp.Corp<CorpInfo,Corp
 
     @Id
     @Column(name = "CORP_CODE", length = 32 ,nullable = false, unique = true)
-    @JsonView(Summary.class)
+    @JsonView(Title.class)
     @Override
     public Long getCode(){
         return super.getCode();
@@ -53,7 +55,7 @@ public class Corp extends cc.coopersoft.common.construct.corp.Corp<CorpInfo,Corp
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "CORP_INFO", nullable = false)
-    @JsonView(Summary.class)
+    @JsonView(Title.class)
     @Override
     public CorpInfo getInfo(){
         return super.getInfo();
@@ -62,7 +64,7 @@ public class Corp extends cc.coopersoft.common.construct.corp.Corp<CorpInfo,Corp
 
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.corp", orphanRemoval = true, cascade = CascadeType.ALL)
-    @JsonView(Details.class)
+    @JsonView(Title.class)
     @Override
     public Set<CorpReg> getRegs(){
         return super.getRegs();

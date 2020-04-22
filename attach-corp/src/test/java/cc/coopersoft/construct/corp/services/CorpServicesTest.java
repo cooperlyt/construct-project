@@ -20,7 +20,7 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
-@ContextConfiguration(classes = {CorpServices.class})
+@ContextConfiguration(classes = {CorpServices.class, MockRemoteService.class})
 public class CorpServicesTest {
 
     @Autowired

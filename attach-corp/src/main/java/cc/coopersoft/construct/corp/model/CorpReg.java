@@ -26,7 +26,7 @@ public class CorpReg extends cc.coopersoft.common.construct.corp.CorpReg<RegInfo
 
     @Transient
     @Override
-    @JsonView(Details.class)
+    @JsonView({Details.class, Corp.TitleWithReg.class})
     @Access(AccessType.PROPERTY)
     public CorpProperty getProperty(){
         return this.id.getProperty();
