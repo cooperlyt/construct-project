@@ -38,6 +38,8 @@ uid:
 
 spring:
   cloud:
+    config:
+      enabled: false
     stream:
       rocketmq:
         binder:

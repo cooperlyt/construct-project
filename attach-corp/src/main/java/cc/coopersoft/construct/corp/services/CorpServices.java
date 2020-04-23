@@ -95,13 +95,15 @@ public class CorpServices {
 
     public Page<Corp> names(Optional<String> key, int page){
         PageRequest pr = PageRequest.of(page,NAMES_PAGE_SIZE,Sort.Direction.DESC , "dataTime");
-        if (key.isPresent() && StringUtils.isNotBlank(key.get())){
+
+        if (key.isPresent() && StringUtils.isNotBlank(key.get().trim())){
             String _key = key.get().trim() + "%";
-            return this.corpRepository.findByEnableIsTrueAndInfoNameLikeAndInfoGroupIdLike( "%" + _key, _key,pr );
+            log.debug("name search by:" + _key);
+            return this.corpRepository.findByEnableIsTrueAndInfoNameLikeOrEnableIsTrueAndInfoGroupIdLike( "%" + _key, _key,pr );
         }else{
+            log.debug("name search no key");
             return this.corpRepository.findByEnableIsTrue(pr);
         }
-
 
     }
 

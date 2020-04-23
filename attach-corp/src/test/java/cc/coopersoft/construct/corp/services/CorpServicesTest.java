@@ -11,10 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
+import java.util.Optional;
 
 import static org.junit.Assert.*;
 
@@ -155,6 +157,17 @@ public class CorpServicesTest {
 
         assertEquals(corp.getInfo().getOwnerId(), "test-modify");
 
+
+        logger.debug("------------info change  test completed!  ----------------------");
+
+
+        Page<Corp> c = corpServices.names(Optional.empty(),0);
+
+        assertEquals(c.getContent().size(), 1);
+
+        c = corpServices.names(Optional.of("nononono"),0);
+
+        assertEquals(c.getContent().size(), 0);
 
     }
 

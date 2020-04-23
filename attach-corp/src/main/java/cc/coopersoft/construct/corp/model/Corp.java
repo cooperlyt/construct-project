@@ -21,7 +21,6 @@ import java.util.Set;
 public class Corp extends cc.coopersoft.common.construct.corp.Corp<CorpInfo,CorpReg>{
 
     public interface Title extends CorpInfo.Title {}
-    public interface TitleWithReg extends Title {}
     public interface Summary extends Title,CorpInfo.Summary{}
     public interface Details extends Summary, CorpReg.Details, CorpInfo.Details {}
 
@@ -64,7 +63,7 @@ public class Corp extends cc.coopersoft.common.construct.corp.Corp<CorpInfo,Corp
 
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.corp", orphanRemoval = true, cascade = CascadeType.ALL)
-    @JsonView(Title.class)
+    @JsonView(Details.class)
     @Override
     public Set<CorpReg> getRegs(){
         return super.getRegs();

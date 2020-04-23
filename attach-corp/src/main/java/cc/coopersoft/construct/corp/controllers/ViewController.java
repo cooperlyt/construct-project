@@ -42,6 +42,7 @@ public class ViewController {
 
     @RequestMapping(value = "/names/{page}" ,method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
+    @JsonView(Corp.Title.class)
     public Page<Corp> listCorp(@RequestParam(value = "key", required = false) Optional<String> key,
                                @PathVariable("page") int page){
         return corpServices.names(key,page);
