@@ -22,27 +22,29 @@ public class ManagerController {
     }
 
     @RequestMapping(value = "/enable/{code}", method = RequestMethod.DELETE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public String enable(@PathVariable("code") long code){
         this.projectService.enableProject(code,true);
         return "{ \"code\":" +  code + " , \"enable\":true}" ;
     }
 
     @RequestMapping(value = "/disable/{code}", method = RequestMethod.DELETE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.ACCEPTED)
     public String disable(@PathVariable("code") long code){
         this.projectService.enableProject(code,false);
         return "{ \"code\":" +  code + " , \"enable\":false}" ;
     }
 
+
+
     @RequestMapping(value = "/patch/create", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
-    public String patchCreate(@RequestBody @Valid ProjectReg reg){
+    @ResponseStatus(HttpStatus.CREATED)
+    public String patchCreate(@Valid @RequestBody  ProjectReg reg){
         return String.valueOf(projectService.patchCreate(reg).getCode());
     }
 
     @RequestMapping(value = "/patch/modify/{code}", method = RequestMethod.POST)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public String pathModify(@PathVariable("code") long code, @RequestBody @Valid ProjectReg reg){
         return String.valueOf(projectService.pathModify(code,reg).getCode());
     }

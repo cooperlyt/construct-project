@@ -3,6 +3,7 @@ package cc.coopersoft.construct.project.controllers;
 
 import cc.coopersoft.construct.project.model.JoinCorp;
 import cc.coopersoft.construct.project.model.Project;
+import cc.coopersoft.construct.project.model.ProjectInfo;
 import cc.coopersoft.construct.project.model.ProjectReg;
 import cc.coopersoft.construct.project.services.ProjectService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -30,11 +31,14 @@ public class ViewController {
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Project.Summary.class)
     public Page<Project> projects(@RequestParam(value = "valid", required = false) Optional<Boolean> valid,
+                                  @RequestParam(value="property", required = false) Optional<ProjectInfo.Property> property,
+                                  @RequestParam(value="class", required = false) Optional<ProjectInfo.ProjectClass> projectClass,
+                                  @RequestParam(value = "important", required = false) Optional<ProjectInfo.ImportantType> important,
                                   @RequestParam(value ="page", required = false) Optional<Integer> page,
                                   @RequestParam(value ="key", required = false)Optional<String> key,
                                   @RequestParam(value ="sort", required = false)Optional<String> sort,
                                   @RequestParam(value ="dir", required = false)Optional<String> dir){
-        return projectService.projects(valid,page,key,sort,dir);
+        return projectService.projects(valid,property,projectClass,important,page,key,sort,dir);
     }
 
 

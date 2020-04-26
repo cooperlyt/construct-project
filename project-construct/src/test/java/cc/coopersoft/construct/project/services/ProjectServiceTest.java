@@ -39,9 +39,9 @@ public class ProjectServiceTest {
         log.debug("===================== begin test path create =====================");
         ProjectInfo projectInfo = new ProjectInfo();
         projectInfo.setName("test create project");
-        projectInfo.setType(ProjectInfo.ProjectType.CIVIL_HOUSE);
-        projectInfo.setProperty(ProjectInfo.ProjectProperty.NEW);
-        projectInfo.setImportantLevel(ProjectInfo.ImportType.NORMAL);
+        projectInfo.setType(ProjectInfo.Type.CIVIL_HOUSE);
+        projectInfo.setProperty(ProjectInfo.Property.NEW);
+        projectInfo.setImportantType(ProjectInfo.ImportantType.NORMAL);
 
         ProjectInfoReg infoReg = new ProjectInfoReg();
         infoReg.setInfo(projectInfo);
@@ -62,7 +62,7 @@ public class ProjectServiceTest {
 
         assertEquals(project.getCorp().getCorps().size(), 1);
         assertEquals(project.getDeveloper().getCode(), 1l);
-        assertEquals(project.getInfo().getInfo().getType(), ProjectInfo.ProjectType.CIVIL_HOUSE);
+        assertEquals(project.getInfo().getInfo().getType(), ProjectInfo.Type.CIVIL_HOUSE);
 
 
         log.debug("===================== test path create complete =====================");
@@ -79,9 +79,9 @@ public class ProjectServiceTest {
 
         ProjectInfo projectInfo = new ProjectInfo();
         projectInfo.setName("test modify project");
-        projectInfo.setType(ProjectInfo.ProjectType.BOILER);
-        projectInfo.setProperty(ProjectInfo.ProjectProperty.NEW);
-        projectInfo.setImportantLevel(ProjectInfo.ImportType.NORMAL);
+        projectInfo.setType(ProjectInfo.Type.BOILER);
+        projectInfo.setProperty(ProjectInfo.Property.NEW);
+        projectInfo.setImportantType(ProjectInfo.ImportantType.NORMAL);
 
         ProjectInfoReg infoReg = new ProjectInfoReg();
         infoReg.setInfo(projectInfo);
@@ -108,7 +108,7 @@ public class ProjectServiceTest {
         assertEquals(project.getDeveloper().getTel(), "1111");
         assertEquals(project.getCorp().getCorps().size(), 1);
         assertEquals(project.getDeveloper().getCode(), 1l);
-        assertEquals(project.getInfo().getInfo().getType(), ProjectInfo.ProjectType.BOILER);
+        assertEquals(project.getInfo().getInfo().getType(), ProjectInfo.Type.BOILER);
 
         log.debug("===================== test path modify  complete =====================");
     }
@@ -141,7 +141,7 @@ public class ProjectServiceTest {
 
     @Test
     public void projects() {
-        Page<Project> result = projectService.projects(Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty());
+        Page<Project> result = projectService.projects(Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty());
         assertEquals(result.getTotalElements(), 1l);
     }
 

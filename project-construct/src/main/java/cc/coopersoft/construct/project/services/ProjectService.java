@@ -22,12 +22,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.*;
 import java.util.*;
 
 @Service
@@ -62,6 +60,9 @@ public class ProjectService {
 
 
     public Page<Project> projects(Optional<Boolean> valid,
+                                  Optional<ProjectInfo.Property> property,
+                                  Optional<ProjectInfo.ProjectClass> projectClass,
+                                  Optional<ProjectInfo.ImportantType> important,
                                   Optional<Integer> page,
                                   Optional<String> key,
                                   Optional<String> sort,
@@ -107,6 +108,19 @@ public class ProjectService {
             if (validOnly){
                 predicates.add(cb.and(cb.isTrue(root.get("enable").as(Boolean.class))));
             }
+
+            property.ifPresent(value -> predicates.add(cb.and(cb.equal(infoJoin.get("property"), value))));
+
+            projectClass.ifPresent(value -> {
+                CriteriaBuilder.In<ProjectInfo.Type> in = cb.in(infoJoin.get("type"));
+                for (ProjectInfo.Type type :  value.getSub()){
+                    in.value(type);
+                }
+                predicates.add(cb.and(in));
+            });
+
+            important.ifPresent(value -> predicates.add((cb.and(cb.equal(infoJoin.get("importantType"),value)))));
+
 
             return cb.and(predicates.toArray(new Predicate[0]));
 

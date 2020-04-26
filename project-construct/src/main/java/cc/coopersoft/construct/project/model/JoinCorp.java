@@ -12,7 +12,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(name = "PROJECT_JOIN_CORP")
+@Table(name = "PROJECT_JOIN_CORP",
+        uniqueConstraints = @UniqueConstraint(name = "UNIQUE_CORP_PROPERTY_REG",columnNames = {"CORP_CODE", "CORP_TYPE", "REG"}))
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor

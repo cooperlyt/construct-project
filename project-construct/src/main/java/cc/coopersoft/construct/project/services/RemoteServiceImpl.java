@@ -31,7 +31,7 @@ public class RemoteServiceImpl implements RemoteService{
 
     @Override
     public void notifyProjectChange(long code){
-        log.debug(" sending message corp {} change ", code);
+        log.debug(" sending message project {} change ", code);
         source.output().send(MessageBuilder.withPayload(code).build());
     }
 }
