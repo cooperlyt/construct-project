@@ -14,12 +14,11 @@ while ! `nc -z configserver $CONFIGSERVER_PORT`; do sleep 3; done
 echo "*******  Configuration Server has started"
 
 echo "********************************************************"
-echo "Starting New house money bank Service                           "
+echo "Starting attach Corp Service                           "
 echo "********************************************************"
 java -Djava.security.egd=file:/dev/./urandom -Dserver.port=$SERVER_PORT   \
      -Deureka.client.serviceUrl.defaultZone=$EUREKASERVER_URI             \
      -Dspring.cloud.config.uri=$CONFIGSERVER_URI                          \
      -Dspring.profiles.active=$PROFILE                                   \
      -Dsecurity.oauth2.resource.userInfoUri=$AUTHSERVER_URI               \
-     -Dugly.register.service.url=$UGLY_REGISTER_URI                       \
      -jar /usr/local/app/@project.build.finalName@.jar

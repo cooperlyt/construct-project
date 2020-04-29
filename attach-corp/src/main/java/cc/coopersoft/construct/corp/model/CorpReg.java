@@ -1,5 +1,7 @@
 package cc.coopersoft.construct.corp.model;
 
+import cc.coopersoft.common.construct.corp.CorpProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
@@ -13,18 +15,38 @@ import java.util.Objects;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
-public class CorpReg {
+public class CorpReg extends cc.coopersoft.common.construct.corp.CorpReg<RegInfo>{
 
     public interface Details extends RegInfo.Details {}
 
     @EmbeddedId
+    @JsonIgnore
+    private CorpRegPK id = new CorpRegPK();
+
+
+    @Transient
+    @Override
     @JsonView(Details.class)
-    private CorpRegPK id;
+    @Access(AccessType.PROPERTY)
+    public CorpProperty getProperty(){
+        return this.id.getProperty();
+    }
+
+    @Override
+    public void setProperty(CorpProperty property){
+        this.id.setProperty(property);
+    }
+
+
 
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "REG_ID", nullable = false)
     @JsonView(Details.class)
-    private RegInfo info;
+    @Override
+    @Access(AccessType.PROPERTY)
+    public RegInfo getInfo(){
+        return super.getInfo();
+    }
 
     @Override
     public boolean equals(Object o) {

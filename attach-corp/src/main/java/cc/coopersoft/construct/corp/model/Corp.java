@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -19,51 +18,71 @@ import java.util.Set;
 @Data
 @NoArgsConstructor
 @NamedEntityGraph(name = "corp.full", attributeNodes = {@NamedAttributeNode(("info"))})
-public class Corp {
+public class Corp extends cc.coopersoft.common.construct.corp.Corp<CorpInfo,CorpReg>{
 
-    public interface Summary extends CorpInfo.Summary{}
+    public interface Title extends CorpInfo.Title {}
+    public interface Summary extends Title,CorpInfo.Summary{}
     public interface Details extends Summary, CorpReg.Details, CorpInfo.Details {}
 
-    @Id
-    @Column(name = "CORP_CODE", length = 32 ,nullable = false, unique = true)
-    @JsonView(Summary.class)
-    private Long corpCode;
-
-    @Column(name = "ENABLE", nullable = false)
-    @JsonView(Summary.class)
-    private boolean enable;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "CORP_INFO", nullable = false)
-    @JsonView(Summary.class)
-    private CorpInfo info;
 
     @Column(name = "TYPES", nullable = false, length = 128)
     @JsonView(Summary.class)
+    @Access(AccessType.FIELD)
     private String types;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "DATA_TIME", nullable = false)
     @JsonIgnore
+    @Access(AccessType.FIELD)
     private Date dataTime;
+
+
+    @Id
+    @Column(name = "CORP_CODE", length = 32 ,nullable = false, unique = true)
+    @JsonView(Title.class)
+    @Override
+    public Long getCode(){
+        return super.getCode();
+    }
+
+    @Column(name = "ENABLE", nullable = false)
+    @JsonView(Summary.class)
+    @Override
+    public boolean isEnable(){
+        return super.isEnable();
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "CORP_INFO", nullable = false)
+    @JsonView(Title.class)
+    @Override
+    public CorpInfo getInfo(){
+        return super.getInfo();
+    }
+
+
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.corp", orphanRemoval = true, cascade = CascadeType.ALL)
     @JsonView(Details.class)
-    private Set<CorpReg> regs = new HashSet<>(0);
+    @Override
+    public Set<CorpReg> getRegs(){
+        return super.getRegs();
+    }
+
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (corpCode == null) return false;
+        if (getCode() == null) return false;
         if (o == null || getClass() != o.getClass()) return false;
 
         Corp corp = (Corp) o;
 
-        return Objects.equals(corpCode, corp.corpCode);
+        return Objects.equals(getCode(), corp.getCode());
     }
 
     @Override
     public int hashCode() {
-        return corpCode != null ? corpCode.hashCode() : super.hashCode();
+        return getCode() != null ? getCode().hashCode() : super.hashCode();
     }
 }

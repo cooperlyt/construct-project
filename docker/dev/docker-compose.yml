@@ -75,24 +75,53 @@ services:
   #        docker run -d --name mariadb_volume -P -v /data/Db/mariadb:/var/lib/mysql mariadb
   #          nosse4  stable4
 
-  zookeeper:
-    image: wurstmeister/zookeeper:latest
-    ports:
-      - "2181:2181"
 
-  kafkaserver:
-    image: wurstmeister/kafka:latest
+  redis:
+    image: redis:latest
     ports:
-      - "9092:9092"
-    environment:
-      - KAFKA_ADVERTISED_HOST_NAME=kafkaserver
-      - KAFKA_ADVERTISED_PORT=9092
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_CREATE_TOPICS=dresses:1:1,ratings:1:1
+      - "6379:6379"
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+      - "/home/docker/data/redis:/data"
+    command: redis-server --requirepass p0stgr@s
+
+  rmqnamesrv:
+    image: rocketmqinc/rocketmq
+    ports:
+      - 9876:9876
+    volumes:
+      - /home/docker/data/rocketmq/logs:/home/rocketmq/logs
+      - /home/docker/data/rocketmq/store:/home/recketmq/store
+    command: sh mqnamesrv
+
+  rmqborker:
+    image: rocketmqinc/rocketmq
+    ports:
+      - 10909:10909
+      - 10911:10911
+      - 10912:10912
+    volumes:
+      - /home/docker/data/rocketmq/logs:/home/rocketmq/logs
+      - /home/docker/data/rocketmq/store:/home/rocketmq/store
+      - /home/docker/data/rocketmq/broker.conf:/opt/rocketmq-4.4.0/conf/broker.conf
+    command: sh mqbroker -n rmqnamesrv:9876 -c ../conf/broker.conf
+    links:
+      - rmqnamesrv:rmqnamesrv
     depends_on:
-      - zookeeper
+      - rmqnamesrv
+
+
+  # rocket 控制台 非必要
+  rmqconsole:
+    image: styletang/rocketmq-console-ng
+    ports:
+      - 8087:8080
+    depends_on:
+      - rmqnamesrv
+    links:
+      - rmqnamesrv:rmqnamesrv
+    environment:
+      - JAVA_OPTS= -Dlogging.level.root=info   -Drocketmq.namesrv.addr=rmqnamesrv:9876
+      - Dcom.rocketmq.sendMessageWithVIPChannel=false
 
 
   authenticationservice:
@@ -128,7 +157,7 @@ services:
 
   # ==================  archive app ===================================================
 
-  moneyaccountservice:
+  corpservices:
     image: coopersoft/construct-attach-corp-service:snapshot
     #    deploy:
     #      resources:
@@ -142,28 +171,75 @@ services:
     expose:
       - "19001"
     environment:
-      PROFILE: "default"
+      PROFILE: "dev"
       SERVER_PORT: "19001"
-      DATABASE_PORT:     3306
       CONFIGSERVER_PORT: 8888
       EUREKASERVER_PORT: 8761
       AUTHSERVER_PORT:   8091
-      KAFKASERVER_PORT:  2181
       CONFIGSERVER_URI: "http://configserver:8888"
       EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
-      AUTHSERVER_URI:   "http://authenticationservice:8901/auth/user"
+      AUTHSERVER_URI:   "http://authenticationservice/auth/user"
+      ENCRYPT_KEY:       "IMSYMMETRIC"
       TZ: Asia/Shanghai
     links:
       - eurekaserver:eurekaserver
       - database:database
       - configserver:configserver
-      - kafkaserver:kafkaserver
-      - zookeeper:zookeeper
+      - rmqnamesrv:rmqnamesrv
     depends_on:
       - eurekaserver
       - database
       - configserver
-      - kafkaserver
-      - zookeeper
+      - rmqnamesrv
 
+  projectservices:
+    image: coopersoft/construct-project-service:snapshot
+    expose:
+      - "19002"
+    environment:
+      PROFILE: "dev"
+      SERVER_PORT: "19002"
+      CONFIGSERVER_PORT: 8888
+      EUREKASERVER_PORT: 8761
+      AUTHSERVER_PORT:   8091
+      CONFIGSERVER_URI: "http://configserver:8888"
+      EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
+      AUTHSERVER_URI:   "http://authenticationservice/auth/user"
+      ENCRYPT_KEY:       "IMSYMMETRIC"
+      TZ: Asia/Shanghai
+    links:
+      - eurekaserver:eurekaserver
+      - database:database
+      - configserver:configserver
+      - rmqnamesrv:rmqnamesrv
+    depends_on:
+      - eurekaserver
+      - database
+      - configserver
+      - rmqnamesrv
 
+  cacheservices:
+    image: coopersoft/construct-project-cache-service:snapshot
+    expose:
+      - "19003"
+    environment:
+      PROFILE: "dev"
+      SERVER_PORT: "19003"
+      CONFIGSERVER_PORT: 8888
+      EUREKASERVER_PORT: 8761
+      AUTHSERVER_PORT:   8091
+      CONFIGSERVER_URI: "http://configserver:8888"
+      EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
+      AUTHSERVER_URI:   "http://authenticationservice/auth/user"
+      ENCRYPT_KEY:       "IMSYMMETRIC"
+      TZ: Asia/Shanghai
+    links:
+      - eurekaserver:eurekaserver
+      - configserver:configserver
+      - rmqnamesrv:rmqnamesrv
+      - redis:redis
+    depends_on:
+      - eurekaserver
+      - configserver
+      - rmqnamesrv
+      - redis

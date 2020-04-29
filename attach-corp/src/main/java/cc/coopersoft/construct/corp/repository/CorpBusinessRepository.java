@@ -1,7 +1,7 @@
 package cc.coopersoft.construct.corp.repository;
 
-import cc.coopersoft.common.business.BusinessStatus;
 import cc.coopersoft.common.data.GroupIdType;
+import cc.coopersoft.common.data.RegStatus;
 import cc.coopersoft.construct.corp.model.Corp;
 import cc.coopersoft.construct.corp.model.CorpBusiness;
 import org.springframework.data.jpa.repository.EntityGraph;
@@ -16,13 +16,13 @@ import java.util.Set;
 @Repository
 public interface CorpBusinessRepository extends CrudRepository<CorpBusiness, Long>, JpaSpecificationExecutor<Corp>, JpaRepository<CorpBusiness,Long> {
 
-    boolean existsByStatusAndCorpCode(BusinessStatus status, Long corpCode);
+    boolean existsByStatusAndCode(RegStatus status, Long corpCode);
 
     @EntityGraph(value = "business.full", type = EntityGraph.EntityGraphType.FETCH)
-    List<CorpBusiness> findByStatusInAndCorpCodeOrderByCreateTime(Set<BusinessStatus> statuses, Long corpCode);
+    List<CorpBusiness> findByStatusInAndCodeOrderByCreateTime(Set<RegStatus> statuses, Long corpCode);
 
-    boolean existsByStatusAndCorpInfoGroupIdTypeAndCorpInfoGroupId(BusinessStatus status, GroupIdType type, String number);
+    boolean existsByStatusAndInfoGroupIdTypeAndInfoGroupId(RegStatus status, GroupIdType type, String number);
 
-    boolean existsByCorpCodeNotAndStatusAndCorpInfoGroupIdTypeAndCorpInfoGroupId(long code, BusinessStatus status, GroupIdType type,String number);
+    boolean existsByCodeNotAndStatusAndInfoGroupIdTypeAndInfoGroupId(long code, RegStatus status, GroupIdType type, String number);
 
 }

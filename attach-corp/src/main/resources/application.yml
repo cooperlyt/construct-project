@@ -20,16 +20,6 @@ eureka:
     serviceUrl:
       defaultZone: http://192.168.1.21:8761/eureka/
 
-spring:
-  cloud:
-    stream:
-      bindings:
-        certificateExecute:
-          destination: certificateChangeTopic
-          content-type: application/json
-      kafka:
-        binder:
-          brokers: 192.168.1.21
 
 signing:
   key: "345345fsdfsf5345"
@@ -46,5 +36,8 @@ uid:
     boostPower: 3          # RingBuffer size扩容参数, 可提高UID生成的吞吐量, 默认:3
     paddingFactor: 50      # 指定何时向RingBuffer中填充UID, 取值为百分比(0, 100), 默认为50
     #scheduleInterval: 60    # 默认:不配置此项, 即不实用Schedule线程. 如需使用, 请指定Schedule线程时间间隔, 单位:秒
+
+
+
 
 

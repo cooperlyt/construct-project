@@ -15,32 +15,59 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @NamedEntityGraph(name = "project.summary",
-        attributeNodes = {@NamedAttributeNode(value = "reg", subgraph = "reg.info")} ,
-        subgraphs = {@NamedSubgraph(name = "reg.info", attributeNodes = @NamedAttributeNode("info"))}
+        attributeNodes = {
+            @NamedAttributeNode(value = "info", subgraph = "info.details"),
+            @NamedAttributeNode(value = "corp"),
+            @NamedAttributeNode(value ="developer", subgraph = "corp.info")} ,
+        subgraphs = {
+            @NamedSubgraph(name = "info.details", attributeNodes = @NamedAttributeNode("info")),
+            @NamedSubgraph(name = "corp.info", attributeNodes = @NamedAttributeNode("info"))
+        }
 )
-public class Project {
+public class Project extends cc.coopersoft.common.construct.project.Project<ProjectInfoReg,JoinCorp,ProjectCorpReg>{
 
-    public interface Summary extends ProjectReg.Summary {}
-    public interface Details extends Summary, ProjectReg.Details {}
 
-    @Id
-    @Column(name = "PROJECT_CODE", nullable = false, unique = true)
-    @JsonView(Summary.class)
-    private Long code;
+    public interface Title extends ProjectInfoReg.Title{}
+    public interface Summary extends Title, ProjectInfoReg.Summary, ProjectCorpReg.Summary , JoinCorp.Summary{}
+    public interface Details extends Title, ProjectInfoReg.Details, ProjectCorpReg.Details {}
 
-    @Column(name = "ENABLE", nullable = false)
-    @JsonView(Summary.class)
-    private boolean enable;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "DATA_TIME", nullable = false)
     @JsonIgnore
+    @Access(AccessType.FIELD)
     private Date dataTime;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinColumn(name = "REG", nullable = false)
+    @Id
+    @Column(name = "PROJECT_CODE", nullable = false, unique = true)
+    @JsonView(Title.class)
+    @Override
+    public Long getCode(){return super.getCode();}
+
+    @Column(name = "ENABLE", nullable = false)
+    @JsonView(Title.class)
+    @Override
+    public boolean isEnable(){return super.isEnable();}
+
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "INFO", nullable = false)
+    @JsonView(Title.class)
+    @Override
+    public ProjectInfoReg getInfo(){return super.getInfo();}
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "CORP", nullable = false)
+    @JsonView(Title.class)
+    @Override
+    public ProjectCorpReg getCorp(){return super.getCorp();}
+
+    @OneToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "DEVELOPER", nullable = false)
     @JsonView(Summary.class)
-    private ProjectReg reg;
+    @Override
+    public JoinCorp getDeveloper(){return super.getDeveloper();}
+
 
 
 }

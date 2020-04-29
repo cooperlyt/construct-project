@@ -23,7 +23,7 @@ public class ManagerController {
     @RequestMapping(value = "/path/create", method = RequestMethod.POST)
     @ResponseStatus(HttpStatus.CREATED)
     public String pathCreate(@Valid @RequestBody CorpBusiness regBusiness){
-        return String.valueOf(this.corpServices.patchCreate(regBusiness).getCorpCode());
+        return String.valueOf(this.corpServices.patchCreate(regBusiness).getCode());
     }
 
 
@@ -32,7 +32,7 @@ public class ManagerController {
     public String pathModify(
             @PathVariable("code") long corpCode,
             @Valid @RequestBody CorpBusiness regBusiness){
-        return String.valueOf(this.corpServices.patchModify(corpCode,regBusiness).getCorpCode());
+        return String.valueOf(this.corpServices.patchModify(corpCode,regBusiness).getCode());
     }
 
     @RequestMapping(value = "/enable/{code}", method = RequestMethod.DELETE)

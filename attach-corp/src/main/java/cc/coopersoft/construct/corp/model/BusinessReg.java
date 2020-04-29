@@ -1,7 +1,7 @@
 package cc.coopersoft.construct.corp.model;
 
 
-import cc.coopersoft.common.data.ConstructJoinType;
+import cc.coopersoft.common.construct.corp.CorpProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -23,7 +23,17 @@ public class BusinessReg {
     }
 
     @EmbeddedId
-    private BusinessRegPK id;
+    private BusinessRegPK id = new BusinessRegPK();
+
+    @Transient
+    @Access(AccessType.FIELD)
+    public CorpProperty getProperty(){
+        return id.getProperty();
+    }
+
+    public void setProperty(CorpProperty property){
+        this.id.setProperty(property);
+    }
 
     @Column(name = "OPERATE", length = 6, nullable = false)
     @Enumerated(EnumType.STRING)
@@ -34,7 +44,7 @@ public class BusinessReg {
     @JoinColumn(name = "REG_ID", nullable = false)
     private RegInfo info;
 
-    public BusinessReg(CorpBusiness business, ConstructJoinType type) {
+    public BusinessReg(CorpBusiness business, CorpProperty type) {
         this.id = new BusinessRegPK(type, business);
     }
 

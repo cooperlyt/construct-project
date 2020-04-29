@@ -1,7 +1,9 @@
 package cc.coopersoft.construct.project.controllers;
 
 
+import cc.coopersoft.construct.project.model.JoinCorp;
 import cc.coopersoft.construct.project.model.Project;
+import cc.coopersoft.construct.project.model.ProjectInfo;
 import cc.coopersoft.construct.project.model.ProjectReg;
 import cc.coopersoft.construct.project.services.ProjectService;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -25,33 +27,25 @@ public class ViewController {
         this.projectService = projectService;
     }
 
-    @RequestMapping(value = "/projects", method = RequestMethod.GET)
+    @RequestMapping(value = "/list", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Project.Summary.class)
-    public Page<Project> projects(@RequestParam("valid") boolean valid,
+    public Page<Project> projects(@RequestParam(value = "valid", required = false) Optional<Boolean> valid,
+                                  @RequestParam(value="property", required = false) Optional<ProjectInfo.Property> property,
+                                  @RequestParam(value="class", required = false) Optional<ProjectInfo.ProjectClass> projectClass,
+                                  @RequestParam(value = "important", required = false) Optional<ProjectInfo.ImportantType> important,
                                   @RequestParam(value ="page", required = false) Optional<Integer> page,
                                   @RequestParam(value ="key", required = false)Optional<String> key,
                                   @RequestParam(value ="sort", required = false)Optional<String> sort,
                                   @RequestParam(value ="dir", required = false)Optional<String> dir){
-        return projectService.projects(valid,page,key,sort,dir);
-    }
-
-
-    @RequestMapping(value = "/business", method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    @JsonView(ProjectReg.Summary.class)
-    public Page<ProjectReg> businesses(@RequestParam(value ="page", required = false) Optional<Integer> page,
-                                       @RequestParam(value ="key", required = false)Optional<String> key,
-                                       @RequestParam(value ="sort", required = false)Optional<String> sort,
-                                       @RequestParam(value ="dir", required = false)Optional<String> dir){
-        return projectService.businesses(page,key,sort,dir);
+        return projectService.projects(valid,property,projectClass,important,page,key,sort,dir);
     }
 
 
     @RequestMapping(value = "/project/{code}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Project.Details.class)
-    public Project project(@PathVariable("code") String code){
+    public Project project(@PathVariable("code") long code){
         Optional<Project> result = projectService.project(code);
         if (result.isPresent()){
             return result.get();
@@ -60,24 +54,21 @@ public class ViewController {
         }
     }
 
-    @RequestMapping(value = "/business/{id}", method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    @JsonView(ProjectReg.Details.class)
-    public ProjectReg business(@PathVariable("id") String id){
-        Optional<ProjectReg> result = projectService.business(id);
-        if (result.isPresent()){
-            return result.get();
-        }else{
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
 
+
+    @RequestMapping(value = "/join/{code}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    @JsonView(JoinCorp.SummaryWithCorp.class)
+    public List<JoinCorp> joinProjects(@PathVariable("code") long code){
+        return projectService.joinProjects(code);
     }
 
-    @RequestMapping(value = "/business/{code}", method = RequestMethod.GET)
+
+    @RequestMapping(value = "/reg/running/{code}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    @JsonView(ProjectReg.Summary.class)
-    public List<ProjectReg> joinProjects(@PathVariable("code") String code){
-        return projectService.joinProjects(code);
+    public String corpInReg(@PathVariable("code") long code){
+        return String.valueOf(projectService.projectInReg(code));
+
     }
 
 
