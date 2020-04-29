@@ -46,12 +46,24 @@ public class ProjectServiceTest {
         ProjectInfoReg infoReg = new ProjectInfoReg();
         infoReg.setInfo(projectInfo);
 
+        ProjectCorpReg corpReg = new ProjectCorpReg();
+
         JoinCorp joinCorp = new JoinCorp();
         joinCorp.setProperty(CorpProperty.Developer);
-        joinCorp.setCode(1l);
-
-        ProjectCorpReg corpReg = new ProjectCorpReg();
+        joinCorp.setCode(2l);
         corpReg.getCorps().add(joinCorp);
+
+        log.debug("hash code:" + joinCorp.hashCode());
+
+        JoinCorp joinCorp1 = new JoinCorp();
+        joinCorp1.setProperty(CorpProperty.Design);
+        joinCorp1.setCode(100l);
+        corpReg.getCorps().add(joinCorp1);
+
+
+        log.debug("hash code:" + joinCorp1.hashCode());
+
+        log.debug("equals :" + joinCorp1.equals(joinCorp));
 
 
         ProjectReg projectReg = new ProjectReg();
@@ -60,9 +72,14 @@ public class ProjectServiceTest {
 
         Project project = projectService.patchCreate(projectReg);
 
-        assertEquals(project.getCorp().getCorps().size(), 1);
-        assertEquals(project.getDeveloper().getCode(), 1l);
+        assertEquals(project.getCorp().getCorps().size(), 2);
+        assertEquals(project.getDeveloper().getCode(), 2l);
+
         assertEquals(project.getInfo().getInfo().getType(), ProjectInfo.Type.CIVIL_HOUSE);
+
+
+
+
 
 
         log.debug("===================== test path create complete =====================");

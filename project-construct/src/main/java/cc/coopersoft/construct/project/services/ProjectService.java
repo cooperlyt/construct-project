@@ -301,6 +301,8 @@ public class ProjectService {
 
         reg.setCorpMaster(true);
         reg.getCorp().setId(reg.getId());
+
+        log.debug("corp size:" + reg.getCorp().getCorps().size());
         for(JoinCorp corp: reg.getCorp().getCorps()){
             corp.setId(defaultUidGenerator.getUID());
             corp.setInfo(getCorpInfo(corp,corp.getCode()));

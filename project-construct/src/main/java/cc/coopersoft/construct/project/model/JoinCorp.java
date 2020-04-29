@@ -93,5 +93,22 @@ public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp<Jo
     private ProjectCorpReg reg;
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
 
+        JoinCorp joinCorp = (JoinCorp) o;
+
+        if (id == null || joinCorp.id == null) return false;
+        return id.equals(joinCorp.id);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        return result;
+    }
 }

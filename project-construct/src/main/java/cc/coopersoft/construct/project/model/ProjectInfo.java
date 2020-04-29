@@ -73,12 +73,12 @@ public class ProjectInfo extends cc.coopersoft.common.construct.project.ProjectI
     public BigDecimal getLandArea(){return super.getLandArea();}
 
     @Column(name = "GROUND_FLOOR_COUNT")
-    @JsonView(ProjectInfoReg.Details.class)
+    @JsonView(ProjectInfoReg.Summary.class)
     @Override
     public Integer getGroundCount(){return super.getGroundCount();}
 
     @Column(name = "UNDER_FLOOR_COUNT")
-    @JsonView(ProjectInfoReg.Details.class)
+    @JsonView(ProjectInfoReg.Summary.class)
     @Override
     public Integer getUnderCount(){return super.getUnderCount();}
 
@@ -96,7 +96,7 @@ public class ProjectInfo extends cc.coopersoft.common.construct.project.ProjectI
 
     //TODO Enum
     @Column(name = "TENDER", length = 32)
-    @JsonView(ProjectInfoReg.Details.class)
+    @JsonView(ProjectInfoReg.Summary.class)
     @Override
     public String getTender(){return super.getTender();}
 
@@ -120,17 +120,17 @@ public class ProjectInfo extends cc.coopersoft.common.construct.project.ProjectI
     public ImportantType getImportantType(){return super.getImportantType();}
 
     @Column(name = "MAIN_PROJECT_FILE", length = 32)
-    @JsonView(ProjectInfoReg.Details.class)
+    @JsonView(ProjectInfoReg.Summary.class)
     @Override
     public String getImportantFile(){return super.getImportantFile();}
 
     @Column(name = "MEMO", length = 512)
-    @JsonView(ProjectInfoReg.Details.class)
+    @JsonView(ProjectInfoReg.Summary.class)
     @Override
     public String getMemo(){return super.getMemo();}
 
     @Column(name = "HEIGHT")
-    @JsonView(ProjectInfoReg.Details.class)
+    @JsonView(ProjectInfoReg.Summary.class)
     @Override
     public BigDecimal getHeight(){return super.getHeight();}
 

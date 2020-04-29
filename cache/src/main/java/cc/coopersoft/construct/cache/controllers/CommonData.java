@@ -4,6 +4,7 @@ package cc.coopersoft.construct.cache.controllers;
 import cc.coopersoft.common.construct.corp.Corp;
 import cc.coopersoft.common.construct.project.Project;
 import cc.coopersoft.construct.cache.services.CorpCacheService;
+import cc.coopersoft.construct.cache.services.DataService;
 import cc.coopersoft.construct.cache.services.ProjectCacheService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,11 +19,15 @@ public class CommonData {
 
     private final ProjectCacheService projectCacheService;
 
+    private final DataService dataService;
+
     @Autowired
     public CommonData(CorpCacheService corpCacheService,
-                      ProjectCacheService projectCacheService) {
+                      ProjectCacheService projectCacheService,
+                      DataService dataService) {
         this.corpCacheService = corpCacheService;
         this.projectCacheService = projectCacheService;
+        this.dataService = dataService;
     }
 
 
@@ -40,6 +45,16 @@ public class CommonData {
     @RequestMapping(value = "/project/{code}", method = RequestMethod.GET)
     public Project.Default project(@PathVariable("code") long code){
         Project.Default result = projectCacheService.get(code);
+        if (result == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return result;
+    }
+
+    @RequestMapping(value = "/project-corp/{code}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public DataService.ProjectAndCorp projectAndCorp(@PathVariable("code") long code){
+        DataService.ProjectAndCorp result = dataService.projectAndCorp(code);
         if (result == null){
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }

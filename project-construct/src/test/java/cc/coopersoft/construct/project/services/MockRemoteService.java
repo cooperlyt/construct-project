@@ -25,7 +25,11 @@ public class MockRemoteService implements RemoteService {
 
         CorpReg<RegInfo> reg = new CorpReg<>();
         reg.setInfo(regInfo);
-        reg.setProperty(CorpProperty.Developer);
+
+        if (code == 100l){
+            reg.setProperty(CorpProperty.Design);
+        }else
+            reg.setProperty(CorpProperty.Developer);
 
         Corp.Default result = new Corp.Default();
         result.setInfo(info);
