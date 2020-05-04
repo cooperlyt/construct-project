@@ -12,10 +12,7 @@ import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 
 
-@EnableDiscoveryClient
-@EnableCircuitBreaker
-@SpringBootApplication(scanBasePackages = {"cc.coopersoft.common.cloud","cc.coopersoft.construct.project"})
-@EnableEurekaClient
+@SpringCloudApplication
 @EnableResourceServer
 @EnableBinding(Source.class)
 public class Application {

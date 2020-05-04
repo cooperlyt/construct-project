@@ -178,7 +178,7 @@ services:
       AUTHSERVER_PORT:   8091
       CONFIGSERVER_URI: "http://configserver:8888"
       EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
-      AUTHSERVER_URI:   "http://authenticationservice/auth/user"
+      AUTHSERVER_URI:   "http://authenticationservice:8901/auth/user"
       ENCRYPT_KEY:       "IMSYMMETRIC"
       TZ: Asia/Shanghai
     links:
@@ -186,11 +186,13 @@ services:
       - database:database
       - configserver:configserver
       - rmqnamesrv:rmqnamesrv
+      - authenticationservice:authenticationservice
     depends_on:
       - eurekaserver
       - database
       - configserver
       - rmqnamesrv
+      - authenticationservice
 
   projectservices:
     image: coopersoft/construct-project-service:snapshot
@@ -204,7 +206,7 @@ services:
       AUTHSERVER_PORT:   8091
       CONFIGSERVER_URI: "http://configserver:8888"
       EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
-      AUTHSERVER_URI:   "http://authenticationservice/auth/user"
+      AUTHSERVER_URI:   "http://authenticationservice:8901/auth/user"
       ENCRYPT_KEY:       "IMSYMMETRIC"
       TZ: Asia/Shanghai
     links:
@@ -212,11 +214,13 @@ services:
       - database:database
       - configserver:configserver
       - rmqnamesrv:rmqnamesrv
+      - authenticationservice:authenticationservice
     depends_on:
       - eurekaserver
       - database
       - configserver
       - rmqnamesrv
+      - authenticationservice
 
   cacheservices:
     image: coopersoft/construct-project-cache-service:snapshot
@@ -230,7 +234,7 @@ services:
       AUTHSERVER_PORT:   8091
       CONFIGSERVER_URI: "http://configserver:8888"
       EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
-      AUTHSERVER_URI:   "http://authenticationservice/auth/user"
+      AUTHSERVER_URI:   "http://authenticationservice:8901/auth/user"
       ENCRYPT_KEY:       "IMSYMMETRIC"
       TZ: Asia/Shanghai
     links:
@@ -238,8 +242,10 @@ services:
       - configserver:configserver
       - rmqnamesrv:rmqnamesrv
       - redis:redis
+      - authenticationservice:authenticationservice
     depends_on:
       - eurekaserver
       - configserver
       - rmqnamesrv
       - redis
+      - authenticationservice
