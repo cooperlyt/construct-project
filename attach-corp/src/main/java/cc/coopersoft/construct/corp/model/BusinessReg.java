@@ -2,6 +2,7 @@ package cc.coopersoft.construct.corp.model;
 
 
 import cc.coopersoft.common.construct.corp.CorpProperty;
+import cc.coopersoft.common.data.OperationType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,13 +15,6 @@ import java.util.Objects;
 @NoArgsConstructor
 @Table(name = "BUSINESS_REG")
 public class BusinessReg {
-
-    public enum OperateType{
-        DELETE,
-        MODIFY,
-        CREATE,
-        QUOTED
-    }
 
     @EmbeddedId
     private BusinessRegPK id = new BusinessRegPK();
@@ -37,7 +31,7 @@ public class BusinessReg {
 
     @Column(name = "OPERATE", length = 6, nullable = false)
     @Enumerated(EnumType.STRING)
-    private OperateType operateType;
+    private OperationType operateType;
 
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})

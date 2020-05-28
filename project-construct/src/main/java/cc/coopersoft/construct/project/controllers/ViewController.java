@@ -3,8 +3,7 @@ package cc.coopersoft.construct.project.controllers;
 
 import cc.coopersoft.construct.project.model.JoinCorp;
 import cc.coopersoft.construct.project.model.Project;
-import cc.coopersoft.construct.project.model.ProjectInfo;
-import cc.coopersoft.construct.project.model.ProjectReg;
+import cc.coopersoft.construct.project.model.ProjectInfoReg;
 import cc.coopersoft.construct.project.services.ProjectService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,9 +30,9 @@ public class ViewController {
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Project.Summary.class)
     public Page<Project> projects(@RequestParam(value = "valid", required = false) Optional<Boolean> valid,
-                                  @RequestParam(value="property", required = false) Optional<ProjectInfo.Property> property,
-                                  @RequestParam(value="class", required = false) Optional<ProjectInfo.ProjectClass> projectClass,
-                                  @RequestParam(value = "important", required = false) Optional<ProjectInfo.ImportantType> important,
+                                  @RequestParam(value="property", required = false) Optional<ProjectInfoReg.PropertyClass> property,
+                                  @RequestParam(value="class", required = false) Optional<ProjectInfoReg.ProjectClass> projectClass,
+                                  @RequestParam(value = "important", required = false) Optional<ProjectInfoReg.ImportantType> important,
                                   @RequestParam(value ="page", required = false) Optional<Integer> page,
                                   @RequestParam(value ="key", required = false)Optional<String> key,
                                   @RequestParam(value ="sort", required = false)Optional<String> sort,
@@ -53,7 +52,6 @@ public class ViewController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
     }
-
 
 
     @RequestMapping(value = "/join/{code}", method = RequestMethod.GET)

@@ -2,6 +2,7 @@ package cc.coopersoft.construct.project.services;
 
 
 import cc.coopersoft.common.construct.corp.CorpProperty;
+import cc.coopersoft.common.data.OperationType;
 import cc.coopersoft.construct.project.Application;
 import cc.coopersoft.construct.project.model.*;
 import lombok.extern.slf4j.Slf4j;
@@ -37,14 +38,14 @@ public class ProjectServiceTest {
     public void createAndModify(){
 
         log.debug("===================== begin test path create =====================");
-        ProjectInfo projectInfo = new ProjectInfo();
+        ProjectInfoReg projectInfo = new ProjectInfoReg();
         projectInfo.setName("test create project");
-        projectInfo.setType(ProjectInfo.Type.CIVIL_HOUSE);
-        projectInfo.setProperty(ProjectInfo.Property.NEW);
-        projectInfo.setImportantType(ProjectInfo.ImportantType.NORMAL);
+        projectInfo.setAddress("test address");
+        projectInfo.setType(ProjectInfoReg.Type.CIVIL_HOUSE);
+        projectInfo.setProperty(ProjectInfoReg.Property.NEW);
+        projectInfo.setImportantType(ProjectInfoReg.ImportantType.NORMAL);
 
-        ProjectInfoReg infoReg = new ProjectInfoReg();
-        infoReg.setInfo(projectInfo);
+
 
         ProjectCorpReg corpReg = new ProjectCorpReg();
 
@@ -65,17 +66,29 @@ public class ProjectServiceTest {
 
         log.debug("equals :" + joinCorp1.equals(joinCorp));
 
+        BuildInfo buildInfo = new BuildInfo();
+        buildInfo.setName("test build");
+        buildInfo.setStructure(cc.coopersoft.common.construct.project.BuildInfo.Struct.BRICK);
+
+        BuildRegInfo buildRegInfo = new BuildRegInfo();
+        buildRegInfo.setInfo(buildInfo);
+        buildRegInfo.setOperation(OperationType.CREATE);
+
+        BuildReg buildReg = new BuildReg();
+        buildRegInfo.setReg(buildReg);
+        buildReg.getBuilds().add(buildRegInfo);
 
         ProjectReg projectReg = new ProjectReg();
         projectReg.setCorp(corpReg);
-        projectReg.setInfo(infoReg);
+        projectReg.setInfo(projectInfo);
+        projectReg.setBuild(buildReg);
 
         Project project = projectService.patchCreate(projectReg);
 
         assertEquals(project.getCorp().getCorps().size(), 2);
         assertEquals(project.getDeveloper().getCode(), 2l);
 
-        assertEquals(project.getInfo().getInfo().getType(), ProjectInfo.Type.CIVIL_HOUSE);
+        assertEquals(project.getInfo().getType(), ProjectInfoReg.Type.CIVIL_HOUSE);
 
 
 
@@ -94,14 +107,13 @@ public class ProjectServiceTest {
 
         log.debug("===================== begin test path modify =====================");
 
-        ProjectInfo projectInfo = new ProjectInfo();
+        ProjectInfoReg projectInfo = new ProjectInfoReg();
         projectInfo.setName("test modify project");
-        projectInfo.setType(ProjectInfo.Type.BOILER);
-        projectInfo.setProperty(ProjectInfo.Property.NEW);
-        projectInfo.setImportantType(ProjectInfo.ImportantType.NORMAL);
+        projectInfo.setAddress("test modify address");
+        projectInfo.setType(ProjectInfoReg.Type.BOILER);
+        projectInfo.setProperty(ProjectInfoReg.Property.NEW);
+        projectInfo.setImportantType(ProjectInfoReg.ImportantType.NORMAL);
 
-        ProjectInfoReg infoReg = new ProjectInfoReg();
-        infoReg.setInfo(projectInfo);
 
 
         JoinCorp joinCorp = new JoinCorp();
@@ -116,7 +128,7 @@ public class ProjectServiceTest {
 
         ProjectReg projectReg = new ProjectReg();
         projectReg.setCorp(corpReg);
-        projectReg.setInfo(infoReg);
+        projectReg.setInfo(projectInfo);
 
 
         Project project = projectService.pathModify(code,projectReg);
@@ -125,7 +137,7 @@ public class ProjectServiceTest {
         assertEquals(project.getDeveloper().getTel(), "1111");
         assertEquals(project.getCorp().getCorps().size(), 1);
         assertEquals(project.getDeveloper().getCode(), 1l);
-        assertEquals(project.getInfo().getInfo().getType(), ProjectInfo.Type.BOILER);
+        assertEquals(project.getInfo().getType(), ProjectInfoReg.Type.BOILER);
 
         log.debug("===================== test path modify  complete =====================");
     }

@@ -2,6 +2,7 @@ package cc.coopersoft.construct.project.services;
 
 import cc.coopersoft.common.construct.corp.*;
 import cc.coopersoft.common.data.GroupIdType;
+import cc.coopersoft.common.data.PersonIdType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -18,6 +19,9 @@ public class MockRemoteService implements RemoteService {
         info.setName("mock corp");
         info.setGroupId("mock");
         info.setGroupIdType(GroupIdType.COMPANY_CODE);
+        info.setOwnerIdType(PersonIdType.TW_ID);
+        info.setOwnerName("test owner");
+
 
 
         RegInfo regInfo = new RegInfo();

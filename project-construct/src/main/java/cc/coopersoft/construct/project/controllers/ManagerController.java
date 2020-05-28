@@ -1,7 +1,5 @@
 package cc.coopersoft.construct.project.controllers;
 
-import cc.coopersoft.construct.project.model.Project;
-import cc.coopersoft.construct.project.model.ProjectInfo;
 import cc.coopersoft.construct.project.model.ProjectReg;
 import cc.coopersoft.construct.project.services.ProjectService;
 import org.springframework.beans.factory.annotation.Autowired;

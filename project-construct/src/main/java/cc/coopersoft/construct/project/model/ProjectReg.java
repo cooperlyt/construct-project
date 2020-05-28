@@ -1,5 +1,6 @@
 package cc.coopersoft.construct.project.model;
 
+import cc.coopersoft.common.data.BusinessType;
 import cc.coopersoft.common.data.RegSource;
 import cc.coopersoft.common.data.RegStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -23,7 +24,7 @@ public class ProjectReg implements java.io.Serializable{
 
     public interface Title {}
     public interface Summary extends Title, ProjectInfoReg.Summary, ProjectCorpReg.Summary {}
-    public interface Details extends Title, ProjectInfoReg.Details, ProjectCorpReg.Details {}
+    public interface Details extends Title, ProjectInfoReg.Details, ProjectCorpReg.Details, BuildReg.Details {}
 
 
     @Id
@@ -65,6 +66,10 @@ public class ProjectReg implements java.io.Serializable{
     @JsonView(Title.class)
     private RegSource source;
 
+    @Column(name = "TYPE", length = 7, nullable = false)
+    @Enumerated(EnumType.STRING)
+    @JsonView(Title.class)
+    private BusinessType type;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST , CascadeType.MERGE}, optional = false)
     @JoinColumn(name = "CORP", nullable = false)
@@ -76,6 +81,11 @@ public class ProjectReg implements java.io.Serializable{
     @JsonView(Title.class)
     private ProjectInfoReg info;
 
+    @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST , CascadeType.MERGE}, optional = false)
+    @JoinColumn(name = "BUILD", nullable = false)
+    @JsonView(Details.class)
+    private BuildReg build;
+
     @Column(name = "CORP_MASTER",nullable = false)
     @JsonView(Details.class)
     private boolean corpMaster;
@@ -83,6 +93,10 @@ public class ProjectReg implements java.io.Serializable{
     @Column(name = "INFO_MASTER", nullable = false)
     @JsonView(Details.class)
     private boolean infoMaster;
+
+    @Column(name = "BUILD_MASTER", nullable = false)
+    @JsonView(Details.class)
+    private boolean buildMaster;
 
 
 }

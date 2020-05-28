@@ -2,6 +2,8 @@ package cc.coopersoft.construct.project.model;
 
 
 import cc.coopersoft.common.data.GroupIdType;
+import cc.coopersoft.common.data.PersonIdType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -29,6 +31,14 @@ public class JoinCorpInfo extends cc.coopersoft.common.construct.project.JoinCor
     @Access(AccessType.FIELD)
     private Long id;
 
+
+    @Access(AccessType.FIELD)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "JOIN_ID",columnDefinition = "JOIN_ID")
+    @MapsId
+    @JsonBackReference
+    private JoinCorp corp;
+
     @Column(name = "NAME", length = 128, nullable = false)
     @Override
     @JsonView(Summary.class)
@@ -51,5 +61,20 @@ public class JoinCorpInfo extends cc.coopersoft.common.construct.project.JoinCor
     @Override
     public int getLevel(){return super.getLevel();}
 
+    @Column(name ="OWNER_NAME", length = 32, nullable = false)
+    @JsonView(Details.class)
+    @Override
+    public String getOwnerName(){return super.getOwnerName();}
+
+    @Enumerated(EnumType.STRING)
+    @Column(name ="OWNER_ID_TYPE", length = 16, nullable = false)
+    @JsonView(Details.class)
+    @Override
+    public PersonIdType getOwnerIdType(){return super.getOwnerIdType();}
+
+    @Column(name ="OWNER_ID_NUMBER", length = 32, nullable = false)
+    @JsonView(Details.class)
+    @Override
+    public String getOwnerId(){return super.getOwnerId();}
 
 }

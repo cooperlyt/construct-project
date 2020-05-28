@@ -4,14 +4,16 @@ import cc.coopersoft.common.construct.corp.Corp;
 import cc.coopersoft.common.construct.corp.CorpProperty;
 import cc.coopersoft.common.construct.corp.CorpReg;
 import cc.coopersoft.common.construct.corp.RegInfo;
+import cc.coopersoft.common.construct.project.ProjectCorpSummary;
+import cc.coopersoft.common.data.BusinessType;
+import cc.coopersoft.common.data.OperationType;
 import cc.coopersoft.common.data.RegSource;
 import cc.coopersoft.common.data.RegStatus;
 import cc.coopersoft.construct.project.model.*;
+import cc.coopersoft.construct.project.repository.BuildRepository;
 import cc.coopersoft.construct.project.repository.JoinCorpRepository;
 import cc.coopersoft.construct.project.repository.RegRepository;
 import cc.coopersoft.construct.project.repository.ProjectRepository;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.wujun234.uid.UidGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -22,7 +24,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.*;
@@ -40,29 +41,32 @@ public class ProjectService {
 
     private final JoinCorpRepository joinCorpRepository;
 
+    private final BuildRepository buildRepository;
+
     private final RemoteService remoteService;
 
 
     @Resource
-    private UidGenerator defaultUidGenerator;
+    private UidGenerator cachedUidGenerator;
 
 
     @Autowired
     public ProjectService(RegRepository regRepository,
                           ProjectRepository projectRepository,
                           JoinCorpRepository joinCorpRepository,
-                          RemoteService remoteService) {
+                          BuildRepository buildRepository, RemoteService remoteService) {
         this.regRepository = regRepository;
         this.projectRepository = projectRepository;
         this.joinCorpRepository = joinCorpRepository;
+        this.buildRepository = buildRepository;
         this.remoteService = remoteService;
     }
 
 
     public Page<Project> projects(Optional<Boolean> valid,
-                                  Optional<ProjectInfo.Property> property,
-                                  Optional<ProjectInfo.ProjectClass> projectClass,
-                                  Optional<ProjectInfo.ImportantType> important,
+                                  Optional<ProjectInfoReg.PropertyClass> propertyClass,
+                                  Optional<ProjectInfoReg.ProjectClass> projectClass,
+                                  Optional<ProjectInfoReg.ImportantType> important,
                                   Optional<Integer> page,
                                   Optional<String> key,
                                   Optional<String> sort,
@@ -77,16 +81,14 @@ public class ProjectService {
             List<Predicate> predicates = new LinkedList<>();
 
 
-            Join<ProjectInfoReg, ProjectInfo> infoJoin;
+            Join<Project, ProjectInfoReg> infoJoin;
             Join<Project,ProjectCorpReg> corpJoin;
             if (countQuery){
-                Join<Project,ProjectInfoReg> regJoin = root.join("info", JoinType.LEFT);
-                infoJoin = regJoin.join("info", JoinType.LEFT);
+                infoJoin = root.join("info", JoinType.LEFT);
                 corpJoin = root.join("corp",JoinType.LEFT);
             }else{
-                Fetch<Project,ProjectInfoReg> regFetch = root.fetch("info", JoinType.LEFT);
-                Fetch<ProjectInfoReg,ProjectInfo> infoFetch = regFetch.fetch("info", JoinType.LEFT);
-                infoJoin = (Join<ProjectInfoReg, ProjectInfo>) infoFetch;
+                Fetch<Project,ProjectInfoReg> infoFetch = root.fetch("info", JoinType.LEFT);
+                infoJoin = (Join<Project, ProjectInfoReg>) infoFetch;
                 Fetch<Project,ProjectCorpReg> corpFetch = root.fetch("corp",JoinType.LEFT);
                 corpJoin = (Join<Project, ProjectCorpReg>) corpFetch;
             }
@@ -98,7 +100,7 @@ public class ProjectService {
                 keyPredicate.add(cb.equal(root.get("code"),_key));
                 keyPredicate.add(cb.like(infoJoin.get("name"),_keyLike));
                 keyPredicate.add(cb.like(infoJoin.get("memo"),_keyLike));
-                keyPredicate.add(cb.like(corpJoin.get("tags"),_keyLike));
+                keyPredicate.add(cb.like(corpJoin.get("corpTags"),_keyLike));
                 keyPredicate.add(cb.like(infoJoin.get("importantFile"),_keyLike));
                 keyPredicate.add(cb.like(infoJoin.get("address"),_keyLike));
 
@@ -109,11 +111,18 @@ public class ProjectService {
                 predicates.add(cb.and(cb.isTrue(root.get("enable").as(Boolean.class))));
             }
 
-            property.ifPresent(value -> predicates.add(cb.and(cb.equal(infoJoin.get("property"), value))));
+
+            propertyClass.ifPresent(value -> {
+                CriteriaBuilder.In<ProjectInfoReg.Property> in = cb.in(infoJoin.get("property"));
+                for (ProjectInfoReg.Property property: value.getProperties()){
+                    in.value(property);
+                }
+                predicates.add(cb.and(in));
+            });
 
             projectClass.ifPresent(value -> {
-                CriteriaBuilder.In<ProjectInfo.Type> in = cb.in(infoJoin.get("type"));
-                for (ProjectInfo.Type type :  value.getSub()){
+                CriteriaBuilder.In<ProjectInfoReg.Type> in = cb.in(infoJoin.get("type"));
+                for (ProjectInfoReg.Type type :  value.getSub()){
                     in.value(type);
                 }
                 predicates.add(cb.and(in));
@@ -129,7 +138,7 @@ public class ProjectService {
 
 
         Sort sortable = Sort.by((dir.isPresent() ? ("DESC".equals(dir.get()) ? Sort.Direction.DESC : Sort.Direction.ASC) : Sort.Direction.DESC)
-                , (sort.isPresent() ? sort.get() : "dataTime"));
+                , (sort.isPresent() ? sort.get() : "regTime"));
 
         return projectRepository.findAll(specification, PageRequest.of(page.isPresent() ? page.get() : 0 ,PAGE_SIZE,sortable));
     }
@@ -153,6 +162,36 @@ public class ProjectService {
         projectRepository.save(project.get());
     }
 
+    private void saveBuildRecord(BuildReg buildReg, long projectCode){
+        for(BuildRegInfo build: buildReg.getBuilds()){
+            switch (build.getOperation()){
+
+                case DELETE:
+                    buildRepository.deleteById(build.getCode());
+                    break;
+                case MODIFY:
+                    Build buildRecord = buildRepository.findById(build.getCode()).orElseThrow();
+                    if (buildRecord.getInfo().getId().equals(build.getPrevious().getId())){
+                        buildRecord.setInfo(build.getInfo());
+                        buildRecord.setProjectCode(projectCode);
+                        buildRecord.setRegTime(buildReg.getRegTime());
+                        buildRepository.saveAndFlush(buildRecord);
+                    }
+
+                    break;
+                case CREATE:
+                    Build newBuildRecord = new Build();
+                    newBuildRecord.setCode(build.getCode());
+                    newBuildRecord.setInfo(build.getInfo());
+                    newBuildRecord.setRegTime(buildReg.getRegTime());
+                    newBuildRecord.setEnable(true);
+                    newBuildRecord.setProjectCode(projectCode);
+                    buildRepository.saveAndFlush(newBuildRecord);
+                    break;
+            }
+        }
+    }
+
     @Transactional()
     public Project patchCreate(ProjectReg reg){
 
@@ -162,12 +201,15 @@ public class ProjectService {
         regRepository.saveAndFlush(reg);
         log.debug("reg saved.");
 
+        saveBuildRecord(reg.getBuild(),reg.getCode());
+
         Project project = new Project();
         project.setCode(reg.getCode());
         project.setEnable(true);
-        project.setDataTime(new Date());
+        project.setRegTime(new Date());
         project.setInfo(reg.getInfo());
         project.setCorp(reg.getCorp());
+        project.setBuild(reg.getBuild());
         project.setDeveloper(getDeveloper(reg.getCorp()));
 
         log.debug("save project.");
@@ -188,6 +230,11 @@ public class ProjectService {
 
         regRepository.saveAndFlush(reg);
 
+        if (reg.isBuildMaster()){
+            saveBuildRecord(reg.getBuild(),reg.getCode());
+            project.get().setBuild(reg.getBuild());
+        }
+
         if (reg.isInfoMaster()){
             project.get().setInfo(reg.getInfo());
         }
@@ -196,7 +243,7 @@ public class ProjectService {
             project.get().setDeveloper(getDeveloper(reg.getCorp()));
         }
 
-        project.get().setDataTime(new Date());
+        project.get().setRegTime(new Date());
 
 
 
@@ -208,6 +255,10 @@ public class ProjectService {
         reg.setRegTime(new Date());
         reg.setSource(RegSource.Patch);
         reg.setStatus(RegStatus.Register);
+
+        if(reg.isBuildMaster()){
+            reg.getBuild().setRegTime(new Date());
+        }
 
         if (reg.isCorpMaster()) {
             reg.getCorp().setRegTime(new Date());
@@ -243,10 +294,14 @@ public class ProjectService {
         }
 
         JoinCorpInfo result = new JoinCorpInfo();
-        result.setId(joinCorp.getId());
+        //result.setId(joinCorp.getId());
+        result.setCorp(joinCorp);
         result.setName(corp.getInfo().getName());
         result.setGroupIdType(corp.getInfo().getGroupIdType());
         result.setGroupId(corp.getInfo().getGroupId());
+        result.setOwnerId(corp.getInfo().getOwnerId());
+        result.setOwnerIdType(corp.getInfo().getOwnerIdType());
+        result.setOwnerName(corp.getInfo().getOwnerName());
 
         for(CorpReg<RegInfo> reg : corp.getRegs()){
             if (joinCorp.getProperty().equals(reg.getProperty())){
@@ -258,62 +313,45 @@ public class ProjectService {
         throw new IllegalArgumentException("corp is found ! but not have this property:[" + joinCorp.getProperty() + "]" + code);
     }
 
-    private String addTag(String source, String tag){
-        if (StringUtils.isNotBlank(tag)){
-            return source.trim() + " " + tag.trim();
-        }else{
-            return source;
+    private void initBuildReg(BuildReg buildReg){
+        for(BuildRegInfo buildRegInfo: buildReg.getBuilds()){
+            buildRegInfo.setId(cachedUidGenerator.getUID());
+            if (OperationType.MODIFY.equals(buildRegInfo.getOperation())){
+                buildRegInfo.getInfo().setId(buildRegInfo.getId());
+                buildRegInfo.setPrevious(buildRepository.findById(buildRegInfo.getCode()).orElseThrow().getInfo());
+            }else if (OperationType.CREATE.equals(buildRegInfo.getOperation())){
+                buildRegInfo.getInfo().setId(buildRegInfo.getId());
+                buildRegInfo.setCode(buildRegInfo.getId());
+            }
         }
     }
-
-    private ProjectCorpReg tagReg(ProjectCorpReg reg) {
-        String tags = "";
-        List<CorpSummary> summaries = new ArrayList<>(reg.getCorps().size());
-        for(JoinCorp corp: reg.getCorps()){
-            tags = tags + " " + corp.getCode();
-            tags = addTag(tags,corp.getOutsideTeamFile());
-            tags = addTag(tags,corp.getTel());
-            tags = addTag(tags,corp.getOutLevelFile());
-            tags = addTag(tags,corp.getContacts());
-            tags = addTag(tags,corp.getInfo().getGroupId());
-            tags = addTag(tags,corp.getInfo().getName());
-
-
-            summaries.add(new CorpSummary(corp.getProperty(),corp.getCode(),corp.getInfo().getName(),corp.getInfo().getGroupIdType(),corp.getInfo().getGroupId()));
-        }
-        reg.setTags(tags.trim());
-        Collections.sort(summaries);
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            reg.setCorpSummary(objectMapper.writeValueAsString(summaries));
-        } catch (JsonProcessingException e) {
-            throw new IllegalArgumentException("data error can`t convert to json");
-        }
-        return reg;
-    }
-
 
     private ProjectReg create(ProjectReg reg){
+        reg.setType(BusinessType.CREATE);
         reg.setCreateTime(new Date());
-        reg.setCode(defaultUidGenerator.getUID());
+        reg.setCode(cachedUidGenerator.getUID());
         reg.setId(reg.getCode());
 
 
         reg.setCorpMaster(true);
         reg.getCorp().setId(reg.getId());
 
+
+        reg.setBuildMaster(true);
+        reg.getBuild().setId(reg.getId());
+        initBuildReg(reg.getBuild());
+
         log.debug("corp size:" + reg.getCorp().getCorps().size());
         for(JoinCorp corp: reg.getCorp().getCorps()){
-            corp.setId(defaultUidGenerator.getUID());
+            corp.setId(cachedUidGenerator.getUID());
             corp.setInfo(getCorpInfo(corp,corp.getCode()));
             corp.setReg(reg.getCorp());
         }
-        reg.setCorp(tagReg(reg.getCorp()));
-
+       // test(reg.getCorp().getCorps());
+        ProjectCorpSummary.fillProjectCorpSummary(reg.getCorp(),reg.getCorp().getCorps());
 
         reg.setInfoMaster(true);
         reg.getInfo().setId(reg.getId());
-        reg.getInfo().getInfo().setId(reg.getInfo().getId());
 
         return reg;
     }
@@ -323,20 +361,21 @@ public class ProjectService {
             throw new IllegalArgumentException("project in reg business: " + project.getCode());
         }
 
+        reg.setType(BusinessType.MODIFY);
         reg.setCreateTime(new Date());
         reg.setCode(project.getCode());
-        reg.setId(defaultUidGenerator.getUID());
+        reg.setId(cachedUidGenerator.getUID());
         reg.setCorpMaster(reg.getCorp() != null);
 
         if (reg.isCorpMaster()){
             reg.getCorp().setId(reg.getId());
             reg.getCorp().setPrevious(project.getCorp());
             for(JoinCorp corp: reg.getCorp().getCorps()){
-                corp.setId(defaultUidGenerator.getUID());
+                corp.setId(cachedUidGenerator.getUID());
                 corp.setInfo(getCorpInfo(corp,corp.getCode()));
                 corp.setReg(reg.getCorp());
             }
-            reg.setCorp(tagReg(reg.getCorp()));
+            ProjectCorpSummary.fillProjectCorpSummary(reg.getCorp(),reg.getCorp().getCorps());
         }else{
             reg.setCorp(project.getCorp());
         }
@@ -345,9 +384,16 @@ public class ProjectService {
         if (reg.isInfoMaster()){
             reg.getInfo().setId(reg.getId());
             reg.getInfo().setPrevious(project.getInfo());
-            reg.getInfo().getInfo().setId(reg.getInfo().getId());
         }else{
             reg.setInfo(project.getInfo());
+        }
+
+        reg.setBuildMaster(reg.getBuild() != null);
+        if (reg.isBuildMaster()){
+            reg.getBuild().setId(reg.getId());
+            initBuildReg(reg.getBuild());
+        }else{
+            reg.setBuild(project.getBuild());
         }
 
         return reg;

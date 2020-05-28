@@ -115,7 +115,7 @@ public class CorpServices {
                                   Optional<String> dir){
         //TODO StringUtils.split(key)
 
-        boolean validOnly = valid.isEmpty() || valid.get();
+        boolean validOnly = valid.orElse(false);
 
         Specification<Corp> specification = (Specification<Corp>) (root, criteriaQuery, cb) -> {
 

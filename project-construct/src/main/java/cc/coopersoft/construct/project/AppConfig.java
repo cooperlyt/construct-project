@@ -27,4 +27,6 @@ public class AppConfig {
     public OAuth2RestTemplate oAuth2RestTemplate(UserInfoRestTemplateFactory factory) {
         return factory.getUserInfoRestTemplate();
     }
+
+
 }

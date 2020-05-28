@@ -4,6 +4,7 @@ package cc.coopersoft.construct.project.model;
 import cc.coopersoft.common.construct.corp.CorpProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,8 +24,7 @@ import javax.validation.constraints.NotNull;
         subgraphs = {
 
             @NamedSubgraph(name = "reg.project", attributeNodes = @NamedAttributeNode(value = "project", subgraph="project.info")),
-                @NamedSubgraph(name = "project.info", attributeNodes = @NamedAttributeNode(value = "info", subgraph = "project.info.info"))  ,
-                    @NamedSubgraph(name = "project.info.info", attributeNodes = @NamedAttributeNode(value = "info"))
+                @NamedSubgraph(name = "project.info", attributeNodes = @NamedAttributeNode(value = "info"))
         }
 )
 public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp<JoinCorpInfo>{
@@ -80,9 +80,9 @@ public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp<Jo
     @Override
     public String getTel(){return super.getTel();}
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL,orphanRemoval = true, optional = false)
-    @PrimaryKeyJoinColumn
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "corp", cascade = CascadeType.ALL,orphanRemoval = true, optional = false)
     @JsonView({Summary.class,SummaryWithCorp.class})
+    @JsonManagedReference
     @Override
     public JoinCorpInfo getInfo(){return super.getInfo();}
 

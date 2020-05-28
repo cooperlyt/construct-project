@@ -17,6 +17,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="construct-project-cache" />
         <module name="project-construct" />
         <module name="attach-corp" />
         <module name="cache" />
@@ -30,6 +31,7 @@
       <module name="cache" options="-parameters" />
       <module name="construct-fire" options="" />
       <module name="construct-project" options="" />
+      <module name="construct-project-cache" options="-parameters" />
       <module name="project-construct" options="-parameters" />
     </option>
   </component>
