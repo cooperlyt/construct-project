@@ -53,4 +53,8 @@ public class BuildReg implements java.io.Serializable{
     @JsonView(Summary.class)
     private BigDecimal underArea;
 
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "build")
+    @JsonIgnore
+    private Project project;
+
 }

@@ -23,13 +23,17 @@ import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Application.class)
-@ContextConfiguration(classes = {ProjectService.class, MockRemoteService.class})
+@ContextConfiguration(classes = {BusinessService.class, MockRemoteService.class})
 @Slf4j
 @FixMethodOrder(MethodSorters.JVM)
-public class ProjectServiceTest {
+public class BusinessServiceTest {
 
     @Autowired
-    private ProjectService projectService;
+    private BusinessService businessService;
+
+    @Autowired
+    private ProjectServices projectServices;
+
 
     private static long code;
 
@@ -82,7 +86,7 @@ public class ProjectServiceTest {
         projectReg.setInfo(projectInfo);
         projectReg.setBuild(buildReg);
 
-        Project project = projectService.patchCreate(projectReg);
+        Project project = businessService.patchCreate(projectReg);
 
         assertEquals(project.getCorp().getCorps().size(), 2);
         assertEquals(project.getDeveloper().getCode(), 2l);
@@ -130,7 +134,7 @@ public class ProjectServiceTest {
         projectReg.setInfo(projectInfo);
 
 
-        Project project = projectService.pathModify(code,projectReg);
+        Project project = businessService.pathModify(code,projectReg);
 
 
         assertEquals(project.getDeveloper().getTel(), "1111");
@@ -144,7 +148,7 @@ public class ProjectServiceTest {
     @Test
     public void project() {
 
-        Optional<Project> project = projectService.project(code);
+        Optional<Project> project = projectServices.project(code);
         assertTrue(project.isPresent());
         assertEquals(project.get().getDeveloper().getInfo().getGroupId(), "mock");
     }
@@ -152,15 +156,15 @@ public class ProjectServiceTest {
     @Test
     public void enableProject() {
 
-        projectService.enableProject(code,false);
+        projectServices.enableProject(code,false);
 
-        Optional<Project> project = projectService.project(code);
+        Optional<Project> project = projectServices.project(code);
         assertTrue(project.isPresent());
         assertFalse(project.get().isEnable());
 
-        projectService.enableProject(code,true);
+        projectServices.enableProject(code,true);
 
-        project = projectService.project(code);
+        project = projectServices.project(code);
         assertTrue(project.isPresent());
         assertTrue(project.get().isEnable());
 
@@ -169,13 +173,13 @@ public class ProjectServiceTest {
 
     @Test
     public void projects() {
-        Page<Project> result = projectService.projects(Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty());
+        Page<Project> result = projectServices.projects(Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty(),Optional.empty());
         assertEquals(result.getTotalElements(), 1l);
     }
 
     @Test
     public void joinProjects() {
-        List<JoinCorp> result = projectService.joinProjects(1l);
+        List<JoinCorp> result = projectServices.joinProjects(1l);
         assertEquals(result.size(), 1);
     }
 

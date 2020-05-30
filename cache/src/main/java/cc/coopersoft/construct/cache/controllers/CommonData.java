@@ -2,7 +2,7 @@ package cc.coopersoft.construct.cache.controllers;
 
 
 import cc.coopersoft.common.construct.corp.Corp;
-import cc.coopersoft.common.construct.project.Project;
+import cc.coopersoft.common.construct.project.*;
 import cc.coopersoft.construct.cache.services.CorpCacheService;
 import cc.coopersoft.construct.cache.services.DataService;
 import cc.coopersoft.construct.cache.services.ProjectCacheService;
@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+
+import java.util.List;
 
 @RestController
 @RequestMapping(value="data")
@@ -59,6 +61,38 @@ public class CommonData {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND);
         }
         return result;
+    }
+
+    @RequestMapping(value = "/project/{code}/corps", method = RequestMethod.GET)
+    public List<JoinCorp<JoinCorpInfo>> projectCorps(@PathVariable("code") long code){
+        Project.Default result = projectCacheService.get(code);
+        if (result == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return result.getCorps();
+    }
+
+    @RequestMapping(value = "/project/{code}/corp/reg", method = RequestMethod.GET)
+    public List<DataService.JoinCorpAndCorp> projectCorpRegs(@PathVariable("code") long code){
+        return dataService.joinCorpAndCorp(code);
+    }
+
+    @RequestMapping(value = "/project/{code}/info", method = RequestMethod.GET)
+    public ProjectRegInfo projectInfo(@PathVariable("code") long code){
+        Project.Default result = projectCacheService.get(code);
+        if (result == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return result.getInfo();
+    }
+
+    @RequestMapping(value = "/project/{code}/builds", method = RequestMethod.GET)
+    public List<BuildRegInfo<BuildInfo>> projectBuilds(@PathVariable("code") long code){
+        Project.Default result = projectCacheService.get(code);
+        if (result == null){
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+        return result.getBuilds();
     }
 
 }

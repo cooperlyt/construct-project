@@ -5,6 +5,7 @@ import cc.coopersoft.common.data.RegSource;
 import cc.coopersoft.common.data.RegStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -40,6 +41,7 @@ public class ProjectReg implements java.io.Serializable{
     @Column(name = "STATUS", nullable = false, length = 8)
     @Enumerated(EnumType.STRING)
     @JsonView(Title.class)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private RegStatus status;
 
     @Basic(fetch = FetchType.LAZY)
@@ -64,11 +66,13 @@ public class ProjectReg implements java.io.Serializable{
     @Column(name = "SOURCE", nullable = false, length = 8)
     @Enumerated(EnumType.STRING)
     @JsonView(Title.class)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private RegSource source;
 
     @Column(name = "TYPE", length = 7, nullable = false)
     @Enumerated(EnumType.STRING)
     @JsonView(Title.class)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private BusinessType type;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST , CascadeType.MERGE}, optional = false)

@@ -60,6 +60,7 @@ public class JoinCorpReg implements ProjectCorpSummary {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "REG_TIME")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @JsonView({Summary.class, SummaryWithCorp.class, Details.class })
     private Date regTime;
 
