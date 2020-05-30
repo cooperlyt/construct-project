@@ -39,12 +39,12 @@ public class BuildInfo  extends cc.coopersoft.common.construct.project.BuildInfo
     @Column(name = "GROUND_AREA")
     @JsonView(View.class)
     @Override
-    public BigDecimal getUpArea(){return super.getUpArea();}
+    public BigDecimal getOnArea(){return super.getOnArea();}
 
     @Column(name = "UNDER_AREA")
     @JsonView(View.class)
     @Override
-    public BigDecimal getDownArea(){return super.getDownArea();}
+    public BigDecimal getUnderArea(){return super.getUnderArea();}
 
     @Column(name = "ALL_AREA")
     @JsonView(View.class)
@@ -54,7 +54,7 @@ public class BuildInfo  extends cc.coopersoft.common.construct.project.BuildInfo
     @Column(name = "GROUND_FLOOR_COUNT")
     @JsonView(View.class)
     @Override
-    public Integer getUpCount(){return super.getUpCount();}
+    public Integer getOnCount(){return super.getOnCount();}
 
     @Column(name = "UNDER_FLOOR_COUNT")
     @JsonView(View.class)

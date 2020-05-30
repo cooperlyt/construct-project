@@ -3,6 +3,7 @@ package cc.coopersoft.construct.corp.services;
 
 import cc.coopersoft.common.construct.corp.CorpProperty;
 import cc.coopersoft.common.data.GroupIdType;
+import cc.coopersoft.common.data.OperationType;
 import cc.coopersoft.common.data.RegSource;
 import cc.coopersoft.common.data.RegStatus;
 import cc.coopersoft.construct.corp.model.*;
@@ -274,7 +275,7 @@ public class CorpServices {
                     corp.getRegs().add(corpReg);
                     break;
             }
-            if (!BusinessReg.OperateType.DELETE.equals(reg.getOperateType())){
+            if (!OperationType.DELETE.equals(reg.getOperateType())){
                 types = types + " " + reg.getId().getProperty().name();
             }
         }
@@ -335,7 +336,7 @@ public class CorpServices {
 
         for(CorpReg corpReg : corpRegs.values()){
             BusinessReg businessReg = new BusinessReg(regBusiness,corpReg.getId().getProperty());
-            businessReg.setOperateType(BusinessReg.OperateType.QUOTED);
+            businessReg.setOperateType(OperationType.QUOTED);
             businessReg.setInfo(corpReg.getInfo());
             regBusiness.getRegs().add(businessReg);
         }
@@ -361,7 +362,7 @@ public class CorpServices {
         for(BusinessReg reg:  regBusiness.getRegs()){
             reg.getInfo().setId(defaultUidGenerator.getUID());
             reg.getId().setBusiness(regBusiness);
-            reg.setOperateType(BusinessReg.OperateType.CREATE);
+            reg.setOperateType(OperationType.CREATE);
             reg.getInfo().setPrevious(null);
         }
         return regBusiness;

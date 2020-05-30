@@ -35,7 +35,7 @@ public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp<Jo
     public interface Details extends Summary, JoinCorpInfo.Details {}
 
     //取 单位 的项目列表时使用
-    public interface SummaryWithCorp extends JoinCorpInfo.Summary, ProjectCorpReg.SummaryWithCorp {}
+    public interface SummaryWithCorp extends JoinCorpInfo.Summary, JoinCorpReg.SummaryWithCorp {}
 
     @Id
     @Column(name = "JOIN_ID", nullable = false, unique = true)
@@ -90,7 +90,7 @@ public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp<Jo
     @JoinColumn(name = "REG", nullable = false)
     @Access(AccessType.FIELD)
     @JsonView(SummaryWithCorp.class)
-    private ProjectCorpReg reg;
+    private JoinCorpReg reg;
 
 
     @Override

@@ -3,7 +3,7 @@ package cc.coopersoft.construct.project.controllers;
 
 import cc.coopersoft.construct.project.model.JoinCorp;
 import cc.coopersoft.construct.project.model.Project;
-import cc.coopersoft.construct.project.model.ProjectInfoReg;
+import cc.coopersoft.construct.project.model.ProjectRegInfo;
 import cc.coopersoft.construct.project.services.ProjectService;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +30,9 @@ public class ViewController {
     @ResponseStatus(HttpStatus.OK)
     @JsonView(Project.Summary.class)
     public Page<Project> projects(@RequestParam(value = "valid", required = false) Optional<Boolean> valid,
-                                  @RequestParam(value="property", required = false) Optional<ProjectInfoReg.PropertyClass> property,
-                                  @RequestParam(value="class", required = false) Optional<ProjectInfoReg.ProjectClass> projectClass,
-                                  @RequestParam(value = "important", required = false) Optional<ProjectInfoReg.ImportantType> important,
+                                  @RequestParam(value="property", required = false) Optional<ProjectRegInfo.Property> property,
+                                  @RequestParam(value="class", required = false) Optional<ProjectRegInfo.ProjectClass> projectClass,
+                                  @RequestParam(value = "important", required = false) Optional<ProjectRegInfo.ImportantType> important,
                                   @RequestParam(value ="page", required = false) Optional<Integer> page,
                                   @RequestParam(value ="key", required = false)Optional<String> key,
                                   @RequestParam(value ="sort", required = false)Optional<String> sort,

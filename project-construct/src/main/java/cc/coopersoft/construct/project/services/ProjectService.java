@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import javax.persistence.criteria.*;
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -64,9 +65,9 @@ public class ProjectService {
 
 
     public Page<Project> projects(Optional<Boolean> valid,
-                                  Optional<ProjectInfoReg.PropertyClass> propertyClass,
-                                  Optional<ProjectInfoReg.ProjectClass> projectClass,
-                                  Optional<ProjectInfoReg.ImportantType> important,
+                                  Optional<ProjectRegInfo.Property> property,
+                                  Optional<ProjectRegInfo.ProjectClass> projectClass,
+                                  Optional<ProjectRegInfo.ImportantType> important,
                                   Optional<Integer> page,
                                   Optional<String> key,
                                   Optional<String> sort,
@@ -81,16 +82,16 @@ public class ProjectService {
             List<Predicate> predicates = new LinkedList<>();
 
 
-            Join<Project, ProjectInfoReg> infoJoin;
-            Join<Project,ProjectCorpReg> corpJoin;
+            Join<Project, ProjectRegInfo> infoJoin;
+            Join<Project, JoinCorpReg> corpJoin;
             if (countQuery){
                 infoJoin = root.join("info", JoinType.LEFT);
                 corpJoin = root.join("corp",JoinType.LEFT);
             }else{
-                Fetch<Project,ProjectInfoReg> infoFetch = root.fetch("info", JoinType.LEFT);
-                infoJoin = (Join<Project, ProjectInfoReg>) infoFetch;
-                Fetch<Project,ProjectCorpReg> corpFetch = root.fetch("corp",JoinType.LEFT);
-                corpJoin = (Join<Project, ProjectCorpReg>) corpFetch;
+                Fetch<Project, ProjectRegInfo> infoFetch = root.fetch("info", JoinType.LEFT);
+                infoJoin = (Join<Project, ProjectRegInfo>) infoFetch;
+                Fetch<Project, JoinCorpReg> corpFetch = root.fetch("corp",JoinType.LEFT);
+                corpJoin = (Join<Project, JoinCorpReg>) corpFetch;
             }
 
             if (key.isPresent() && StringUtils.isNotBlank(key.get())){
@@ -111,18 +112,12 @@ public class ProjectService {
                 predicates.add(cb.and(cb.isTrue(root.get("enable").as(Boolean.class))));
             }
 
+            property.ifPresent(value -> predicates.add(cb.and(cb.equal(infoJoin.get("property"),value))));
 
-            propertyClass.ifPresent(value -> {
-                CriteriaBuilder.In<ProjectInfoReg.Property> in = cb.in(infoJoin.get("property"));
-                for (ProjectInfoReg.Property property: value.getProperties()){
-                    in.value(property);
-                }
-                predicates.add(cb.and(in));
-            });
 
             projectClass.ifPresent(value -> {
-                CriteriaBuilder.In<ProjectInfoReg.Type> in = cb.in(infoJoin.get("type"));
-                for (ProjectInfoReg.Type type :  value.getSub()){
+                CriteriaBuilder.In<ProjectRegInfo.Type> in = cb.in(infoJoin.get("type"));
+                for (ProjectRegInfo.Type type :  value.getSub()){
                     in.value(type);
                 }
                 predicates.add(cb.and(in));
@@ -270,7 +265,7 @@ public class ProjectService {
         return reg;
     }
 
-    private JoinCorp getDeveloper(ProjectCorpReg reg){
+    private JoinCorp getDeveloper(JoinCorpReg reg){
         for(JoinCorp corp : reg.getCorps()){
             if (CorpProperty.Developer.equals(corp.getProperty())){
                 return corp;
@@ -314,7 +309,18 @@ public class ProjectService {
     }
 
     private void initBuildReg(BuildReg buildReg){
+        int count = 0;
+        BigDecimal onArea = BigDecimal.ZERO;
+        BigDecimal underArea = BigDecimal.ZERO;
         for(BuildRegInfo buildRegInfo: buildReg.getBuilds()){
+            if (!OperationType.DELETE.equals(buildRegInfo.getOperation())){
+                count++;
+                if (buildRegInfo.getInfo().getOnArea() != null)
+                    onArea = onArea.add(buildRegInfo.getInfo().getOnArea());
+                if (buildRegInfo.getInfo().getUnderArea() != null){
+                    underArea = underArea.add(buildRegInfo.getInfo().getUnderArea());
+                }
+            }
             buildRegInfo.setId(cachedUidGenerator.getUID());
             if (OperationType.MODIFY.equals(buildRegInfo.getOperation())){
                 buildRegInfo.getInfo().setId(buildRegInfo.getId());
@@ -324,6 +330,9 @@ public class ProjectService {
                 buildRegInfo.setCode(buildRegInfo.getId());
             }
         }
+        buildReg.setCount(count);
+        buildReg.setOnArea(onArea);
+        buildReg.setUnderArea(underArea);
     }
 
     private ProjectReg create(ProjectReg reg){

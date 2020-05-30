@@ -1,11 +1,13 @@
 package cc.coopersoft.construct.project.model;
 
 
+
 import cc.coopersoft.common.construct.project.ProjectCorpSummary;
 import cc.coopersoft.common.json.JsonRawDeserializer;
 import cc.coopersoft.common.json.JsonRawSerialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -21,16 +23,17 @@ import java.util.*;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
-public class ProjectCorpReg implements ProjectCorpSummary {
+public class JoinCorpReg implements ProjectCorpSummary {
 
     public interface Summary {}
-    public interface Details extends JoinCorp.Details{}
     public interface SummaryWithCorp extends  Project.Title {}
+
+    public interface Details extends JoinCorp.Details {}
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PREVIOUS")
     @JsonIgnore
-    private ProjectCorpReg previous;
+    private JoinCorpReg previous;
 
     @Basic(fetch = FetchType.LAZY)
     @Column(name = "TAGS", length = 1024)
@@ -41,6 +44,7 @@ public class ProjectCorpReg implements ProjectCorpSummary {
     @JsonDeserialize(using = JsonRawDeserializer.class)
     @JsonSerialize(using = JsonRawSerialize.class)
     @JsonView(Summary.class)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private String corpSummary;
 
     @OneToOne(fetch = FetchType.LAZY, mappedBy = "corp")
@@ -49,13 +53,14 @@ public class ProjectCorpReg implements ProjectCorpSummary {
 
     @Id
     @Column(name = "ID", unique = true, nullable = false)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonView({Summary.class, SummaryWithCorp.class, Details.class})
     private Long id;
 
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "REG_TIME")
-    @JsonView({Summary.class,Details.class,SummaryWithCorp.class })
+    @JsonView({Summary.class, SummaryWithCorp.class, Details.class })
     private Date regTime;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "reg", cascade = CascadeType.ALL, orphanRemoval = true)

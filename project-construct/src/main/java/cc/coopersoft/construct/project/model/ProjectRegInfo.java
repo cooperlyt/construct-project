@@ -19,7 +19,7 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @Access(AccessType.PROPERTY)
-public class ProjectInfoReg extends cc.coopersoft.common.construct.project.ProjectInfoReg{
+public class ProjectRegInfo extends cc.coopersoft.common.construct.project.ProjectRegInfo{
 
     public interface Title {}
     public interface Summary extends Title{}
@@ -29,7 +29,7 @@ public class ProjectInfoReg extends cc.coopersoft.common.construct.project.Proje
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PREVIOUS")
     @JsonIgnore
-    private ProjectInfoReg previous;
+    private ProjectRegInfo previous;
 
 
     @Id
@@ -52,6 +52,20 @@ public class ProjectInfoReg extends cc.coopersoft.common.construct.project.Proje
     @Override
     public Property getProperty(){return super.getProperty();}
 
+    @Column(name = "MODIFY_FIT")
+    @JsonView(Title.class)
+    @Override
+    public Boolean getModifyFit(){return super.getModifyFit();}
+
+    @Column(name = "MODIFY_WARM")
+    @JsonView(Title.class)
+    @Override
+    public Boolean getModifyWarm(){return super.getModifyWarm();}
+
+    @Column(name = "MODIFY_USE")
+    @JsonView(Title.class)
+    @Override
+    public Boolean getModifyUse(){return super.getModifyUse();}
 
     @Column(name = "NAME", nullable = false, length = 256)
     @NotBlank
@@ -96,12 +110,12 @@ public class ProjectInfoReg extends cc.coopersoft.common.construct.project.Proje
 
     //TODO Enum
     @Column(name = "TENDER", length = 32)
-    @JsonView(ProjectInfoReg.Summary.class)
+    @JsonView(ProjectRegInfo.Summary.class)
     @Override
     public String getTender(){return super.getTender();}
 
     @Column(name = "COSTS")
-    @JsonView(ProjectInfoReg.Summary.class)
+    @JsonView(ProjectRegInfo.Summary.class)
     @Override
     public BigDecimal getCosts(){return super.getCosts();}
 

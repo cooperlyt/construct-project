@@ -27,12 +27,12 @@ import java.util.stream.Collectors;
             @NamedSubgraph(name = "corp.info", attributeNodes = @NamedAttributeNode("info"))
         }
 )
-public class Project extends cc.coopersoft.common.construct.project.Project<ProjectInfoReg,JoinCorp>{
+public class Project extends cc.coopersoft.common.construct.project.Project<ProjectRegInfo,JoinCorp,BuildRegInfo>{
 
 
-    public interface Title extends ProjectInfoReg.Title{}
-    public interface Summary extends Title, ProjectInfoReg.Summary, ProjectCorpReg.Summary , JoinCorp.Summary{}
-    public interface Details extends Title, ProjectInfoReg.Details, ProjectCorpReg.Details , BuildRegInfo.View {}
+    public interface Title extends ProjectRegInfo.Title{}
+    public interface Summary extends Title, ProjectRegInfo.Summary, BuildReg.Summary, JoinCorpReg.Summary , JoinCorp.Summary{}
+    public interface Details extends Title, ProjectRegInfo.Details, JoinCorp.Details , BuildRegInfo.View {}
 
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -63,12 +63,13 @@ public class Project extends cc.coopersoft.common.construct.project.Project<Proj
     @JsonView(Title.class)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Override
-    public ProjectInfoReg getInfo(){return super.getInfo();}
+    public ProjectRegInfo getInfo(){return super.getInfo();}
 
     @Access(AccessType.FIELD)
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "CORP", nullable = false)
-    private ProjectCorpReg corp;
+    @JsonView(Summary.class)
+    private JoinCorpReg corp;
 
     @Transient
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -81,6 +82,7 @@ public class Project extends cc.coopersoft.common.construct.project.Project<Proj
     @Access(AccessType.FIELD)
     @OneToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "BUILD", nullable = false)
+    @JsonView(Summary.class)
     private BuildReg build;
 
     @Transient
@@ -91,9 +93,4 @@ public class Project extends cc.coopersoft.common.construct.project.Project<Proj
         return this.getBuild().getBuilds().stream().filter(build -> !OperationType.DELETE.equals(build.getOperation())).collect(Collectors.toList());
     }
 
-    @Access(AccessType.FIELD)
-    @Version
-    @Column(name = "VERSION")
-    @JsonIgnore
-    private Integer version;
 }

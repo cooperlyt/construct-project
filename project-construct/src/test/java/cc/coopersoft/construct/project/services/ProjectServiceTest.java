@@ -6,7 +6,6 @@ import cc.coopersoft.common.data.OperationType;
 import cc.coopersoft.construct.project.Application;
 import cc.coopersoft.construct.project.model.*;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -38,16 +37,16 @@ public class ProjectServiceTest {
     public void createAndModify(){
 
         log.debug("===================== begin test path create =====================");
-        ProjectInfoReg projectInfo = new ProjectInfoReg();
+        ProjectRegInfo projectInfo = new ProjectRegInfo();
         projectInfo.setName("test create project");
         projectInfo.setAddress("test address");
-        projectInfo.setType(ProjectInfoReg.Type.CIVIL_HOUSE);
-        projectInfo.setProperty(ProjectInfoReg.Property.NEW);
-        projectInfo.setImportantType(ProjectInfoReg.ImportantType.NORMAL);
+        projectInfo.setType(ProjectRegInfo.Type.CIVIL_HOUSE);
+        projectInfo.setProperty(ProjectRegInfo.Property.NEW);
+        projectInfo.setImportantType(ProjectRegInfo.ImportantType.NORMAL);
 
 
 
-        ProjectCorpReg corpReg = new ProjectCorpReg();
+        JoinCorpReg corpReg = new JoinCorpReg();
 
         JoinCorp joinCorp = new JoinCorp();
         joinCorp.setProperty(CorpProperty.Developer);
@@ -88,7 +87,7 @@ public class ProjectServiceTest {
         assertEquals(project.getCorp().getCorps().size(), 2);
         assertEquals(project.getDeveloper().getCode(), 2l);
 
-        assertEquals(project.getInfo().getType(), ProjectInfoReg.Type.CIVIL_HOUSE);
+        assertEquals(project.getInfo().getType(), ProjectRegInfo.Type.CIVIL_HOUSE);
 
 
 
@@ -107,12 +106,12 @@ public class ProjectServiceTest {
 
         log.debug("===================== begin test path modify =====================");
 
-        ProjectInfoReg projectInfo = new ProjectInfoReg();
+        ProjectRegInfo projectInfo = new ProjectRegInfo();
         projectInfo.setName("test modify project");
         projectInfo.setAddress("test modify address");
-        projectInfo.setType(ProjectInfoReg.Type.BOILER);
-        projectInfo.setProperty(ProjectInfoReg.Property.NEW);
-        projectInfo.setImportantType(ProjectInfoReg.ImportantType.NORMAL);
+        projectInfo.setType(ProjectRegInfo.Type.BOILER);
+        projectInfo.setProperty(ProjectRegInfo.Property.NEW);
+        projectInfo.setImportantType(ProjectRegInfo.ImportantType.NORMAL);
 
 
 
@@ -122,7 +121,7 @@ public class ProjectServiceTest {
         joinCorp.setTel("1111");
 
 
-        ProjectCorpReg corpReg = new ProjectCorpReg();
+        JoinCorpReg corpReg = new JoinCorpReg();
         corpReg.getCorps().add(joinCorp);
 
 
@@ -137,7 +136,7 @@ public class ProjectServiceTest {
         assertEquals(project.getDeveloper().getTel(), "1111");
         assertEquals(project.getCorp().getCorps().size(), 1);
         assertEquals(project.getDeveloper().getCode(), 1l);
-        assertEquals(project.getInfo().getType(), ProjectInfoReg.Type.BOILER);
+        assertEquals(project.getInfo().getType(), ProjectRegInfo.Type.BOILER);
 
         log.debug("===================== test path modify  complete =====================");
     }

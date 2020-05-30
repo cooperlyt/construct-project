@@ -2,6 +2,7 @@ package cc.coopersoft.construct.corp.services;
 
 import cc.coopersoft.common.construct.corp.CorpProperty;
 import cc.coopersoft.common.data.GroupIdType;
+import cc.coopersoft.common.data.OperationType;
 import cc.coopersoft.common.data.PersonIdType;
 import cc.coopersoft.construct.corp.Application;
 import cc.coopersoft.construct.corp.model.*;
@@ -86,7 +87,7 @@ public class CorpServicesTest {
         businessReg = new BusinessReg();
         businessReg.setId(new BusinessRegPK());
         businessReg.getId().setProperty(CorpProperty.Construct);
-        businessReg.setOperateType(BusinessReg.OperateType.DELETE);
+        businessReg.setOperateType(OperationType.DELETE);
         business.getRegs().add(businessReg);
 
         corpServices.patchModify(code,business);
@@ -109,7 +110,7 @@ public class CorpServicesTest {
         businessReg.setId(new BusinessRegPK());
         businessReg.getId().setProperty(CorpProperty.Construct);
         businessReg.setInfo(regInfo);
-        businessReg.setOperateType(BusinessReg.OperateType.CREATE);
+        businessReg.setOperateType(OperationType.CREATE);
         business.getRegs().add(businessReg);
 
 
@@ -122,7 +123,7 @@ public class CorpServicesTest {
         businessReg.setId(new BusinessRegPK());
         businessReg.getId().setProperty(CorpProperty.Developer);
         businessReg.setInfo(regInfo);
-        businessReg.setOperateType(BusinessReg.OperateType.MODIFY);
+        businessReg.setOperateType(OperationType.MODIFY);
         business.getRegs().add(businessReg);
 
         corpServices.patchModify(code,business);

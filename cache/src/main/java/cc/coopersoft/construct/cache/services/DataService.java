@@ -38,8 +38,8 @@ public class DataService {
         Project.Default project = projectCacheService.get(code);
         if (project != null){
             Set<Long> corpCodes = new HashSet<>();
-            ProjectAndCorp result = new ProjectAndCorp(project,new ArrayList<>(project.getCorp().getCorps().size()));
-            for(JoinCorp<JoinCorpInfo> corp: project.getCorp().getCorps()){
+            ProjectAndCorp result = new ProjectAndCorp(project,new ArrayList<>(project.getCorps().size()));
+            for(JoinCorp<JoinCorpInfo> corp: project.getCorps()){
                 if (!corpCodes.contains(corp.getCode())){
                     result.getCorps().add(corpCacheService.get(corp.getCode()));
                     corpCodes.add(corp.getCode());

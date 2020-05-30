@@ -23,8 +23,8 @@ public class ProjectReg implements java.io.Serializable{
 
 
     public interface Title {}
-    public interface Summary extends Title, ProjectInfoReg.Summary, ProjectCorpReg.Summary {}
-    public interface Details extends Title, ProjectInfoReg.Details, ProjectCorpReg.Details, BuildReg.Details {}
+    public interface Summary extends Title, ProjectRegInfo.Summary, JoinCorpReg.Summary,BuildReg.Summary {}
+    public interface Details extends Title, ProjectRegInfo.Details, BuildReg.Details, JoinCorpReg.Details {}
 
 
     @Id
@@ -74,12 +74,12 @@ public class ProjectReg implements java.io.Serializable{
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST , CascadeType.MERGE}, optional = false)
     @JoinColumn(name = "CORP", nullable = false)
     @JsonView(Title.class)
-    private ProjectCorpReg corp;
+    private JoinCorpReg corp;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST , CascadeType.MERGE}, optional = false)
     @JoinColumn(name = "INFO", nullable = false)
     @JsonView(Title.class)
-    private ProjectInfoReg info;
+    private ProjectRegInfo info;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST , CascadeType.MERGE}, optional = false)
     @JoinColumn(name = "BUILD", nullable = false)
