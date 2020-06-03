@@ -53,6 +53,7 @@ public class CommonData {
         return result;
     }
 
+
     @RequestMapping(value = "/project-corp/{code}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
     public DataService.ProjectAndCorp projectAndCorp(@PathVariable("code") long code){

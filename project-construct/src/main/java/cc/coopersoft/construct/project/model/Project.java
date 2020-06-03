@@ -37,7 +37,7 @@ public class Project extends cc.coopersoft.common.construct.project.Project<Proj
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "REG_TIME", nullable = false)
-    @JsonIgnore
+    @JsonView(Title.class)
     @Access(AccessType.FIELD)
     private Date regTime;
 
@@ -90,7 +90,8 @@ public class Project extends cc.coopersoft.common.construct.project.Project<Proj
     @JsonView(Details.class)
     @Override
     public List<BuildRegInfo> getBuilds(){
-        return this.getBuild().getBuilds().stream().filter(build -> !OperationType.DELETE.equals(build.getOperation())).collect(Collectors.toList());
+        return this.getBuild().getBuilds()
+                .stream().filter(build -> !OperationType.DELETE.equals(build.getOperation()) || ProjectRegInfo.Property.MOVE.equals(getInfo().getProperty()) ).collect(Collectors.toList());
     }
 
 }
