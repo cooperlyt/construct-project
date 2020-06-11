@@ -4,7 +4,9 @@ import cc.coopersoft.common.construct.corp.CorpProperty;
 import cc.coopersoft.common.data.GroupIdType;
 import cc.coopersoft.construct.corp.model.Corp;
 import cc.coopersoft.construct.corp.model.CorpBusiness;
+import cc.coopersoft.construct.corp.model.CorpEmployee;
 import cc.coopersoft.construct.corp.services.CorpServices;
+import cc.coopersoft.construct.corp.services.EmployeeServices;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,9 +25,12 @@ public class ViewController {
 
     private final CorpServices corpServices;
 
+    private final EmployeeServices employeeServices;
+
     @Autowired
-    public ViewController(CorpServices corpServices) {
+    public ViewController(CorpServices corpServices, EmployeeServices employeeServices) {
         this.corpServices = corpServices;
+        this.employeeServices = employeeServices;
     }
 
     @RequestMapping(value = "/list", method = RequestMethod.GET)
@@ -101,7 +106,11 @@ public class ViewController {
     @ResponseStatus(HttpStatus.OK)
     public String corpInBusiness(@PathVariable("code") long code){
         return String.valueOf(corpServices.corpInBusiness(code));
+    }
 
+    @RequestMapping(value = "/corp/{code}/employee", method = RequestMethod.GET)
+    public List<CorpEmployee> listEmployee(@PathVariable("code") long code){
+        return employeeServices.employeeList(code);
     }
 
 }

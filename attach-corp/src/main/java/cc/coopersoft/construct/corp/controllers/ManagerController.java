@@ -1,6 +1,7 @@
 package cc.coopersoft.construct.corp.controllers;
 
 import cc.coopersoft.construct.corp.model.CorpBusiness;
+import cc.coopersoft.construct.corp.model.CorpEmployee;
 import cc.coopersoft.construct.corp.services.CorpServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,5 +50,14 @@ public class ManagerController {
         return "{ \"code\":" +  corpCode + " , \"enable\":false}" ;
     }
 
+    @RequestMapping(value = "/corp/{code}/employee/add", method = RequestMethod.POST)
+    public String addCorpEmployee(@PathVariable("code") long corpCode, @Valid @RequestBody CorpEmployee employee){
+
+    }
+
+    @RequestMapping(value = "/employee/{id}", method = RequestMethod.DELETE)
+    public String delEmployee(@PathVariable("id") String id){
+
+    }
 
 }

@@ -107,10 +107,10 @@ public class ProjectServices {
         };
 
 
-        Sort sortable = Sort.by((dir.isPresent() ? ("DESC".equals(dir.get()) ? Sort.Direction.DESC : Sort.Direction.ASC) : Sort.Direction.DESC)
-                , (sort.isPresent() ? sort.get() : "regTime"));
+        Sort sortable = Sort.by((dir.filter(s -> !"DESC".equals(s)).map(s -> Sort.Direction.ASC).orElse(Sort.Direction.DESC))
+                , (sort.orElse("regTime")));
 
-        return projectRepository.findAll(specification, PageRequest.of(page.isPresent() ? page.get() : 0 ,PAGE_SIZE,sortable));
+        return projectRepository.findAll(specification, PageRequest.of(page.orElse(0),PAGE_SIZE,sortable));
     }
 
     public List<JoinCorp> joinProjects(long code){
