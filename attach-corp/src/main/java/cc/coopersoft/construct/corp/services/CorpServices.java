@@ -150,7 +150,7 @@ public class CorpServices {
 
             if (joinType.isPresent()){
                 Join<Corp,CorpReg> regJoin = root.join("regs", JoinType.INNER);
-                predicates.add(cb.and(cb.equal(regJoin.get("id").get("type").as(CorpProperty.class),joinType.get())));
+                predicates.add(cb.and(cb.equal(regJoin.get("id").get("property").as(CorpProperty.class),joinType.get())));
 
             }
 

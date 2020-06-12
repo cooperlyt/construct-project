@@ -1,6 +1,8 @@
 package cc.coopersoft.construct.corp.services;
 
+import cc.coopersoft.common.cloud.schemas.UserInfo;
 import cc.coopersoft.common.construct.corp.Corp;
+import cc.coopersoft.construct.corp.model.CorpEmployee;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.stream.messaging.Source;
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class RemoteServicesImpl implements RemoteServices {
 
-    private static final String CORP_TYPE = "CONSTRUCT.CORP";
+
 
     private final Source source;
 
@@ -33,23 +35,28 @@ public class RemoteServicesImpl implements RemoteServices {
     }
 
     @Override
-    public String addUser(long corpCode, boolean manager, UserDetails user) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<UserDetails> entity = new HttpEntity<>(user,headers);
+    public String addUser(long corp, UserInfo user) {
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        HttpEntity<UserDetails> entity = new HttpEntity<>(user,headers);
 
         ResponseEntity<String> restExchange = oAuth2RestTemplate.exchange(
-                "http://authenticationservice/admin/trust/add/{type}/{org}/{manager}",
-                HttpMethod.POST, entity ,String.class, CORP_TYPE,corpCode,manager );
+                "http://authenticationservice/admin/trust/add/{org}",
+                HttpMethod.PUT, null ,String.class, corp , user );
 
         return restExchange.getBody();
     }
 
     @Override
-    public void delUser(String id) {
+    public void resetPassword(String username) {
         ResponseEntity<String> restExchange = oAuth2RestTemplate.exchange(
-                "http://authenticationservice/admin/trust/del/{type}/{org}/{username}",
-                HttpMethod.DELETE, null ,String.class, CORP_TYPE,corpCode,manager );
+                "http://authenticationservice/admin/trust/reset/{username}",
+                HttpMethod.PUT, null ,String.class, username);
+    }
 
+    public void userEnable(String username, boolean enable){
+        ResponseEntity<String> restExchange = oAuth2RestTemplate.exchange(
+                "http://authenticationservice/admin/trust/{type}/{username}",
+                HttpMethod.PUT, null ,String.class, enable ? "enabled" : "disabled" , username);
     }
 }

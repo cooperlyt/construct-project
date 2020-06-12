@@ -91,9 +91,11 @@ CREATE TABLE CONSTRUCT_EMPLOYEE
     NAME varchar(64) NOT NULL,
     TEL varchar(16),
     CORP_CODE bigint NOT NULL,
-    ID varchar(32) NOT NULL,
     DATA_TIME timestamp NOT NULL,
     MANAGER boolean NOT NULL,
+    USERNAME varchar(32) NOT NULL,
+    ID bigint NOT NULL,
+    VALID boolean NOT NULL,
     PRIMARY KEY (ID)
 ) ENGINE = InnoDB DEFAULT CHARACTER SET utf8;
 
