@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeServices {
@@ -26,7 +27,7 @@ public class EmployeeServices {
     }
 
     public List<CorpEmployee> employeeList(long corpCode){
-        return corpEmployeeRepository.findByCorpCodeOrderByCode(corpCode);
+        return corpEmployeeRepository.findByCorpCodeOrderById(corpCode);
     }
 
     @Transactional
@@ -39,5 +40,9 @@ public class EmployeeServices {
         employee.setValid(true);
         employee.setDataTime(new Date());
         return corpEmployeeRepository.save(employee);
+    }
+
+    public Optional<CorpEmployee> employee(long code){
+        return corpEmployeeRepository.findById(code);
     }
 }

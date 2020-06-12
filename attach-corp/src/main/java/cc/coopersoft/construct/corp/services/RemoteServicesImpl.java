@@ -47,16 +47,4 @@ public class RemoteServicesImpl implements RemoteServices {
         return restExchange.getBody();
     }
 
-    @Override
-    public void resetPassword(String username) {
-        ResponseEntity<String> restExchange = oAuth2RestTemplate.exchange(
-                "http://authenticationservice/admin/trust/reset/{username}",
-                HttpMethod.PUT, null ,String.class, username);
-    }
-
-    public void userEnable(String username, boolean enable){
-        ResponseEntity<String> restExchange = oAuth2RestTemplate.exchange(
-                "http://authenticationservice/admin/trust/{type}/{username}",
-                HttpMethod.PUT, null ,String.class, enable ? "enabled" : "disabled" , username);
-    }
 }

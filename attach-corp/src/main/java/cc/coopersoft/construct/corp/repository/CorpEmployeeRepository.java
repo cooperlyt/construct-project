@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CorpEmployeeRepository extends CrudRepository<CorpEmployee,String> {
+public interface CorpEmployeeRepository extends CrudRepository<CorpEmployee,Long> {
 
-    List<CorpEmployee> findByCorpCodeOrderByCode(long code);
+    List<CorpEmployee> findByCorpCodeOrderById(long code);
 }

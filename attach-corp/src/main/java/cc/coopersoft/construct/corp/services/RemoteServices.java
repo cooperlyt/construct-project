@@ -10,5 +10,4 @@ public interface RemoteServices {
 
     String addUser(long corp, UserInfo user);
 
-    void resetPassword(String username);
 }

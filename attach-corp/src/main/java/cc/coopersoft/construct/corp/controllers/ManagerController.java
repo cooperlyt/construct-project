@@ -3,9 +3,11 @@ package cc.coopersoft.construct.corp.controllers;
 import cc.coopersoft.construct.corp.model.CorpBusiness;
 import cc.coopersoft.construct.corp.model.CorpEmployee;
 import cc.coopersoft.construct.corp.services.CorpServices;
+import cc.coopersoft.construct.corp.services.EmployeeServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
 
@@ -15,9 +17,12 @@ public class ManagerController {
 
     private final CorpServices corpServices;
 
+    private final EmployeeServices employeeServices;
+
     @Autowired
-    public ManagerController(CorpServices corpServices) {
+    public ManagerController(CorpServices corpServices, EmployeeServices employeeServices) {
         this.corpServices = corpServices;
+        this.employeeServices = employeeServices;
     }
 
 
@@ -52,12 +57,12 @@ public class ManagerController {
 
     @RequestMapping(value = "/corp/{code}/employee/add", method = RequestMethod.POST)
     public String addCorpEmployee(@PathVariable("code") long corpCode, @Valid @RequestBody CorpEmployee employee){
-
+        return String.valueOf(employeeServices.addEmployee(corpCode,employee).getId());
     }
 
-    @RequestMapping(value = "/employee/{id}", method = RequestMethod.DELETE)
-    public String delEmployee(@PathVariable("id") String id){
-
+    @RequestMapping(value = "/employee/{code}", method = RequestMethod.GET)
+    public CorpEmployee getEmployee(@PathVariable("code") long code){
+        return employeeServices.employee(code).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
 }

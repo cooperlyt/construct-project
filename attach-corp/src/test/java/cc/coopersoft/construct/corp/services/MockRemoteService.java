@@ -1,5 +1,6 @@
 package cc.coopersoft.construct.corp.services;
 
+import cc.coopersoft.common.cloud.schemas.UserInfo;
 import cc.coopersoft.common.construct.corp.*;
 import cc.coopersoft.common.data.GroupIdType;
 import lombok.extern.slf4j.Slf4j;
@@ -15,4 +16,10 @@ public class MockRemoteService implements RemoteServices {
     public void publishChangeMessage(long code) {
         log.info("notify corp change: " + code);
     }
+
+    @Override
+    public String addUser(long corp, UserInfo user) {
+        return null;
+    }
+
 }
