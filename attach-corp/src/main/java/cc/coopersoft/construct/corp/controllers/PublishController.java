@@ -16,7 +16,7 @@ public class PublishController {
 
     @RequestMapping(value = "/status", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.CREATED)
-    public String pathCreate(){
+    public String status(){
         return "Running";
     }
 

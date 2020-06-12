@@ -27,7 +27,7 @@ public class CorpEmployee implements UserInfo {
     private Long id;
 
     @Column(name = "VALID", nullable = false)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private boolean valid;
 
     @Column(name = "USERNAME", length = 32, nullable = false)

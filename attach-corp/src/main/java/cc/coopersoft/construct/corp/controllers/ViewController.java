@@ -15,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -111,6 +112,13 @@ public class ViewController {
     @RequestMapping(value = "/corp/{code}/employee", method = RequestMethod.GET)
     public List<CorpEmployee> listEmployee(@PathVariable("code") long code){
         return employeeServices.employeeList(code);
+    }
+
+
+
+    @RequestMapping(value = "/employee/{code}", method = RequestMethod.GET)
+    public CorpEmployee getEmployee(@PathVariable("code") long code){
+        return employeeServices.employee(code).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
     }
 
 }
