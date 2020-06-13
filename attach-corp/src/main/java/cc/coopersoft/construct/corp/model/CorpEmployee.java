@@ -31,7 +31,6 @@ public class CorpEmployee implements UserInfo {
     private boolean valid;
 
     @Column(name = "USERNAME", length = 32, nullable = false)
-    @NotBlank
     @Size(max = 32)
     private String username;
 

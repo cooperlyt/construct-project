@@ -36,13 +36,14 @@ public class RemoteServicesImpl implements RemoteServices {
 
     @Override
     public String addUser(long corp, UserInfo user) {
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity<UserDetails> entity = new HttpEntity<>(user,headers);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<UserInfo> entity = new HttpEntity<>(user,headers);
+
 
         ResponseEntity<String> restExchange = oAuth2RestTemplate.exchange(
                 "http://authenticationservice/admin/trust/add/{org}",
-                HttpMethod.PUT, null ,String.class, corp , user );
+                HttpMethod.PUT, entity ,String.class, corp  );
 
         return restExchange.getBody();
     }
