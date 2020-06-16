@@ -17,6 +17,7 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .antMatchers("/path/**").hasAuthority("DATA_MGR")
                 .antMatchers("/mgr/**").hasAuthority("CONSTRUCT.CORP")
                 .antMatchers("/view/**").hasAuthority("Master")
+                .antMatchers("/trust/**").hasAuthority("Trust")
                 .anyRequest().authenticated();
 
     }

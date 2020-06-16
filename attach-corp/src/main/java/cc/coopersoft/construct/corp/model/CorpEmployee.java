@@ -19,6 +19,13 @@ import java.util.Date;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
+@NamedEntityGraph(name = "employee.full",
+        attributeNodes = {
+                @NamedAttributeNode(value ="corp", subgraph = "corp.info")} ,
+        subgraphs = {
+                @NamedSubgraph(name = "corp.info", attributeNodes = @NamedAttributeNode("info"))
+        }
+)
 public class CorpEmployee implements UserInfo {
 
     @Id
