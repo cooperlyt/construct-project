@@ -23,7 +23,7 @@ public class ProjectCacheService extends DataCacheService<Project.Default,Long> 
     @Override
     protected Project.Default getData(Long key) {
         ResponseEntity<Project.Default> restExchange = oAuth2RestTemplate.exchange(
-                "http://construct-project/view/project/{code}",
+                "http://construct-project/publish/project/{code}",
                 HttpMethod.GET, null,Project.Default.class,key);
 
         return restExchange.getBody();

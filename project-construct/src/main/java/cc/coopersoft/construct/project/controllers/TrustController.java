@@ -1,7 +1,9 @@
 package cc.coopersoft.construct.project.controllers;
 
+import cc.coopersoft.common.construct.corp.CorpProperty;
 import cc.coopersoft.construct.project.model.Project;
 import cc.coopersoft.construct.project.services.TrustService;
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,10 +35,12 @@ public class TrustController {
     }
 
     @RequestMapping(value = "{corp}/projects", method = RequestMethod.GET)
+    @JsonView(Project.Summary.class)
     public List<Project> listProject(@PathVariable("corp") long corp,
+                                     @RequestParam(value = "property", required = false) CorpProperty property,
                                      @RequestParam(value = "key", required = false) String key){
         if (hasCorpRole(corp)){
-            return trustService.searchProject(corp,key);
+            return trustService.searchProject(corp,key,property);
         }else{
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE);
         }

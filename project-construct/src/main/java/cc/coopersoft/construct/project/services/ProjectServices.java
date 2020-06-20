@@ -73,9 +73,8 @@ public class ProjectServices {
                 List<Predicate> keyPredicate = new LinkedList<>();
                 String _key = key.get().trim();
                 String _keyLike = "%" + _key + "%";
-                keyPredicate.add(cb.equal(root.get("code"),_key));
+                keyPredicate.add(cb.equal(root.get("code").as(String.class),_key));
                 keyPredicate.add(cb.like(infoJoin.get("name"),_keyLike));
-                keyPredicate.add(cb.like(infoJoin.get("memo"),_keyLike));
                 keyPredicate.add(cb.like(corpJoin.get("corpTags"),_keyLike));
                 keyPredicate.add(cb.like(infoJoin.get("importantFile"),_keyLike));
                 keyPredicate.add(cb.like(infoJoin.get("address"),_keyLike));

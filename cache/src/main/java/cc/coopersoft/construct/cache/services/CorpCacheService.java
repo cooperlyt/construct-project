@@ -27,7 +27,7 @@ public class CorpCacheService extends DataCacheService<Corp.Default,Long>{
     @Override
     protected Corp.Default getData(Long key) {
         ResponseEntity<Corp.Default> restExchange = oAuth2RestTemplate.exchange(
-                "http://construct-attach-corp/view/corp/{code}",
+                "http://construct-attach-corp/publish/corp/{code}",
                 HttpMethod.GET, null,Corp.Default.class,key);
 
         return restExchange.getBody();

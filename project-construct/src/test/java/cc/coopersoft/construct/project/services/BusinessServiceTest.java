@@ -34,6 +34,8 @@ public class BusinessServiceTest {
     @Autowired
     private ProjectServices projectServices;
 
+    @Autowired
+    private TrustService trustService;
 
     private static long code;
 
@@ -183,5 +185,12 @@ public class BusinessServiceTest {
         assertEquals(result.size(), 1);
     }
 
+
+    @Test
+    public void searchTest(){
+
+       List<Project> result = trustService.searchProject(1l,null,CorpProperty.Developer);
+
+    }
 
 }

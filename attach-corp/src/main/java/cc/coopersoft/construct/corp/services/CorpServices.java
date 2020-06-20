@@ -136,7 +136,7 @@ public class CorpServices {
                 List<Predicate> keyPredicate = new LinkedList<>();
                 String _key = key.get().trim();
                 String _keyLike = "%" + _key + "%";
-                keyPredicate.add(cb.equal(root.get("code").as(Long.class),_key));
+                keyPredicate.add(cb.equal(root.get("code").as(String.class),_key));
                 keyPredicate.add(cb.like(infoJoin.get("groupId").as(String.class), _keyLike ));
                 keyPredicate.add(cb.like(infoJoin.get("ownerName").as(String.class), _keyLike));
                 keyPredicate.add(cb.like(infoJoin.get("ownerId").as(String.class), _keyLike));
