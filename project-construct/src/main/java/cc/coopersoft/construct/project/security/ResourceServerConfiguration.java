@@ -15,6 +15,8 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
                 .authorizeRequests()
                 .antMatchers("/publish/**").permitAll()
                 .antMatchers("/mgr/**").hasAuthority("DATA_MGR")
+                .antMatchers("/view/**").hasAuthority("Master")
+                .antMatchers("/trust/**").hasAuthority("Trust")
                 .anyRequest().authenticated();
 
     }

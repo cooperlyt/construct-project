@@ -23,13 +23,14 @@ eureka:
 spring:
   cloud:
     stream:
-      bindings:
-        certificateExecute:
-          destination: certificateChangeTopic
-          content-type: application/json
-      kafka:
+      rocketmq:
         binder:
-          brokers: 192.168.1.21
+          name-server:
+            192.168.1.21:9876
+      bindings:
+        output:
+          destination: projectChangeTopic
+          content-type: application/json
 
 signing:
   key: "345345fsdfsf5345"

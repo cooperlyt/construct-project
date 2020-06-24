@@ -1,7 +1,8 @@
 package cc.coopersoft.construct.corp.model;
 
 
-import cc.coopersoft.common.data.ConstructJoinType;
+import cc.coopersoft.common.construct.corp.CorpProperty;
+import cc.coopersoft.common.data.OperationType;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -15,26 +16,29 @@ import java.util.Objects;
 @Table(name = "BUSINESS_REG")
 public class BusinessReg {
 
-    public enum OperateType{
-        DELETE,
-        MODIFY,
-        CREATE,
-        QUOTED
+    @EmbeddedId
+    private BusinessRegPK id = new BusinessRegPK();
+
+    @Transient
+    @Access(AccessType.FIELD)
+    public CorpProperty getProperty(){
+        return id.getProperty();
     }
 
-    @EmbeddedId
-    private BusinessRegPK id;
+    public void setProperty(CorpProperty property){
+        this.id.setProperty(property);
+    }
 
     @Column(name = "OPERATE", length = 6, nullable = false)
     @Enumerated(EnumType.STRING)
-    private OperateType operateType;
+    private OperationType operateType;
 
 
     @ManyToOne(fetch = FetchType.LAZY, optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "REG_ID", nullable = false)
     private RegInfo info;
 
-    public BusinessReg(CorpBusiness business, ConstructJoinType type) {
+    public BusinessReg(CorpBusiness business, CorpProperty type) {
         this.id = new BusinessRegPK(type, business);
     }
 

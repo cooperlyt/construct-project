@@ -1,97 +1,114 @@
 package cc.coopersoft.construct.project.model;
 
 
-import cc.coopersoft.common.data.ConstructJoinType;
-import cc.coopersoft.common.data.GroupIdType;
+import cc.coopersoft.common.construct.corp.CorpProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonView;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 @Entity
-@Table(name = "PROJECT_JOIN_CORP")
+@Table(name = "PROJECT_JOIN_CORP",
+        uniqueConstraints = @UniqueConstraint(name = "UNIQUE_CORP_PROPERTY_REG",columnNames = {"CORP_CODE", "CORP_TYPE", "REG"}))
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
-@NamedEntityGraph(name = "joinCorp.full",
-        attributeNodes = {@NamedAttributeNode(value = "info", subgraph = "info.reg")} ,
-        subgraphs = {@NamedSubgraph(name = "info.reg", attributeNodes = @NamedAttributeNode("reg"))}
-)
-public class JoinCorp {
+@Access(AccessType.PROPERTY)
+@NamedEntityGraph(name = "joinCorp.details",
+        attributeNodes = {@NamedAttributeNode(value = "reg", subgraph = "reg.project")} ,
+        subgraphs = {
 
-    public interface Summary{}
-    public interface Details extends Summary {}
-    public interface DetailsWithCorp extends Summary{}
+            @NamedSubgraph(name = "reg.project", attributeNodes = @NamedAttributeNode(value = "project", subgraph="project.info")),
+                @NamedSubgraph(name = "project.info", attributeNodes = @NamedAttributeNode(value = "info"))
+        }
+)
+public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp<JoinCorpInfo>{
+
+    //从 project 取建设单位时使用
+    public interface Summary extends JoinCorpInfo.Summary {}
+
+    public interface Details extends Summary, JoinCorpInfo.Details {}
+
+    //取 单位 的项目列表时使用
+    public interface SummaryWithCorp extends JoinCorpInfo.Summary, JoinCorpReg.SummaryWithCorp {}
 
     @Id
     @Column(name = "JOIN_ID", nullable = false, unique = true)
     @JsonIgnore
+    @Access(AccessType.FIELD)
     private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "CORP_TYPE", nullable = false, length = 16)
     @NotNull
-    @JsonView(Summary.class)
-    private ConstructJoinType type;
+    @JsonView({Details.class, SummaryWithCorp.class})
+    @Override
+    public CorpProperty getProperty(){return super.getProperty();}
 
     @Column(name = "OUTSIDE_TEAM_FILE", length = 32)
-    @JsonView(Details.class)
-    private String outsideTeamFile;
+    @JsonView({Details.class, SummaryWithCorp.class})
+    @Override
+    public String getOutsideTeamFile(){return super.getOutsideTeamFile();}
 
     @Column(name = "OUT_LEVEL")
-    @JsonView(Details.class)
-    private Boolean outLevel;
+    @JsonView({Details.class, SummaryWithCorp.class})
+    @Override
+    public Boolean getOutLevel(){return super.getOutLevel();}
 
     @Column(name = "OUT_LEVEL_FILE", length = 32)
-    @JsonView(Details.class)
-    private String outLevelFile;
+    @JsonView({Details.class, SummaryWithCorp.class})
+    @Override
+    public String getOutLevelFile(){return super.getOutLevelFile();}
 
-    @Column(name = "CORP_CODE", length = 32, nullable = false)
-    @JsonView(Summary.class)
-    private String corpCode;
-
-    @Column(name = "NAME", length = 128, nullable = false)
-    @JsonView(Summary.class)
-    private String name;
-
-    @Column(name = "REG_ID_TYPE", nullable = false, length = 16)
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    @JsonView(Summary.class)
-    private GroupIdType groupIdType;
-
-    @Column(name = "REG_ID_NUMBER", nullable = false, length = 32)
-    @NotBlank
-    @Size(max = 32)
-    @JsonView(Summary.class)
-    private String groupId;
-
-    @Column(name = "LEVEL", nullable = false)
-    @JsonView(Summary.class)
-    private int level;
+    @Column(name = "CORP_CODE", nullable = false)
+    @JsonView({Summary.class,SummaryWithCorp.class})
+    @Override
+    public long getCode(){return super.getCode();}
 
     @Column(name = "CONTACTS", length = 64)
-    @JsonView(Details.class)
-    private String contacts;
+    @JsonView({Details.class, SummaryWithCorp.class})
+    @Override
+    public String getContacts(){return super.getContacts();}
 
     @Column(name = "TEL", length = 16)
-    @JsonView(Details.class)
-    private String tel;
+    @JsonView({Details.class, SummaryWithCorp.class})
+    @Override
+    public String getTel(){return super.getTel();}
 
-    @Column(name = "MASTER", nullable = false)
-    @JsonView(Summary.class)
-    private boolean master;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "corp", cascade = CascadeType.ALL,orphanRemoval = true, optional = false)
+    @JsonView({Summary.class,SummaryWithCorp.class})
+    @JsonManagedReference
+    @Override
+    public JoinCorpInfo getInfo(){return super.getInfo();}
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "BUSINESS_ID", nullable = false)
-    @JsonView(DetailsWithCorp.class)
-    @JsonIgnore
-    private ProjectInfo info;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "REG", nullable = false)
+    @Access(AccessType.FIELD)
+    @JsonView(SummaryWithCorp.class)
+    private JoinCorpReg reg;
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        JoinCorp joinCorp = (JoinCorp) o;
+
+        if (id == null || joinCorp.id == null) return false;
+        return id.equals(joinCorp.id);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (id != null ? id.hashCode() : 0);
+        return result;
+    }
 }

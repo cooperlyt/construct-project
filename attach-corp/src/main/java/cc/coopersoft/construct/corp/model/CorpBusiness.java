@@ -1,7 +1,7 @@
 package cc.coopersoft.construct.corp.model;
 
-import cc.coopersoft.common.business.BusinessSource;
-import cc.coopersoft.common.business.BusinessStatus;
+import cc.coopersoft.common.data.RegSource;
+import cc.coopersoft.common.data.RegStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -19,7 +19,7 @@ import java.util.Set;
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
-@NamedEntityGraph(name = "business.full", attributeNodes = {@NamedAttributeNode("corpInfo")})
+@NamedEntityGraph(name = "business.full", attributeNodes = {@NamedAttributeNode("info")})
 public class CorpBusiness {
 
     public interface Summary {}
@@ -29,6 +29,10 @@ public class CorpBusiness {
     @Column(name = "BUSINESS_ID", nullable = false, unique = true)
     @JsonView(Summary.class)
     private Long id;
+
+    @Column(name = "CORP_CODE", nullable = false, length = 32)
+    @JsonView(Summary.class)
+    private Long code;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "CREATE_TIME", nullable = false)
@@ -48,12 +52,12 @@ public class CorpBusiness {
     @Column(name = "SOURCE", nullable = false, length = 3)
     @Enumerated(EnumType.STRING)
     @JsonView(Summary.class)
-    private BusinessSource source;
+    private RegSource source;
 
     @Column(name = "STATUS", nullable = false, length = 8)
     @Enumerated(EnumType.STRING)
     @JsonView(Summary.class)
-    private BusinessStatus status;
+    private RegStatus status;
 
     @JsonIgnore
     @Column(name = "TAGS", length = 512)
@@ -61,12 +65,12 @@ public class CorpBusiness {
 
     @Column(name = "INFO", nullable = false)
     @JsonView(Details.class)
-    private boolean info;
+    private boolean infoChanged;
 
     @ManyToOne(fetch = FetchType.LAZY,optional = false, cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "CORP_INFO", nullable = false)
     @JsonView(Summary.class)
-    private CorpInfo corpInfo;
+    private CorpInfo info;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "id.business", cascade = CascadeType.ALL)
     @JsonView(Details.class)

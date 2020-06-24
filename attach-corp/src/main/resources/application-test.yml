@@ -11,21 +11,17 @@ logging:
     cc.coopersoft: DEBUG
 
 
-
-#spring:
-#  cloud:
-#    stream:
-#      bindings:
-#        certificateExecute:
-#          destination: certificateChangeTopic
-#          content-type: application/json
-#      kafka:
-#        binder:
-#          brokers: 192.168.1.21
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://192.168.1.21:8761/eureka/
 
 signing:
   key: "345345fsdfsf5345"
-
 
 
 uid:
@@ -40,13 +36,23 @@ uid:
     paddingFactor: 50      # 指定何时向RingBuffer中填充UID, 取值为百分比(0, 100), 默认为50
     #scheduleInterval: 60    # 默认:不配置此项, 即不实用Schedule线程. 如需使用, 请指定Schedule线程时间间隔, 单位:秒
 
-
-
 spring:
+  cloud:
+    config:
+      enabled: false
+    stream:
+      rocketmq:
+        binder:
+          name-server:
+            192.168.1.21:9876
+      bindings:
+        output:
+          destination: corpChangeTopic
+          content-type: application/json
   datasource:
     testWhileIdle: "true"
     validationQuery: "SELECT 1"
-    url: "jdbc:mysql://127.0.0.1:3306/MONEY_ACCOUNT?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false"
+    url: "jdbc:mysql://127.0.0.1:3306/CONSTRUCT?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false"
     username: "root"
     password: "5257mq99"
     driver-class-name: "com.mysql.cj.jdbc.Driver"
@@ -65,4 +71,3 @@ spring:
         dialect: "org.hibernate.dialect.MySQL5Dialect"
         naming:
           physical-strategy: "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl"
-

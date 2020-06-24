@@ -3,7 +3,7 @@ spring:
     name: construct-attach-corp
   profiles:
     active:
-      default
+      test
   cloud:
     config:
       enabled: false
