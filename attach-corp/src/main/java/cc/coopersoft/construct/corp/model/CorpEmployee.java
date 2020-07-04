@@ -1,6 +1,6 @@
 package cc.coopersoft.construct.corp.model;
 
-import cc.coopersoft.common.cloud.schemas.UserInfo;
+
 import cc.coopersoft.common.data.PersonIdType;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
@@ -26,7 +26,7 @@ import java.util.Date;
                 @NamedSubgraph(name = "corp.info", attributeNodes = @NamedAttributeNode("info"))
         }
 )
-public class CorpEmployee implements UserInfo {
+public class CorpEmployee {
 
     @Id
     @Column(name = "ID",nullable = false , unique = true)

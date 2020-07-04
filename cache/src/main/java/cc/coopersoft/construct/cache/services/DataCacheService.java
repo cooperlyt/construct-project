@@ -2,11 +2,12 @@ package cc.coopersoft.construct.cache.services;
 
 import cc.coopersoft.construct.cache.repository.CacheDataRepository;
 import lombok.extern.slf4j.Slf4j;
+import reactor.core.publisher.Mono;
 
 @Slf4j
 public abstract class DataCacheService<T,E> {
 
-    protected abstract T getData(E key);
+    protected abstract Mono<T> getData(E key);
 
     private final CacheDataRepository<T,E> repository;
 
@@ -32,22 +33,21 @@ public abstract class DataCacheService<T,E> {
     }
 
 
-    public T get(E key){
+    public Mono<T> get(E key){
         T data = checkCache(key);
         if (data != null){
             log.debug(" successfully retrieved a data {} from the cache: {}", key, data);
-            return data;
+            return Mono.just(data) ;
         }
 
         log.debug("Unable to locate data from the cache: {}",key);
 
-        data = getData(key);
+        return getData(key).map(d -> {
+            if (d != null){
+                cache(d);
+            }
+            return d;
+        });
 
-
-        if (data != null){
-            cache(data);
-        }
-
-        return data;
     }
 }

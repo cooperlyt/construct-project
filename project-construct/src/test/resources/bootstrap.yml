@@ -5,8 +5,9 @@ spring:
     active:
       test
   cloud:
-    config:
-      enabled: false
+    consul:
+      config:
+        enabled: false
 
 server:
   port: 19002

@@ -6,13 +6,14 @@ import cc.coopersoft.common.data.PersonIdType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 @Service
 @Primary
 @Slf4j
 public class MockRemoteService implements RemoteService {
     @Override
-    public Corp.Default getCorp(long code) {
+    public Mono<Corp.Default> getCorp(long code) {
 
         log.info("get mock corp : " + code);
         CorpInfo info = new CorpInfo();
@@ -40,7 +41,7 @@ public class MockRemoteService implements RemoteService {
         result.getRegs().add(reg);
         result.setCode(code);
         result.setEnable(true);
-        return result;
+        return Mono.just(result);
     }
 
     @Override

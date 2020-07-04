@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -32,68 +34,58 @@ public class CommonData {
         this.dataService = dataService;
     }
 
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public String serverExceptionHandler(Exception ex) {
+        //LOGGER.error(ex.getMessage(),ex);
+        return ex.getMessage();
+    }
 
     @RequestMapping(value = "/corp/{code}", method = RequestMethod.GET)
     @ResponseStatus(HttpStatus.OK)
-    public Corp.Default corp(@PathVariable("code") long code){
-        Corp.Default result = corpCacheService.get(code);
-        if (result == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-
-        return result;
+    public Mono<Corp.Default> corp(@PathVariable("code") long code){
+        return corpCacheService.get(code);
     }
 
     @RequestMapping(value = "/project/{code}", method = RequestMethod.GET)
-    public Project.Default project(@PathVariable("code") long code){
-        Project.Default result = projectCacheService.get(code);
-        if (result == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return result;
+    public Mono<Project.Default> project(@PathVariable("code") long code){
+        return projectCacheService.get(code);
     }
 
 
-    @RequestMapping(value = "/project-corp/{code}", method = RequestMethod.GET)
-    @ResponseStatus(HttpStatus.OK)
-    public DataService.ProjectAndCorp projectAndCorp(@PathVariable("code") long code){
-        DataService.ProjectAndCorp result = dataService.projectAndCorp(code);
-        if (result == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return result;
-    }
-
-    @RequestMapping(value = "/project/{code}/corps", method = RequestMethod.GET)
-    public List<JoinCorp<JoinCorpInfo>> projectCorps(@PathVariable("code") long code){
-        Project.Default result = projectCacheService.get(code);
-        if (result == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return result.getCorps();
-    }
-
-    @RequestMapping(value = "/project/{code}/corp/reg", method = RequestMethod.GET)
-    public List<DataService.JoinCorpAndCorp> projectCorpRegs(@PathVariable("code") long code){
-        return dataService.joinCorpAndCorp(code);
-    }
+//    @RequestMapping(value = "/project-corp/{code}", method = RequestMethod.GET)
+//    @ResponseStatus(HttpStatus.OK)
+//    public Mono<DataService.ProjectAndCorp> projectAndCorp(@PathVariable("code") long code){
+//        DataService.ProjectAndCorp result = dataService.projectAndCorp(code);
+//        if (result == null){
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+//        }
+//        return Mono.just(result);
+//    }
+//
+//    @RequestMapping(value = "/project/{code}/corps", method = RequestMethod.GET)
+//    public Flux<JoinCorp<JoinCorpInfo>> projectCorps(@PathVariable("code") long code){
+//        Project.Default result = projectCacheService.get(code);
+//        if (result == null){
+//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+//        }
+//
+//        return Flux.fromIterable(result.getCorps());
+//    }
+//
+//    @RequestMapping(value = "/project/{code}/corp/reg", method = RequestMethod.GET)
+//    public Flux<DataService.JoinCorpAndCorp> projectCorpRegs(@PathVariable("code") long code){
+//        return Flux.fromIterable(dataService.joinCorpAndCorp(code));
+//    }
 
     @RequestMapping(value = "/project/{code}/info", method = RequestMethod.GET)
-    public ProjectRegInfo projectInfo(@PathVariable("code") long code){
-        Project.Default result = projectCacheService.get(code);
-        if (result == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return result.getInfo();
+    public Mono<ProjectRegInfo> projectInfo(@PathVariable("code") long code){
+        return projectCacheService.get(code).map(Project.Default::getInfo);
     }
 
     @RequestMapping(value = "/project/{code}/builds", method = RequestMethod.GET)
-    public List<BuildRegInfo<BuildInfo>> projectBuilds(@PathVariable("code") long code){
-        Project.Default result = projectCacheService.get(code);
-        if (result == null){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-        }
-        return result.getBuilds();
+    public Flux<BuildRegInfo<BuildInfo>> projectBuilds(@PathVariable("code") long code){
+        return projectCacheService.get(code).map(Project.Default::getBuilds).flatMapMany(Flux::fromIterable);
     }
 
 }

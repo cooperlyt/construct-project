@@ -1,30 +1,17 @@
-security:
-  oauth2:
-    resource:
-      userInfoUri: http://authenticationservice/auth/user
+
 
 #Setting the logging levels for the service
 logging:
   level:
     com.netflix: WARN
     org.springframework.web: WARN
-    cc.coopersoft: DEBUG
-
-
-eureka:
-  instance:
-    preferIpAddress: true
-  client:
-    registerWithEureka: true
-    fetchRegistry: true
-    serviceUrl:
-      defaultZone: http://192.168.1.21:8761/eureka/
+    cc.coopersoft: WARN
 
 
 spring:
   redis:
     database: 5  # Redis数据库索引（默认为0）
-    host: 192.168.1.21
+    host: redis
     port: 6379
     password: p0stgr@s
     jedis:
@@ -34,12 +21,48 @@ spring:
         max-idle: 8  # 连接池中的最大空闲连接
         min-idle: 0 # 连接池中的最小空闲连接
     timeout: 0 # 连接超时时间（毫秒）
+  security:
+    oauth2:
+      client:
+        registration:
+          master-extend-cer:
+            provider: keycloak
+            client-id: extends
+            client-secret: f0efd4d7-3c26-430c-968f-d8987518a5b8
+            authorization-grant-type: client_credentials
+            scope: Master
+        provider:
+          keycloak:
+            authorization-uri: http://keycloak:8080/auth/realms/construction/protocol/openid-connect/auth
+            token-uri: http://keycloak:8080/auth/realms/construction/protocol/openid-connect/token
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/auth/realms/construction/protocol/openid-connect/certs
   cloud:
+    consul:
+      discovery:
+        serviceName: ${spring.application.name}
+        # 启用服务发现
+        enabled: true
+        # 启用服务注册
+        register: true
+        # 服务停止时取消注册
+        deregister: true
+        # 表示注册时使用IP而不是hostname
+        prefer-ip-address: true
+        # 执行监控检查的频率
+        health-check-interval: 30s
+        # 设置健康检查失败多长时间后，取消注册
+        health-check-critical-timeout: 30s
+        # 健康检查的路径
+        health-check-path: /actuator/info
+        # 服务注册标识，格式为：应用名称+服务器IP+端口
+        instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
     stream:
       rocketmq:
         binder:
           name-server:
-            192.168.1.21:9876
+            rmqnamesrv:9876
       bindings:
         corpChanges:
           destination: corpChangeTopic
@@ -50,8 +73,5 @@ spring:
           content-type: application/json
           group: projectCache
 
-
-signing:
-  key: "345345fsdfsf5345"
 
 
