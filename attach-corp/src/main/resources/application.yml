@@ -67,7 +67,7 @@ trust:
     url: http://keycloak:8080/auth
     realm: trust
     clientId: corp-admin
-    clientSecret: c98309e2-0edc-4bbe-9a28-acb020d6cf7d
+    clientSecret: 916109ff-b3f9-4018-a251-8fb0a716dfd1
 
 
 uid:

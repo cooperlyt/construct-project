@@ -28,7 +28,7 @@ spring:
           master-extend-cer:
             provider: keycloak
             client-id: extends
-            client-secret: f0efd4d7-3c26-430c-968f-d8987518a5b8
+            client-secret: c8f7d947-b83c-4adf-bff8-93b1a49ba2a2
             authorization-grant-type: client_credentials
             scope: Master
         provider:

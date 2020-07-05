@@ -10,6 +10,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.util.*;
@@ -17,7 +18,6 @@ import java.util.stream.Collectors;
 
 @Service
 public class DataService {
-
 
     @Data
     @NoArgsConstructor
@@ -50,27 +50,28 @@ public class DataService {
 
 
 
-//    public List<JoinCorpAndCorp> joinCorpAndCorp(long code){
-//        Project.Default project = projectCacheService.get(code);
-//        return project.getCorps().stream().map(corp -> JoinCorpAndCorp.builder().joinCorp(corp).corp(corpCacheService.get(corp.getCode())).build()).collect(Collectors.toList());
-//    }
-//
-//    public Mono<ProjectAndCorp> projectAndCorp(long code){
-//        return projectCacheService.get(code).map(project -> {
-//            if (project != null){
-//                Set<Long> corpCodes = new HashSet<>();
-//                ProjectAndCorp result = new ProjectAndCorp(project,new ArrayList<>(project.getCorps().size()));
-//                for(JoinCorp<JoinCorpInfo> corp: project.getCorps()){
-//                    if (!corpCodes.contains(corp.getCode())){
-//                        result.getCorps().add(corpCacheService.get(corp.getCode()));
-//                        corpCodes.add(corp.getCode());
-//                    }
-//                }
-//                return result;
-//            }else{
-//                return null;
-//            }
-//        }).;
-//
-//    }
+    public Flux<JoinCorpAndCorp> joinCorpAndCorp(long code){
+        return projectCacheService.get(code)
+                .map(Project.Default::getCorps)
+                .flatMapMany(corps -> Flux.fromStream(corps.stream().map(corp -> JoinCorpAndCorp.builder().joinCorp(corp).corp(corpCacheService.get(corp.getCode()).block()).build())));
+    }
+
+    public Mono<ProjectAndCorp> projectAndCorp(long code){
+        return projectCacheService.get(code).map(project -> {
+            if (project != null){
+                Set<Long> corpCodes = new HashSet<>();
+                ProjectAndCorp result = new ProjectAndCorp(project,new ArrayList<>(project.getCorps().size()));
+                for(JoinCorp<JoinCorpInfo> corp: project.getCorps()){
+                    if (!corpCodes.contains(corp.getCode())){
+                        result.getCorps().add(corpCacheService.get(corp.getCode()).block());
+                        corpCodes.add(corp.getCode());
+                    }
+                }
+                return result;
+            }else{
+                return null;
+            }
+        });
+
+    }
 }

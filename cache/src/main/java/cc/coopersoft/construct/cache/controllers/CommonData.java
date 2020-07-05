@@ -53,30 +53,21 @@ public class CommonData {
     }
 
 
-//    @RequestMapping(value = "/project-corp/{code}", method = RequestMethod.GET)
-//    @ResponseStatus(HttpStatus.OK)
-//    public Mono<DataService.ProjectAndCorp> projectAndCorp(@PathVariable("code") long code){
-//        DataService.ProjectAndCorp result = dataService.projectAndCorp(code);
-//        if (result == null){
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-//        }
-//        return Mono.just(result);
-//    }
-//
-//    @RequestMapping(value = "/project/{code}/corps", method = RequestMethod.GET)
-//    public Flux<JoinCorp<JoinCorpInfo>> projectCorps(@PathVariable("code") long code){
-//        Project.Default result = projectCacheService.get(code);
-//        if (result == null){
-//            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-//        }
-//
-//        return Flux.fromIterable(result.getCorps());
-//    }
-//
-//    @RequestMapping(value = "/project/{code}/corp/reg", method = RequestMethod.GET)
-//    public Flux<DataService.JoinCorpAndCorp> projectCorpRegs(@PathVariable("code") long code){
-//        return Flux.fromIterable(dataService.joinCorpAndCorp(code));
-//    }
+    @RequestMapping(value = "/project-corp/{code}", method = RequestMethod.GET)
+    @ResponseStatus(HttpStatus.OK)
+    public Mono<DataService.ProjectAndCorp> projectAndCorp(@PathVariable("code") long code){
+        return dataService.projectAndCorp(code);
+    }
+
+    @RequestMapping(value = "/project/{code}/corps", method = RequestMethod.GET)
+    public Flux<JoinCorp<JoinCorpInfo>> projectCorps(@PathVariable("code") long code){
+        return projectCacheService.get(code).map(Project.Default::getCorps).flatMapMany(Flux::fromIterable);
+    }
+
+    @RequestMapping(value = "/project/{code}/corp/reg", method = RequestMethod.GET)
+    public Flux<DataService.JoinCorpAndCorp> projectCorpRegs(@PathVariable("code") long code){
+        return dataService.joinCorpAndCorp(code);
+    }
 
     @RequestMapping(value = "/project/{code}/info", method = RequestMethod.GET)
     public Mono<ProjectRegInfo> projectInfo(@PathVariable("code") long code){
