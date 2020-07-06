@@ -29,7 +29,7 @@ public class CorpCacheService extends DataCacheService<Corp.Default,Long>{
         return webClient
                 .get()
                 .uri("http://construct-attach-corp/publish/corp/{code}",key)
-                .attributes(clientRegistrationId("master-extend-cer"))
+//                .attributes(clientRegistrationId("master-extend-cer"))
                 .retrieve()
                 .bodyToMono(Corp.Default.class);
 
