@@ -129,6 +129,7 @@ CREATE TABLE PROJECT_INFO_REG
     COMPLETED_DATE date,
     TENDER varchar(32),
     COSTS decimal(18,2),
+    PUT_MONEY decimal(19,2),
     MAIN_PROJECT_LEVEL varchar(8) NOT NULL,
     MAIN_PROJECT_FILE varchar(32),
     MODIFY_FIT boolean NULL,

@@ -119,6 +119,11 @@ public class ProjectRegInfo extends cc.coopersoft.common.construct.project.Proje
     @Override
     public BigDecimal getCosts(){return super.getCosts();}
 
+    @Column(name = "PUT_MONEY")
+    @JsonView(ProjectRegInfo.Summary.class)
+    @Override
+    public BigDecimal getPutMoney(){return super.getPutMoney();}
+
 
     @Enumerated(EnumType.STRING)
     @Column(name = "MAIN_PROJECT_LEVEL", length = 8)
