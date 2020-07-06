@@ -75,6 +75,11 @@ public class JoinCorp extends cc.coopersoft.common.construct.project.JoinCorp<Jo
     @Override
     public String getContacts(){return super.getContacts();}
 
+    @Column(name = "CONTACTS_ID", length = 32)
+    @JsonView({Details.class, SummaryWithCorp.class})
+    @Override
+    public String getContactsId(){return super.getContactsId();}
+
     @Column(name = "TEL", length = 16)
     @JsonView({Details.class, SummaryWithCorp.class})
     @Override
