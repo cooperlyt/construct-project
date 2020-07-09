@@ -19,6 +19,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="construct-project-cache" />
         <module name="project-construct" />
+        <module name="trust-gateway" />
         <module name="attach-corp" />
         <module name="cache" />
       </profile>
@@ -33,6 +34,7 @@
       <module name="construct-project" options="" />
       <module name="construct-project-cache" options="-parameters" />
       <module name="project-construct" options="-parameters" />
+      <module name="trust-gateway" options="-parameters" />
     </option>
   </component>
 </project>

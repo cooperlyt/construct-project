@@ -20,8 +20,11 @@ spring:
           name-server:
             rmqnamesrv:9876
       bindings:
-        output:
+        corpChange:
           destination: corpChangeTopic
+          content-type: application/json
+        userChange:
+          destination: trustUserTopic
           content-type: application/json
     consul:
       discovery:

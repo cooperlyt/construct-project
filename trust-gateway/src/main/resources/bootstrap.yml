@@ -1,0 +1,28 @@
+server:
+  port: 5556
+
+spring:
+  application:
+    name: trustgatewayservice
+  profiles:
+    active:
+      test
+  cloud:
+    consul:
+      host: 192.168.1.21
+      port: 8500
+      config:
+        enabled: true #是否启用配置中心功能
+        format: yaml #设置配置值的格式
+        prefix: config #设置配置所在目录
+        profile-separator: ':' #设置配置的分隔符
+        data-key: data #配置key的名字，由于Consul是K/V存储，配置存储在对应K的V中
+
+
+        # watch选项为配置监视功能，主要监视配置的改变  use bus
+#        watch:
+#          enabled: true
+#          delay: 10000
+#          wait-time: 30
+#    config:
+#      enabled: true

@@ -176,3 +176,22 @@ services:
       - rmqnamesrv
       - keycloak
       - consul
+
+  trustgatewaysvr:
+    image: coopersoft/trust-gatewaysvr:snapshot
+    ports:
+      - "5556:5556"
+    environment:
+      PROFILE: "dev"
+      SERVER_PORT: "5556"
+      CONSULSERVER_PORT: 8500
+      CONSULSERVER_HOST: "consul"
+      TZ: Asia/Shanghai
+    depends_on:
+      - consul
+      - rmqnamesrv
+      - redis
+    links:
+      - consul:consul
+      - rmqnamesrv:rmqnamesrv
+      - redis:redis

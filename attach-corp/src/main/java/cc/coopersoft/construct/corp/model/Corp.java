@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -35,6 +36,11 @@ public class Corp extends cc.coopersoft.common.construct.corp.Corp<CorpInfo,Corp
     @JsonIgnore
     @Access(AccessType.FIELD)
     private Date dataTime;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "corp")
+    @JsonIgnore
+    @Access(AccessType.FIELD)
+    private Set<CorpEmployee> employees = new HashSet<>();
 
 
     @Id
@@ -68,6 +74,7 @@ public class Corp extends cc.coopersoft.common.construct.corp.Corp<CorpInfo,Corp
     public Set<CorpReg> getRegs(){
         return super.getRegs();
     }
+
 
 
     @Override

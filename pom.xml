@@ -11,6 +11,7 @@
         <module>attach-corp</module>
         <module>project-construct</module>
         <module>cache</module>
+        <module>trust-gateway</module>
     </modules>
     <packaging>pom</packaging>
 

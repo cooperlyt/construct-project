@@ -24,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 import javax.persistence.criteria.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -170,11 +171,12 @@ public class CorpServices {
     @Transactional
     public void setCorpEnable(long id, boolean enable){
         remoteServices.publishChangeMessage(id);
-        Optional<Corp> corp = this.corpRepository.findById(id);
-        if (corp.isPresent()){
-            corp.get().setEnable(enable);
-            this.corpRepository.save(corp.get());
-        }
+        corpRepository.findById(id).ifPresent(c -> {
+            c.setEnable(enable);
+            Corp result = corpRepository.save(c);
+            remoteServices.publishUserChangeMessage(result.getEmployees().stream().map(CorpEmployee::getUsername).collect(Collectors.toList()));
+        });
+
     }
 
 

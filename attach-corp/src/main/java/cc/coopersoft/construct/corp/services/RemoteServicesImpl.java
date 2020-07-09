@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 import javax.ws.rs.core.Response;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -42,19 +43,25 @@ public class RemoteServicesImpl implements RemoteServices {
     @Value("${trust.keycloak.clientSecret:}")
     private String clientSecret = "c98309e2-0edc-4bbe-9a28-acb020d6cf7d";
 
-    private final Source source;
+    private final CorpChangeChannel source;
 
 
-    @Autowired
-    public RemoteServicesImpl(Source source) {
+    public RemoteServicesImpl(CorpChangeChannel source) {
         this.source = source;
     }
 
     @Override
     public void publishChangeMessage(long code){
         log.debug(" sending message corp {} change ", code);
-        source.output().send(MessageBuilder.withPayload(code).build());
+        source.corpChange().send(MessageBuilder.withPayload(code).build());
     }
+
+    @Override
+    public void publishUserChangeMessage(List<String> username) {
+        log.debug(" sending message corp user {} change ", username);
+        source.corpChange().send(MessageBuilder.withPayload(username).build());
+    }
+
 
     @Override
     public String addUser(long corp, CorpEmployee employee) {

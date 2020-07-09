@@ -5,9 +5,9 @@ import org.springframework.messaging.SubscribableChannel;
 
 public interface CacheChangeChannel {
 
-    static String corpChannel = "corpChanges";
+    String corpChannel = "corpChanges";
 
-    static String projectChannel = "projectChanges";
+    String projectChannel = "projectChanges";
 
     @Input(corpChannel)
     SubscribableChannel corp();

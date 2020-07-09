@@ -18,33 +18,19 @@ import java.util.stream.Collectors;
 @RequestMapping(value="trust")
 public class TrustController {
 
-    private static final String TRUST_ROLE_PREFIX = "T_";
-
     private final TrustService trustService;
 
     public TrustController(TrustService trustService) {
         this.trustService = trustService;
     }
 
-    private boolean hasCorpRole(long corp){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        return authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .map(res -> {if (res.startsWith("ROLE_"))  return res.substring(5);  else return res; }) // Strip "ROLE_"
-                .collect(Collectors.toSet()).contains(TRUST_ROLE_PREFIX + corp);
-    }
 
-    @RequestMapping(value = "{corp}/projects", method = RequestMethod.GET)
+    @RequestMapping(value = "projects", method = RequestMethod.GET)
     @JsonView(Project.Summary.class)
-    public List<Project> listProject(@PathVariable("corp") long corp,
+    public List<Project> listProject(@RequestParam("org") long corp,
                                      @RequestParam(value = "property", required = false) CorpProperty property,
                                      @RequestParam(value = "key", required = false) String key){
-        if (hasCorpRole(corp)){
-            return trustService.searchProject(corp,key,property);
-        }else{
-            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE);
-        }
-
+        return trustService.searchProject(corp,key,property);
     }
 
 }
