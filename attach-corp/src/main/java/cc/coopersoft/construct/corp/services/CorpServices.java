@@ -10,6 +10,7 @@ import cc.coopersoft.construct.corp.model.*;
 import cc.coopersoft.construct.corp.repository.CorpBusinessRepository;
 import cc.coopersoft.construct.corp.repository.CorpRegRepository;
 import cc.coopersoft.construct.corp.repository.CorpRepository;
+import cc.coopersoft.construct.corp.repository.CreditRecordRepository;
 import com.github.wujun234.uid.UidGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -42,6 +43,7 @@ public class CorpServices {
 
     private final RemoteServices remoteServices;
 
+    private final CreditRecordRepository creditRecordRepository;
 
 
     @Resource
@@ -51,11 +53,24 @@ public class CorpServices {
     public CorpServices(CorpRepository corpRepository,
                         CorpBusinessRepository corpBusinessRepository,
                         CorpRegRepository corpRegRepository,
-                        RemoteServices remoteServices) {
+                        RemoteServices remoteServices, CreditRecordRepository creditRecordRepository) {
         this.corpRepository = corpRepository;
         this.corpBusinessRepository = corpBusinessRepository;
         this.corpRegRepository = corpRegRepository;
         this.remoteServices = remoteServices;
+        this.creditRecordRepository = creditRecordRepository;
+    }
+
+    public CreditRecord addCredit(long code, CreditRecord creditRecord){
+        Corp corp = corpRepository.findById(code).orElseThrow();
+        creditRecord.setCorp(corp);
+        creditRecord.setRecordTime(new Date());
+        creditRecord.setId(defaultUidGenerator.getUID());
+        return creditRecordRepository.save(creditRecord);
+    }
+
+    public List<CreditRecord> credits(long code){
+        return creditRecordRepository.findByCorpCodeOrderByRecordTimeDesc(code);
     }
 
     public Optional<CorpReg> corpReg(long corpCode, CorpProperty type){
