@@ -178,7 +178,7 @@ public class BusinessService {
 
     private JoinCorpInfo getCorpInfo(JoinCorp joinCorp, long code){
 
-        Corp.Default corp = remoteService.getCorp(code);
+        Corp.Default corp = remoteService.getCorp(code).block();
 
         if (corp == null || !corp.isEnable()){
             throw new IllegalArgumentException("corp is not found or not enable: " + code);

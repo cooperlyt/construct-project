@@ -1,9 +1,6 @@
 package cc.coopersoft.construct.cache.services;
 
 import cc.coopersoft.common.construct.corp.Corp;
-import cc.coopersoft.common.construct.corp.CorpProperty;
-import cc.coopersoft.common.construct.corp.CorpReg;
-import cc.coopersoft.common.construct.corp.RegInfo;
 import cc.coopersoft.common.construct.project.JoinCorp;
 import cc.coopersoft.common.construct.project.JoinCorpInfo;
 import cc.coopersoft.common.construct.project.Project;
@@ -13,13 +10,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class DataService {
-
 
     @Data
     @NoArgsConstructor
@@ -52,24 +50,28 @@ public class DataService {
 
 
 
-    public List<JoinCorpAndCorp> joinCorpAndCorp(long code){
-        Project.Default project = projectCacheService.get(code);
-        return project.getCorps().stream().map(corp -> JoinCorpAndCorp.builder().joinCorp(corp).corp(corpCacheService.get(corp.getCode())).build()).collect(Collectors.toList());
+    public Flux<JoinCorpAndCorp> joinCorpAndCorp(long code){
+        return projectCacheService.get(code)
+                .map(Project.Default::getCorps)
+                .flatMapMany(corps -> Flux.fromStream(corps.stream().map(corp -> JoinCorpAndCorp.builder().joinCorp(corp).corp(corpCacheService.get(corp.getCode()).block()).build())));
     }
 
-    public ProjectAndCorp projectAndCorp(long code){
-        Project.Default project = projectCacheService.get(code);
-        if (project != null){
-            Set<Long> corpCodes = new HashSet<>();
-            ProjectAndCorp result = new ProjectAndCorp(project,new ArrayList<>(project.getCorps().size()));
-            for(JoinCorp<JoinCorpInfo> corp: project.getCorps()){
-                if (!corpCodes.contains(corp.getCode())){
-                    result.getCorps().add(corpCacheService.get(corp.getCode()));
-                    corpCodes.add(corp.getCode());
+    public Mono<ProjectAndCorp> projectAndCorp(long code){
+        return projectCacheService.get(code).map(project -> {
+            if (project != null){
+                Set<Long> corpCodes = new HashSet<>();
+                ProjectAndCorp result = new ProjectAndCorp(project,new ArrayList<>(project.getCorps().size()));
+                for(JoinCorp<JoinCorpInfo> corp: project.getCorps()){
+                    if (!corpCodes.contains(corp.getCode())){
+                        result.getCorps().add(corpCacheService.get(corp.getCode()).block());
+                        corpCodes.add(corp.getCode());
+                    }
                 }
+                return result;
+            }else{
+                return null;
             }
-            return result;
-        }
-        return null;
+        });
+
     }
 }

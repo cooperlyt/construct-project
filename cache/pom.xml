@@ -26,7 +26,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <start-class>cc.coopersoft.construct.cache.Application</start-class>
         <docker.image.name>coopersoft/construct-project-cache-service</docker.image.name>
-        <docker.image.tag>latest</docker.image.tag>
+        <docker.image.tag>1.0.1</docker.image.tag>
 <!--        <docker.image.tag>snapshot</docker.image.tag>-->
     </properties>
 
@@ -46,6 +46,23 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webflux</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-oauth2-client</artifactId>
+        </dependency>
+
+
+<!--        <dependency>-->
+<!--            <groupId>javax.servlet</groupId>-->
+<!--            <artifactId>javax.servlet-api</artifactId>-->
+<!--            <version>3.1.0</version>-->
+<!--        </dependency>-->
     </dependencies>
 
     <build>

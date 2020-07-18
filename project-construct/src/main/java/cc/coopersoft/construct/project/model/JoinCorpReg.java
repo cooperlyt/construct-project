@@ -2,9 +2,9 @@ package cc.coopersoft.construct.project.model;
 
 
 
+import cc.coopersoft.common.cloud.json.JsonRawDeserializer;
+import cc.coopersoft.common.cloud.json.JsonRawSerialize;
 import cc.coopersoft.common.construct.project.ProjectCorpSummary;
-import cc.coopersoft.common.json.JsonRawDeserializer;
-import cc.coopersoft.common.json.JsonRawSerialize;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

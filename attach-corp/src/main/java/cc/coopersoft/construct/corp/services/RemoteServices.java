@@ -1,13 +1,15 @@
 package cc.coopersoft.construct.corp.services;
 
-import cc.coopersoft.common.cloud.schemas.UserInfo;
 import cc.coopersoft.construct.corp.model.CorpEmployee;
-import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.List;
 
 public interface RemoteServices {
 
     void publishChangeMessage(long code);
 
-    String addUser(long corp, UserInfo user);
+    void publishUserChangeMessage(List<String> username);
+
+    String addUser(long corp, CorpEmployee user);
 
 }

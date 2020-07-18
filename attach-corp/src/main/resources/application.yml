@@ -1,28 +1,76 @@
-security:
-  oauth2:
-    resource:
-      userInfoUri: http://192.168.1.21:8901/auth/user
+
 
 #Setting the logging levels for the service
 logging:
   level:
     com.netflix: WARN
     org.springframework.web: WARN
-    cc.coopersoft: DEBUG
+    cc.coopersoft: WARN
 
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8080/auth/realms/construction/protocol/openid-connect/certs
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          name-server:
+            rmqnamesrv:9876
+      bindings:
+        corpChange:
+          destination: corpChangeTopic
+          content-type: application/json
+        userChange:
+          destination: trustUserTopic
+          content-type: application/json
+    consul:
+      discovery:
+        serviceName: ${spring.application.name}
+        # 启用服务发现
+        enabled: true
+        # 启用服务注册
+        register: true
+        # 服务停止时取消注册
+        deregister: true
+        # 表示注册时使用IP而不是hostname
+        prefer-ip-address: true
+        # 执行监控检查的频率
+        health-check-interval: 30s
+        # 设置健康检查失败多长时间后，取消注册
+        health-check-critical-timeout: 30s
+        # 健康检查的路径
+        health-check-path: /actuator/info
+        # 服务注册标识，格式为：应用名称+服务器IP+端口
+        instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${server.port}
+  datasource:
+    initialization-mode: NEVER
+    testWhileIdle: "true"
+    validationQuery: "SELECT 1"
+    url: "jdbc:mysql://database:3306/CONSTRUCT?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=CONVERT_TO_NULL&useSSL=false"
+    username: "root"
+    password: "p0stgr@s"
+    driver-class-name: "com.mysql.cj.jdbc.Driver"
+  jpa:
+    database: "MYSQL"
+    show-sql: "false"
+    hibernate:
+      naming:
+        physical-strategy: "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl"
+    properties:
+      hibernate:
+        ddl-auto: "none"
+        enable_lazy_load_no_trans: true
+        dialect: "org.hibernate.dialect.MySQL5Dialect"
 
-eureka:
-  instance:
-    preferIpAddress: true
-  client:
-    registerWithEureka: true
-    fetchRegistry: true
-    serviceUrl:
-      defaultZone: http://192.168.1.21:8761/eureka/
-
-
-signing:
-  key: "345345fsdfsf5345"
+trust:
+  keycloak:
+    url: http://keycloak:8080/auth
+    realm: trust
+    clientId: corp-admin
+    clientSecret: 916109ff-b3f9-4018-a251-8fb0a716dfd1
 
 
 uid:

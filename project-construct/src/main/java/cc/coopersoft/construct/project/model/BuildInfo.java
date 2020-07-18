@@ -72,4 +72,9 @@ public class BuildInfo  extends cc.coopersoft.common.construct.project.BuildInfo
     @JsonView(View.class)
     @Override
     public BigDecimal getHeight(){return super.getHeight();}
+
+    @Column(name = "_LENGTH")
+    @JsonView(View.class)
+    @Override
+    public BigDecimal getLength(){return super.getLength();}
 }

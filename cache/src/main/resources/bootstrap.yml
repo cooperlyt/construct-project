@@ -5,9 +5,18 @@ spring:
     active:
       test
   cloud:
-    config:
-      uri: http://192.168.1.21:8888
-      enabled: true
+    loadbalancer:
+      ribbon:
+        enabled: false
+    consul:
+      host: 192.168.1.21
+      port: 8500
+      config:
+        enabled: true
+        format: yaml
+        prefix: config
+        profile-separator: ':'
+        data-key: data
 
 server:
   port: 19003

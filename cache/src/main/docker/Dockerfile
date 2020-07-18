@@ -6,7 +6,7 @@ RUN echo http://mirrors.ustc.edu.cn/alpine/v3.8/main > /etc/apk/repositories; \
     && ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime \
     && echo "Asia/Shanghai" > /etc/timezone \
     && rm -rf /var/cache/apk/* /tmp/* /var/tmp/* $HOME/.cache \
-    && mkdir -p /usr/local/roomservice
+    && mkdir -p /usr/local/app
 ADD @project.build.finalName@.jar /usr/local/app/
 ADD run.sh run.sh
 RUN chmod +x run.sh

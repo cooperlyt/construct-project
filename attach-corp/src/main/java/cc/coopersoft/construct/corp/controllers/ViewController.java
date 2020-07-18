@@ -5,6 +5,7 @@ import cc.coopersoft.common.data.GroupIdType;
 import cc.coopersoft.construct.corp.model.Corp;
 import cc.coopersoft.construct.corp.model.CorpBusiness;
 import cc.coopersoft.construct.corp.model.CorpEmployee;
+import cc.coopersoft.construct.corp.model.CreditRecord;
 import cc.coopersoft.construct.corp.services.CorpServices;
 import cc.coopersoft.construct.corp.services.EmployeeServices;
 import com.fasterxml.jackson.annotation.JsonView;
@@ -12,6 +13,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -119,6 +123,11 @@ public class ViewController {
     @RequestMapping(value = "/employee/{code}", method = RequestMethod.GET)
     public CorpEmployee getEmployee(@PathVariable("code") long code){
         return employeeServices.employee(code).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+    }
+
+    @RequestMapping(value = "/corp/{code}/credits", method = RequestMethod.GET)
+    public List<CreditRecord> listCredit(@PathVariable("code") long code){
+        return corpServices.credits(code);
     }
 
 }

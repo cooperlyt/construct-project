@@ -19,10 +19,9 @@ public class TrustService {
         this.corpEmployeeRepository = corpEmployeeRepository;
     }
 
-    public List<Corp> listCorp(){
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String userName = authentication.getName();
-        return corpEmployeeRepository.findByValidIsTrueAndCorpEnableIsTrueAndUsername(userName).stream().map(CorpEmployee::getCorp).collect(Collectors.toList());
+
+    public List<Corp> listCorp(String username){
+        return corpEmployeeRepository.findByValidIsTrueAndCorpEnableIsTrueAndUsername(username).stream().map(CorpEmployee::getCorp).collect(Collectors.toList());
     }
 
 }

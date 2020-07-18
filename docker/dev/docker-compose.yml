@@ -1,79 +1,24 @@
 version: '3'
 services:
-  eurekaserver:
-    image:   coopersoft/cloud-eurekasvr:latest
-    #    deploy:
-    #      resources:
-    #        limits:
-    ##          cpus: '0.05'
-    #          memory: 360M
-    #        reservations:
-    ##          cpus: '0.01'
-    #          memory: 128M
-    ports:
-      - "8761:8761"
-    environment:
-      TZ: Asia/Shanghai
-  configserver:
-    image: coopersoft/cloud-confsvr:latest
-    ports:
-      - "8888:8888"
-    environment:
-      EUREKASERVER_PORT: 8761
-      EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
-      ENCRYPT_KEY:       "IMSYMMETRIC"
-      TZ: Asia/Shanghai
-    links:
-      - eurekaserver:eurekaserver
-    depends_on:
-      - eurekaserver
-  zuulserver:
-    image: coopersoft/cloud-zuulsvr:latest
-    #    deploy:
-    #      resources:
-    #        limits:
-    #          #          cpus: '0.05'
-    #          memory: 360M
-    #        reservations:
-    #          #          cpus: '0.01'
-    #          memory: 128M
-    ports:
-      - "5555:5555"
-    environment:
-      PROFILE: "default"
-      SERVER_PORT: "5555"
-      CONFIGSERVER_PORT: 8888
-      EUREKASERVER_PORT: 8761
-      CONFIGSERVER_URI: "http://configserver:8888"
-      EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
-      TZ: Asia/Shanghai
-    links:
-      - eurekaserver:eurekaserver
-      - configserver:configserver
-    depends_on:
-      - eurekaserver
-      - configserver
   database:
     image: coopersoft/mariadb-min:v1
-    #      command: mysqld --character-set-server=utf8 --collation-server=utf8_unicode_ci --init-connect='SET NAMES UTF8;' --innodb-flush-log-at-trx-commit=0
     ports:
       - "3306:3306"
     volumes:
-      - "/home/docker/data/db:/var/lib/mysql"
+      - "/home/data/db:/var/lib/mysql"
     environment:
-      #      - MYSQL_ROOT_PASSWORD=p0stgr@s
-      #      - MYSQL_DATABASE=archives
-      MYSQL_DATABASE: archives
       MYSQL_ROOT_PASSWORD: p0stgr@s
-      #      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: k@ycl0ck
       TZ: Asia/Shanghai
-  #        - MYSQL_USER=testuser
-  #        - MYSQL_PASSWORD=testpassword
 
-
-  #        docker run --name mariadb_test -e MYSQL_ROOT_PASSWORD=my-secret=pw -d
-  #        docker run -d --name mariadb_volume -P -v /data/Db/mariadb:/var/lib/mysql mariadb
-  #          nosse4  stable4
+  mediaservice:
+    image: coopersoft/archives-media-service:stable2
+    ports:
+      - "6699:6699"
+    volumes:
+      - "/home/data/weedfs:/data"
 
 
   redis:
@@ -89,8 +34,8 @@ services:
     ports:
       - 9876:9876
     volumes:
-      - /home/docker/data/rocketmq/logs:/home/rocketmq/logs
-      - /home/docker/data/rocketmq/store:/home/recketmq/store
+      - /home/data/rocketmq/logs:/home/rocketmq/logs
+      - /home/data/rocketmq/store:/home/recketmq/store
     command: sh mqnamesrv
 
   rmqborker:
@@ -100,9 +45,9 @@ services:
       - 10911:10911
       - 10912:10912
     volumes:
-      - /home/docker/data/rocketmq/logs:/home/rocketmq/logs
-      - /home/docker/data/rocketmq/store:/home/rocketmq/store
-      - /home/docker/data/rocketmq/broker.conf:/opt/rocketmq-4.4.0/conf/broker.conf
+      - /home/data/rocketmq/logs:/home/rocketmq/logs
+      - /home/data/rocketmq/store:/home/rocketmq/store
+      - /home/data/rocketmq/broker.conf:/opt/rocketmq-4.4.0/conf/broker.conf
     command: sh mqbroker -n rmqnamesrv:9876 -c ../conf/broker.conf
     links:
       - rmqnamesrv:rmqnamesrv
@@ -120,79 +65,75 @@ services:
     links:
       - rmqnamesrv:rmqnamesrv
     environment:
-      - JAVA_OPTS= -Dlogging.level.root=info   -Drocketmq.namesrv.addr=rmqnamesrv:9876
+      - JAVA_OPTS= -Dlogging.level.root=info -Drocketmq.namesrv.addr=rmqnamesrv:9876
       - Dcom.rocketmq.sendMessageWithVIPChannel=false
 
 
-  authenticationservice:
-    image: coopersoft/cloud-authentication-service:latest
-      #deploy:
-      #resources:
-      #limits:
-      #          cpus: '0.05'
-      #memory: 360M
-      #reservations:
-      #          cpus: '0.01'
-    #memory: 128M
+  consul:
+    image: consul:latest
+    command: agent -server -bootstrap -ui -node=node1 -client=0.0.0.0
     ports:
-      - "8901:8901"
+      - 8500:8500
+    volumes:
+      - /home/consul:/consul/data
+
+
+  keycloak:
+    image: jboss/keycloak
+    ports:
+      - 8901:8080
+    environment:
+      KEYCLOAK_USER: admin
+      KEYCLOAK_PASSWORD: admin
+      DB_VENDOR: mariadb
+      DB_ADDR: database
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: k@ycl0ck
+      DB_PORT: 3306
+    links:
+      - database:database
+    depends_on:
+      - database
+
+
+  gatewaysvr:
+    image: coopersoft/cloud-gatewaysvr:snapshot
+    ports:
+      - "5555:5555"
     environment:
       PROFILE: "default"
-      SERVER_PORT: "8901"
-      DATABASE_PORT:     3306
-      CONFIGSERVER_PORT: 8888
-      EUREKASERVER_PORT: 8761
-      CONFIGSERVER_URI: "http://configserver:8888"
-      EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
-      ENCRYPT_KEY:       "IMSYMMETRIC"
+      SERVER_PORT: "5555"
+      CONSULSERVER_PORT: 8500
+      CONSULSERVER_HOST: "consul"
       TZ: Asia/Shanghai
-    links:
-      - eurekaserver:eurekaserver
-      - database:database
-      - configserver:configserver
     depends_on:
-      - eurekaserver
-      - database
-      - configserver
+      - consul
+    links:
+      - consul:consul
 
   # ==================  archive app ===================================================
 
   corpservices:
     image: coopersoft/construct-attach-corp-service:snapshot
-    #    deploy:
-    #      resources:
-    #        limits:
-    #          #          cpus: '0.05'
-    #          memory: 360M
-    #        reservations:
-    #          #          cpus: '0.01'
-    #          memory: 128M
-
     expose:
       - "19001"
     environment:
       PROFILE: "dev"
       SERVER_PORT: "19001"
-      CONFIGSERVER_PORT: 8888
-      EUREKASERVER_PORT: 8761
-      AUTHSERVER_PORT:   8091
-      CONFIGSERVER_URI: "http://configserver:8888"
-      EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
-      AUTHSERVER_URI:   "http://authenticationservice:8901/auth/user"
-      ENCRYPT_KEY:       "IMSYMMETRIC"
+      CONSULSERVER_PORT: 8500
+      CONSULSERVER_HOST: "consul"
       TZ: Asia/Shanghai
     links:
-      - eurekaserver:eurekaserver
       - database:database
-      - configserver:configserver
       - rmqnamesrv:rmqnamesrv
-      - authenticationservice:authenticationservice
+      - keycloak:keycloak
+      - consul:consul
     depends_on:
-      - eurekaserver
       - database
-      - configserver
       - rmqnamesrv
-      - authenticationservice
+      - keycloak
+      - consul
 
   projectservices:
     image: coopersoft/construct-project-service:snapshot
@@ -201,26 +142,19 @@ services:
     environment:
       PROFILE: "dev"
       SERVER_PORT: "19002"
-      CONFIGSERVER_PORT: 8888
-      EUREKASERVER_PORT: 8761
-      AUTHSERVER_PORT:   8091
-      CONFIGSERVER_URI: "http://configserver:8888"
-      EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
-      AUTHSERVER_URI:   "http://authenticationservice:8901/auth/user"
-      ENCRYPT_KEY:       "IMSYMMETRIC"
+      CONSULSERVER_PORT: 8500
+      CONSULSERVER_HOST: "consul"
       TZ: Asia/Shanghai
     links:
-      - eurekaserver:eurekaserver
       - database:database
-      - configserver:configserver
       - rmqnamesrv:rmqnamesrv
-      - authenticationservice:authenticationservice
+      - keycloak:keycloak
+      - consul:consul
     depends_on:
-      - eurekaserver
       - database
-      - configserver
       - rmqnamesrv
-      - authenticationservice
+      - keycloak
+      - consul
 
   cacheservices:
     image: coopersoft/construct-project-cache-service:snapshot
@@ -229,23 +163,35 @@ services:
     environment:
       PROFILE: "dev"
       SERVER_PORT: "19003"
-      CONFIGSERVER_PORT: 8888
-      EUREKASERVER_PORT: 8761
-      AUTHSERVER_PORT:   8091
-      CONFIGSERVER_URI: "http://configserver:8888"
-      EUREKASERVER_URI: "http://eurekaserver:8761/eureka/"
-      AUTHSERVER_URI:   "http://authenticationservice:8901/auth/user"
-      ENCRYPT_KEY:       "IMSYMMETRIC"
+      CONSULSERVER_PORT: 8500
+      CONSULSERVER_HOST: "consul"
       TZ: Asia/Shanghai
     links:
-      - eurekaserver:eurekaserver
-      - configserver:configserver
       - rmqnamesrv:rmqnamesrv
       - redis:redis
-      - authenticationservice:authenticationservice
+      - keycloak:keycloak
+      - consul:consul
     depends_on:
-      - eurekaserver
-      - configserver
+      - redis
+      - rmqnamesrv
+      - keycloak
+      - consul
+
+  trustgatewaysvr:
+    image: coopersoft/trust-gatewaysvr:snapshot
+    ports:
+      - "5556:5556"
+    environment:
+      PROFILE: "dev"
+      SERVER_PORT: "5556"
+      CONSULSERVER_PORT: 8500
+      CONSULSERVER_HOST: "consul"
+      TZ: Asia/Shanghai
+    depends_on:
+      - consul
       - rmqnamesrv
       - redis
-      - authenticationservice
+    links:
+      - consul:consul
+      - rmqnamesrv:rmqnamesrv
+      - redis:redis

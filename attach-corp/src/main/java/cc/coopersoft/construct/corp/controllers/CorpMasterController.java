@@ -1,6 +1,7 @@
 package cc.coopersoft.construct.corp.controllers;
 
 import cc.coopersoft.construct.corp.model.CorpEmployee;
+import cc.coopersoft.construct.corp.model.CreditRecord;
 import cc.coopersoft.construct.corp.services.CorpServices;
 import cc.coopersoft.construct.corp.services.EmployeeServices;
 import org.springframework.http.HttpStatus;
@@ -38,4 +39,12 @@ public class CorpMasterController {
     public String addCorpEmployee(@PathVariable("code") long corpCode, @Valid @RequestBody CorpEmployee employee){
         return String.valueOf(employeeServices.addEmployee(corpCode,employee).getId());
     }
+
+    @RequestMapping(value = "/corp/{code}/credit/add", method = RequestMethod.POST)
+    public String addCreditRecord(@PathVariable("code") long corpCode,
+                                  @Valid @RequestBody CreditRecord creditRecord){
+        return String.valueOf(corpServices.addCredit(corpCode, creditRecord).getId());
+    }
+
+
 }
